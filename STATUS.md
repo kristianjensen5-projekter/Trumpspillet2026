@@ -1,7 +1,8 @@
 # Trumpspillet 2026 — Status
 
 **Type:** arbejde (bekræftet af Kristian 2026-07-02)
-**Live URL:** https://trumpspillet2026.pages.dev/ (gammel version)
+**Live URL:** https://trumpspillet2026.pages.dev/ (gammel version) ·
+**v2-test:** https://trumpspillet2026.pages.dev/trumpspillet-v2
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
 **Senest opdateret:** 2026-07-02
 
