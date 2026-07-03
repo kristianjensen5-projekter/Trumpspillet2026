@@ -1078,14 +1078,16 @@ function gameOverCause(cause, opts){
   GO.pending=true;
   GO.timer=setTimeout(()=>{
     GS.overMode='go_'+GO.cause; GS.over=true; GO.pending=false; GO.timer=null;
+    GO.shownAt=now(); // tableau animations key off this
     invEl.classList.add('hidden');
     SFX.achievement();
   }, Math.max(0, opts.delayMs!=null?opts.delayMs:900));
 }
 function startContinueOverlay(){
   continueOverlay={ phase:'idle', words:DATA.CONTINUE.words, idx:0, interval:80, inc:32,
-    stepsLeft:0, nextAt:now()+80, stopped:false, grantDone:false, democratClicked:false,
-    _btnDem:null, _btnVote:null };
+    stepsLeft:0, nextAt:now()+80, stopped:false, grantDone:false,
+    demAttempts:0, shakeUntil:0, reject:null, lastDemAt:0,
+    _btnDem:null, _btnVote:null, _giveUp:null };
   GS.overMode='continue';
 }
 function continueSpin(){
@@ -1101,37 +1103,61 @@ function continueSpin(){
     switchScene(dest);
   }
 }
+/* THE core gag (Kristian's original idea): the machine physically cannot
+   vote Democrat. Pressing it buzzes, rejects the ballot with escalating
+   excuses — and then spins to TRUMP anyway. Nobody loses at this machine. */
+function continueDemocrat(){
+  const C=continueOverlay;
+  if (!C || C.phase==='done') return;
+  C.demAttempts++;
+  C.lastDemAt=now();
+  C.shakeUntil=now()+600;
+  const msgs=['INVALID BALLOT','RECOUNT DENIED','SO RIGGED... FOR YOU'];
+  C.reject={ text: msgs[Math.min(C.demAttempts-1, msgs.length-1)], until: now()+1600 };
+  ensureAudio();
+  tone(140,.25,'sawtooth',.4); setTimeout(()=>tone(110,.3,'sawtooth',.35),120); // buzzer
+  if (C.phase==='idle'){
+    setTimeout(()=>{ if (continueOverlay && continueOverlay.phase==='idle') continueSpin(); }, 900);
+  }
+}
 function drawGameOver(){
   beginScreen();
   if (GS.overMode==='continue'){ drawContinueOverlay(); return; }
-  // Cause art screen
-  ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
-  ctx.textAlign='center';
+  // Full-screen themed tableau — the theme IS the screen (build plan trin 4)
+  const t=now()-(GO.shownAt||now());
+  const darkText = drawTableau(GO.cause, t);
   const goText = DATA.GAMEOVER[GO.cause] || DATA.GAMEOVER.generic;
   const title = GO.title || goText.title;
   const subtitle = GO.subtitle || goText.subtitle;
-  ctx.fillStyle='#141414'; ctx.font=`800 ${clamp(VW*0.05,20,30)}px system-ui`;
-  ctx.fillText(title, VW/2, VH*0.14);
-  ctx.font=`${clamp(VW*0.03,13,17)}px system-ui`; ctx.fillStyle='#2a2a2a';
-  ctx.fillText(subtitle, VW/2, VH*0.14+30);
-  const boxW=Math.min(VW*0.8,720), boxH=Math.min(VH*0.5,360);
-  const bx=(VW-boxW)/2, by=VH*0.24;
-  drawCauseArt(GO.cause,bx,by,boxW,boxH);
-  ctx.fillStyle='#1f1f1f'; ctx.font='14px system-ui';
-  ctx.fillText('Tap or press any key to continue', VW/2, by+boxH+36);
+  ctx.textAlign='center';
+  ctx.save();
+  ctx.shadowColor=darkText?'rgba(255,255,255,0.6)':'rgba(0,0,0,0.7)';
+  ctx.shadowBlur=10;
+  ctx.fillStyle=darkText?'#141414':'#fff';
+  ctx.font=`800 ${clamp(VW*0.075,26,52)}px system-ui`;
+  ctx.fillText(title, VW/2, VH*0.16);
+  ctx.font=`italic ${clamp(VW*0.032,14,20)}px system-ui`;
+  ctx.fillStyle=darkText?'#2a2a2a':'#f0f0f0';
+  ctx.fillText('"'+subtitle+'"', VW/2, VH*0.16+36);
+  ctx.restore();
+  // pulsing continue prompt
+  ctx.save();
+  ctx.globalAlpha=0.65+0.35*Math.sin(now()/350);
+  ctx.fillStyle=darkText?'#1f1f1f':'#fff';
+  ctx.font='bold 15px system-ui';
+  ctx.fillText('Tap or press any key to continue', VW/2, VH-Math.max(28,VH*0.05));
+  ctx.restore();
   ctx.textAlign='left';
 }
-function drawCauseArt(cause,bx,by,boxW,boxH){
+/* Each tableau returns true if the background is light (=> dark text). */
+function drawTableau(cause,t){
   ctx.save(); ctx.imageSmoothingEnabled=false;
-  if (cause==='ice'){
-    ctx.fillStyle='#cfe9ff'; ctx.fillRect(bx,by,boxW,boxH);
-    ctx.fillStyle='#80c0ff'; ctx.fillRect(bx,by+boxH*0.7,boxW,boxH*0.3);
-    // Trump's hair floating in the water
-    ctx.fillStyle='#f3a32d'; ctx.fillRect(bx+boxW*0.45,by+boxH*0.68,boxW*0.08,8);
-  } else if (cause==='bear'){
-    ctx.fillStyle='#b8d8f0'; ctx.fillRect(bx,by,boxW,boxH);
-    ctx.fillStyle='#e8f4ff'; ctx.fillRect(bx,by+boxH*0.75,boxW,boxH*0.25);
-    const cX=bx+boxW*0.42, cY=by+boxH*0.72, r=boxH*0.17;
+  let darkText=true;
+  if (cause==='bear'){
+    // Greenland winter, giant bear, falling snow
+    ctx.fillStyle='#b8d8f0'; ctx.fillRect(0,0,VW,VH);
+    ctx.fillStyle='#e8f4ff'; ctx.fillRect(0,VH*0.78,VW,VH*0.22);
+    const cX=VW*0.44, cY=VH*0.76, r=Math.min(VH,VW)*0.16;
     ctx.fillStyle='#5d3a1a';
     ctx.beginPath(); ctx.ellipse(cX,cY,r*1.5,r,0,0,Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.arc(cX+r*1.2,cY-r*0.4,r*0.75,0,Math.PI*2); ctx.fill();
@@ -1141,70 +1167,199 @@ function drawCauseArt(cause,bx,by,boxW,boxH){
     ctx.beginPath(); ctx.arc(cX+r*0.96,cY-r*0.55,r*0.08,0,Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.arc(cX+r*1.44,cY-r*0.55,r*0.08,0,Math.PI*2); ctx.fill();
     ctx.fillStyle='#c0392b'; ctx.beginPath(); ctx.arc(cX+r*1.2,cY-r*0.15,r*0.32,0,Math.PI); ctx.fill();
-    // Trump legs sticking out of the mouth
+    // Trump legs kicking out of the mouth (little wiggle)
+    const wig=Math.sin(t/180)*r*0.05;
     const tmX=cX+r*1.55, tmY=cY-r*0.25;
-    ctx.fillStyle='#1a1a3a'; ctx.fillRect(tmX,tmY,r*0.18,r*0.45);
-    ctx.fillStyle='#f5cba7'; ctx.beginPath(); ctx.arc(tmX+r*0.09,tmY-r*0.15,r*0.18,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#ffd700'; ctx.fillRect(tmX,tmY-r*0.36,r*0.18,r*0.12);
+    ctx.fillStyle='#1a1a3a'; ctx.fillRect(tmX,tmY+wig,r*0.18,r*0.45);
+    ctx.fillStyle='#f5cba7'; ctx.beginPath(); ctx.arc(tmX+r*0.09,tmY-r*0.15+wig,r*0.18,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#ffd700'; ctx.fillRect(tmX,tmY-r*0.36+wig,r*0.18,r*0.12);
     ctx.fillStyle='rgba(192,57,43,0.7)';
     [[cX-r*0.3,cY-r*0.6],[cX+r*0.1,cY-r*1.1],[cX-r*0.7,cY-r*0.2],[cX+r*0.6,cY-r*0.9],[cX-r*0.2,cY-r*0.1]]
       .forEach(([sx,sy])=>{ ctx.beginPath(); ctx.arc(sx,sy,r*0.07,0,Math.PI*2); ctx.fill(); });
-  } else if (cause==='nuke'){
-    ctx.fillStyle='#000'; ctx.fillRect(bx,by,boxW,boxH);
-    ctx.fillStyle='#0a0a2a'; ctx.fillRect(bx,by,boxW,boxH*0.6);
-    ctx.fillStyle='#3cf'; ctx.beginPath(); ctx.arc(bx+boxW*0.6,by+boxH*0.45,boxH*0.18,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#ffb300'; ctx.beginPath(); ctx.arc(bx+boxW*0.6,by+boxH*0.45,boxH*0.12,0,Math.PI*2); ctx.fill();
+    // falling snow
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    for (let i=0;i<50;i++){
+      const sx=((i*97)%VW)+Math.sin(t/900+i)*24;
+      const sy=(t/18+i*67)%VH;
+      ctx.fillRect(sx,sy,i%3?2:3,i%3?2:3);
+    }
+  } else if (cause==='ice'){
+    // The water RISES while you watch. MAGA cap floats by.
+    ctx.fillStyle='#9fb8cc'; ctx.fillRect(0,0,VW,VH);
+    const rise=Math.min(1,t/4000);
+    const wl=VH*(0.62-0.22*rise); // waterline climbs from 62% to 40%
+    ctx.fillStyle='#4a90e2'; ctx.globalAlpha=0.85;
+    ctx.fillRect(0,wl,VW,VH-wl); ctx.globalAlpha=1;
+    // waves
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    for (let x=0;x<VW;x+=36){
+      ctx.fillRect(x,wl+Math.sin(t/700+x*0.05)*4-2,26,4);
+    }
+    // bobbing ice chunks
+    ctx.fillStyle='#e8f4f8';
+    for (let i=0;i<5;i++){
+      const ix=VW*(0.12+i*0.19), iy=wl+10+Math.sin(t/800+i*1.7)*5;
+      ctx.beginPath(); ctx.moveTo(ix-22,iy+10); ctx.lineTo(ix,iy-12); ctx.lineTo(ix+22,iy+10);
+      ctx.closePath(); ctx.fill();
+    }
+    // floating MAGA cap + hair tuft (all that remains)
+    const capX=VW*0.5+Math.sin(t/1300)*30, capY=wl-4+Math.sin(t/600)*3;
+    ctx.fillStyle='#c22'; ctx.fillRect(capX-16,capY-8,32,8); ctx.fillRect(capX-20,capY,40,4);
+    ctx.fillStyle='#f3a32d';
+    ctx.fillRect(capX+40+Math.sin(t/900)*10, capY+2, 22, 6);
+    // rising bubbles
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    for (let i=0;i<8;i++){
+      const bx2=capX+50+((i*13)%30), by2=capY+20+((t/12+i*40)%80);
+      ctx.beginPath(); ctx.arc(bx2,by2,2+i%3,0,Math.PI*2); ctx.fill();
+    }
   } else if (cause==='lars-fight'){
-    ctx.fillStyle='#dff4ff'; ctx.fillRect(bx,by,boxW,boxH);
-    ctx.fillStyle='#e7fbff'; ctx.fillRect(bx,by+boxH*0.75,boxW,boxH*0.25);
-    // stars circling above fallen Trump
-    ctx.save(); ctx.translate(bx+boxW/2, by+boxH*0.62);
-    ctx.fillStyle='#f3a32d'; ctx.fillRect(-30,-6,60,14);   // Trump lying down (hair blob + suit)
-    ctx.fillStyle='#7a5328'; ctx.fillRect(-10,-4,52,12);
-    ctx.fillStyle='#ffd700'; ctx.font='20px system-ui';
-    for (let i=0;i<3;i++){
-      const a=now()/500+i*2.1;
-      ctx.fillText('★', Math.cos(a)*44-8, -22+Math.sin(a)*8);
+    // KO on the ice: Trump flat on his back, stars orbiting, Lars victorious
+    ctx.fillStyle='#dff4ff'; ctx.fillRect(0,0,VW,VH);
+    ctx.fillStyle='#e7fbff'; ctx.fillRect(0,VH*0.75,VW,VH*0.25);
+    const gy=VH*0.75, s=Math.min(VW,VH)/280;
+    // Trump lying down (rotated blocky sprite)
+    ctx.save(); ctx.translate(VW*0.44,gy-8*s); ctx.scale(s*2.2,s*2.2);
+    ctx.fillStyle='#2b2b2b'; ctx.fillRect(14,-4,20,9);          // legs
+    ctx.fillStyle='#7a5328'; ctx.fillRect(-12,-8,26,13);        // suit
+    ctx.fillStyle='#d8e6ff'; ctx.fillRect(-8,-5,16,8);
+    ctx.fillStyle='#e02424'; ctx.fillRect(-2,-4,10,4);          // tie flopped
+    ctx.fillStyle=skinColor(); ctx.fillRect(-24,-8,12,12);      // face
+    ctx.fillStyle='#f3a32d'; ctx.fillRect(-30,-8,7,12);         // hair squashed
+    ctx.fillStyle='#111'; ctx.fillRect(-21,-4,2,1); ctx.fillRect(-16,-4,2,1); // X-ish eyes
+    ctx.restore();
+    // orbiting stars above his head
+    ctx.fillStyle='#ffd700'; ctx.font=`${Math.round(20*s*1.4)}px system-ui`;
+    for (let i=0;i<4;i++){
+      const a=t/450+i*1.57;
+      ctx.fillText('★', VW*0.38+Math.cos(a)*60*s, gy-70*s+Math.sin(a)*14*s);
+    }
+    // Lars standing over him, arm raised, pipe smoking
+    ctx.save(); ctx.translate(VW*0.62,gy); ctx.scale(s*2.4,s*2.4);
+    ctx.fillStyle='#1a1a2e'; ctx.fillRect(-10,-30,20,22);
+    ctx.fillStyle='#fff'; ctx.fillRect(-3,-28,6,14);
+    ctx.fillStyle='#2c4f9e'; ctx.fillRect(-1,-26,2,10);
+    ctx.fillStyle='#1a1a2e'; ctx.fillRect(-7,-8,5,8); ctx.fillRect(2,-8,5,8);
+    ctx.fillStyle='#f4c59a'; ctx.fillRect(-9,-44,18,14);
+    ctx.fillStyle='#bdbdbd'; ctx.fillRect(-10,-48,20,4);
+    ctx.fillStyle='#333'; ctx.fillRect(-7,-40,6,4); ctx.fillRect(1,-40,6,4);
+    ctx.fillStyle='#1a1a2e'; ctx.fillRect(8,-34,5,14);           // raised arm
+    ctx.fillStyle='#f4c59a'; ctx.fillRect(8,-38,5,5);            // fist up
+    ctx.fillStyle='#7b4a2f'; ctx.fillRect(-16,-38,6,4);          // pipe
+    const st=(t%3000)/3000;
+    if (st<0.4){
+      ctx.fillStyle=`rgba(255,255,255,${0.5*(1-st/0.4)})`;
+      ctx.beginPath(); ctx.arc(-18,-46-st*20,4+st*8,0,Math.PI*2); ctx.fill();
     }
     ctx.restore();
+  } else if (cause==='nuke'){
+    // Darkness. A mushroom cloud grows on the horizon.
+    darkText=false;
+    ctx.fillStyle='#050510'; ctx.fillRect(0,0,VW,VH);
+    const grow=Math.min(1,t/2500);
+    const gx=VW*0.5, hy=VH*0.8;
+    // horizon
+    ctx.fillStyle='#0a0a1e'; ctx.fillRect(0,hy,VW,VH-hy);
+    // glow pulse
+    const pulse=0.7+0.3*Math.sin(t/300);
+    const grd=ctx.createRadialGradient(gx,hy,10,gx,hy,VW*0.45*grow+40);
+    grd.addColorStop(0,`rgba(255,140,40,${0.55*pulse})`);
+    grd.addColorStop(1,'rgba(255,80,0,0)');
+    ctx.fillStyle=grd; ctx.fillRect(0,0,VW,VH);
+    // stem
+    const stemW=VW*0.07*grow+8, stemH=VH*0.34*grow;
+    ctx.fillStyle='#3a2a20';
+    ctx.fillRect(gx-stemW/2,hy-stemH,stemW,stemH);
+    // cap
+    const capR=VW*0.16*grow+12;
+    ctx.fillStyle='#4a3626';
+    ctx.beginPath(); ctx.ellipse(gx,hy-stemH,capR,capR*0.5,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#5d4632';
+    ctx.beginPath(); ctx.ellipse(gx,hy-stemH-capR*0.18,capR*0.8,capR*0.36,0,0,Math.PI*2); ctx.fill();
+    // core
+    ctx.fillStyle=`rgba(255,190,90,${0.5*pulse})`;
+    ctx.beginPath(); ctx.ellipse(gx,hy-stemH,capR*0.4,capR*0.2,0,0,Math.PI*2); ctx.fill();
+  } else if (cause==='kremlin'){
+    // "World Peace?" — red void, one dove feather drifting down
+    darkText=false;
+    ctx.fillStyle='#3d0a0a'; ctx.fillRect(0,0,VW,VH);
+    const grd=ctx.createRadialGradient(VW/2,VH/2,50,VW/2,VH/2,VW*0.7);
+    grd.addColorStop(0,'rgba(140,20,20,0.6)'); grd.addColorStop(1,'rgba(0,0,0,0.5)');
+    ctx.fillStyle=grd; ctx.fillRect(0,0,VW,VH);
+    const fy=(t/22)%(VH*1.2), fx=VW*0.5+Math.sin(t/650)*VW*0.12;
+    ctx.save(); ctx.translate(fx,fy); ctx.rotate(Math.sin(t/500)*0.5);
+    ctx.fillStyle='#f5f5f5';
+    ctx.beginPath(); ctx.ellipse(0,0,4,14,0.4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  } else if (cause==='wagner'){
+    // Gulag: bars + sweeping searchlight over orange-jumpsuit Trump
+    darkText=false;
+    ctx.fillStyle='#1a1410'; ctx.fillRect(0,0,VW,VH);
+    ctx.fillStyle='#2a2420'; ctx.fillRect(0,VH*0.8,VW,VH*0.2);
+    // searchlight sweep
+    const sw=Math.sin(t/1600)*VW*0.35+VW*0.5;
+    const lg=ctx.createLinearGradient(sw-120,0,sw+120,0);
+    lg.addColorStop(0,'rgba(180,180,140,0)');
+    lg.addColorStop(0.5,'rgba(180,180,140,0.18)');
+    lg.addColorStop(1,'rgba(180,180,140,0)');
+    ctx.fillStyle=lg; ctx.fillRect(0,0,VW,VH);
+    // Trump in orange jumpsuit
+    const s=Math.min(VW,VH)/300, tx=VW*0.5, ty=VH*0.42;
+    ctx.fillStyle='#d97706'; ctx.fillRect(tx-24*s,ty,48*s,74*s);
+    ctx.fillStyle='#f5cba7'; ctx.beginPath(); ctx.arc(tx,ty-12*s,18*s,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#e6a13c'; ctx.fillRect(tx-18*s,ty-30*s,36*s,11*s);
+    ctx.fillStyle='#111'; ctx.fillRect(tx-9*s,ty-16*s,4*s,3*s); ctx.fillRect(tx+5*s,ty-16*s,4*s,3*s);
+    ctx.fillStyle='#9a2b38'; ctx.fillRect(tx-7*s,ty-5*s,14*s,3*s);
+    // bars in front
+    ctx.fillStyle='#0a0a0a';
+    const nBars=6, span=VW*0.7, x0=VW*0.15;
+    for (let i=0;i<nBars;i++) ctx.fillRect(x0+i*(span/(nBars-1))-4,VH*0.08,8,VH*0.78);
+    ctx.fillRect(x0-10,VH*0.08,span+20,6);
+    ctx.fillRect(x0-10,VH*0.83,span+20,6);
   } else {
-    ctx.fillStyle='#ddd'; ctx.fillRect(bx,by,boxW,boxH);
+    ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
   }
   ctx.restore();
+  return darkText;
 }
 function drawContinueOverlay(){
   const C=continueOverlay; if (!C) return;
+  const t=now();
   ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
   ctx.textAlign='center';
-  const dem=C.democratClicked;
-  // white frame box
-  const wbW=Math.min(VW*0.86,560), wbH=wbW*0.6, wbX=(VW-wbW)/2, wbY=VH*0.07;
-  ctx.fillStyle='#fff'; ctx.fillRect(wbX,wbY,wbW,wbH);
-  ctx.strokeStyle='#3a3a3a'; ctx.lineWidth=2; ctx.strokeRect(wbX,wbY,wbW,wbH);
-  // machine (left 56%)
-  const mHalf=wbW*0.56, boxW=mHalf*0.76, boxH=boxW*0.66;
-  const bx=wbX+(mHalf-boxW)/2, by=wbY+(wbH-boxH)*0.30, mCX=bx+boxW/2;
+  // framing line
+  ctx.fillStyle='#141414';
+  ctx.font=`bold ${clamp(VW*0.034,14,22)}px "Courier New",monospace`;
+  ctx.fillText('Out of luck? In America, you can always VOTE.', VW/2, Math.max(34,VH*0.07));
+  // ---- THE MACHINE (full-screen star of the show) ----
+  const mW=Math.min(VW*0.86, 460);
+  const mH=Math.min(VH*0.52, mW*1.05);
+  let mX=(VW-mW)/2, mY=VH*0.13;
+  // ballot-rejection shake
+  if (t<C.shakeUntil){
+    mX+=(Math.random()-0.5)*14; mY+=(Math.random()-0.5)*8;
+  }
+  const mCX=mX+mW/2;
   // pedestal
-  ctx.fillStyle='#8b0000'; ctx.fillRect(mCX-6,by+boxH,12,40);
-  ctx.fillStyle='#6b0000'; ctx.fillRect(mCX-boxW*0.24,by+boxH+40,boxW*0.48,10);
+  ctx.fillStyle='#8b0000'; ctx.fillRect(mCX-10,mY+mH,20,VH*0.06);
+  ctx.fillStyle='#6b0000'; ctx.fillRect(mCX-mW*0.22,mY+mH+VH*0.06,mW*0.44,12);
   // case
-  roundRectPath(ctx,bx,by,boxW,boxH,8); ctx.fillStyle='#0d1f3c'; ctx.fill();
-  roundRectPath(ctx,bx,by,boxW,12,8); ctx.fillStyle='#c0392b'; ctx.fill();
-  ctx.fillStyle='#ffd700'; ctx.font='bold 9px system-ui';
-  ctx.fillText('DIEBOLD NIXONDORF™', mCX, by+22);
+  roundRectPath(ctx,mX,mY,mW,mH,12); ctx.fillStyle='#0d1f3c'; ctx.fill();
+  roundRectPath(ctx,mX,mY,mW,20,12); ctx.fillStyle='#c0392b'; ctx.fill();
+  ctx.fillStyle='#ffd700'; ctx.font=`bold ${clamp(mW*0.035,11,16)}px system-ui`;
+  ctx.fillText('DIEBOLD NIXONDORF™', mCX, mY+15+clamp(mW*0.035,11,16)*0.35);
   // screen
-  const sx=bx+20, sy=by+30, sw=boxW-40, sh=boxH-56;
+  const sx=mX+mW*0.08, sy=mY+30, sw=mW*0.84, sh=mH*0.5;
   ctx.fillStyle='#040c1e'; ctx.fillRect(sx,sy,sw,sh);
   ctx.strokeStyle='#3a82ff'; ctx.lineWidth=2; ctx.strokeRect(sx,sy,sw,sh);
-  ctx.fillStyle='#3a82ff'; ctx.font='8px system-ui';
-  ctx.fillText('PRESIDENTIAL ELECTION 2024', sx+sw/2, sy+11);
-  // slot window
-  const winH=30, winY=sy+sh*0.42-winH/2;
-  ctx.fillStyle='#0a1228'; ctx.fillRect(sx+sw*0.1,winY,sw*0.8,winH);
-  ctx.strokeStyle=(C.phase==='done')?'#ffd700':'#6ad3ff'; ctx.lineWidth=2;
-  ctx.strokeRect(sx+sw*0.1,winY,sw*0.8,winH);
-  // slot update
-  const t=now();
+  ctx.fillStyle='#3a82ff'; ctx.font=`${clamp(sw*0.035,9,13)}px system-ui`;
+  ctx.fillText('PRESIDENTIAL ELECTION 2024', sx+sw/2, sy+16);
+  // slot window (big)
+  const winH=Math.max(40,sh*0.3), winY=sy+sh*0.5-winH/2;
+  ctx.fillStyle='#0a1228'; ctx.fillRect(sx+sw*0.08,winY,sw*0.84,winH);
+  ctx.strokeStyle=(C.phase==='done')?'#ffd700':'#6ad3ff'; ctx.lineWidth=3;
+  ctx.strokeRect(sx+sw*0.08,winY,sw*0.84,winH);
+  // slot state machine
   if (C.phase==='spinning'){
     while (!C.stopped && t>=C.nextAt){
       C.idx=(C.idx+1)%C.words.length;
@@ -1219,71 +1374,96 @@ function drawContinueOverlay(){
     }
   }
   const N=C.words.length;
-  const prev=C.words[(C.idx-1+N)%N], cur=dem?'RIGGED!':C.words[C.idx], next=C.words[(C.idx+1)%N];
-  ctx.save(); ctx.beginPath(); ctx.rect(sx+sw*0.1,winY,sw*0.8,winH); ctx.clip();
+  const rejecting=C.reject && t<C.reject.until;
+  const prev=C.words[(C.idx-1+N)%N], next=C.words[(C.idx+1)%N];
+  const cur = rejecting && C.phase!=='done' ? C.reject.text : C.words[C.idx];
+  ctx.save(); ctx.beginPath(); ctx.rect(sx+sw*0.08,winY,sw*0.84,winH); ctx.clip();
   const centerY=winY+winH/2;
-  ctx.fillStyle='#5070a0'; ctx.font='bold 12px system-ui'; ctx.textBaseline='middle';
-  ctx.fillText(prev, sx+sw/2, centerY-22);
-  ctx.fillStyle=dem?'#ff5555':(C.phase==='done'?'#ffd700':'#fff'); ctx.font='bold 15px system-ui';
+  const bigF=clamp(winH*0.42,16,26), smallF=bigF*0.7;
+  ctx.textBaseline='middle';
+  ctx.fillStyle='#5070a0'; ctx.font=`bold ${smallF}px system-ui`;
+  ctx.fillText(prev, sx+sw/2, centerY-winH*0.72);
+  ctx.fillStyle=rejecting?'#ff4444':(C.phase==='done'?'#ffd700':'#fff');
+  let curF=bigF; ctx.font=`bold ${curF}px system-ui`;
+  while (ctx.measureText(cur).width>sw*0.78 && curF>11){ curF--; ctx.font=`bold ${curF}px system-ui`; }
   ctx.fillText(cur, sx+sw/2, centerY);
-  ctx.fillStyle='#5070a0'; ctx.font='bold 12px system-ui';
-  ctx.fillText(next, sx+sw/2, centerY+22);
+  ctx.fillStyle='#5070a0'; ctx.font=`bold ${smallF}px system-ui`;
+  ctx.fillText(next, sx+sw/2, centerY+winH*0.72);
   ctx.restore(); ctx.textBaseline='alphabetic';
-  if (C.phase==='done' && !dem){
+  if (C.phase==='done'){
     ctx.save(); ctx.globalAlpha=0.8+0.2*Math.sin(t/200);
-    ctx.fillStyle='#ffd700'; ctx.font='bold 10px system-ui';
-    ctx.fillText(DATA.CONTINUE.lifeLine, sx+sw/2, winY+winH+14);
+    ctx.fillStyle='#ffd700'; ctx.font=`bold ${clamp(sw*0.045,12,16)}px system-ui`;
+    ctx.fillText(DATA.CONTINUE.lifeLine, sx+sw/2, winY+winH+22);
     ctx.restore();
-    ctx.fillStyle='#ffd700'; ctx.font='13px system-ui';
+    ctx.fillStyle='#ffd700'; ctx.font='18px system-ui';
     for (let i=0;i<6;i++){
       const a=t/1200+i*Math.PI/3;
-      ctx.fillText('★', mCX+Math.cos(a)*40, by+boxH*0.45+Math.sin(a)*26);
+      ctx.fillText('★', mCX+Math.cos(a)*mW*0.34, mY+mH*0.42+Math.sin(a)*mH*0.22);
     }
   }
-  // DEMOCRAT mini-button inside machine
-  const btnY=by+boxH-26, bwB=Math.min(96,boxW*0.44), bhB=18;
-  const bx1=mCX-bwB-4;
-  C._btnDem={x:bx1,y:btnY,w:bwB,h:bhB};
-  roundRectPath(ctx,bx1,btnY,bwB,bhB,3); ctx.fillStyle=dem?'#c0392b':'#2e2e40'; ctx.fill();
-  ctx.fillStyle=dem?'#fff':'#6070a0'; ctx.font='bold 8px system-ui';
-  ctx.fillText(dem?'⚠ RIGGED!':'DEMOCRAT', bx1+bwB/2, btnY+12);
-  roundRectPath(ctx,mCX+4,btnY,bwB,bhB,3); ctx.fillStyle='#ffd700'; ctx.fill();
-  ctx.fillStyle='#1a0f00'; ctx.fillText('★ TRUMP ★', mCX+4+bwB/2, btnY+12);
-  // Trump figure right side + speech bubble
-  const tAreaX=wbX+mHalf, tAreaW=wbW-mHalf;
-  const tCX=tAreaX+tAreaW*0.42, tScale=wbH/260;
-  ctx.save(); ctx.beginPath(); ctx.rect(tAreaX,wbY,tAreaW,wbH); ctx.clip();
-  ctx.translate(tCX, wbY+wbH-8); ctx.scale(tScale,tScale); ctx.translate(0,-95);
-  ctx.fillStyle='#2b2b2b'; ctx.fillRect(-15,15,30,60);
-  ctx.fillStyle='#d8e6ff'; ctx.fillRect(-12,18,24,36);
-  ctx.fillStyle='#e02424'; ctx.fillRect(-3,24,6,28);
-  ctx.fillStyle='#ffaa66'; ctx.fillRect(-15,-15,30,30);
-  ctx.fillStyle='#ffdd44'; ctx.fillRect(-18,-24,36,15);
-  ctx.fillStyle='#111'; ctx.fillRect(-9,-3,3,3); ctx.fillRect(6,-3,3,3);
-  ctx.fillStyle='#c2185b'; ctx.fillRect(-6,6,12,3);
-  ctx.restore();
-  const bubText = dem ? DATA.CONTINUE.bubbleRigged : (C.phase==='done'?DATA.CONTINUE.bubbleWin:DATA.CONTINUE.bubbleIdle);
-  ctx.font='bold 10px "Courier New",monospace';
-  const bubW=ctx.measureText(bubText).width+18, bubH=26;
-  const bubX=clamp(tCX-bubW/2, wbX+4, wbX+wbW-bubW-4), bubY=wbY+8;
-  ctx.fillStyle='#fff'; roundRectPath(ctx,bubX,bubY,bubW,bubH,6); ctx.fill();
-  ctx.strokeStyle=dem?'#c0392b':'#3a3a3a'; ctx.lineWidth=1.5; roundRectPath(ctx,bubX,bubY,bubW,bubH,6); ctx.stroke();
-  ctx.fillStyle=dem?'#c0392b':'#141414';
-  ctx.fillText(bubText, bubX+bubW/2, bubY+17);
-  // title + VOTE button below
-  ctx.fillStyle='#141414'; ctx.font=`bold ${clamp(VW*0.032,13,18)}px "Courier New",monospace`;
-  ctx.fillText(DATA.CONTINUE.title, VW/2, wbY+wbH+34);
-  const voteW=Math.min(260,VW*0.6), voteH=44, voteX=(VW-voteW)/2, voteY=wbY+wbH+52;
-  C._btnVote={x:voteX,y:voteY,w:voteW,h:voteH};
-  ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(voteX,voteY,voteW,voteH);
-  ctx.strokeStyle='#2b2b2b'; ctx.lineWidth=1.5; ctx.strokeRect(voteX,voteY,voteW,voteH);
-  ctx.fillStyle='#141414'; ctx.font='bold 14px "Courier New",monospace';
-  ctx.fillText(C.phase==='done'?'[ CONTINUE ]':'[ VOTE ]', VW/2, voteY+voteH*0.64);
-  if (Math.sin(t/400)>0){
-    ctx.fillStyle='#ff00ff'; ctx.font='11px "Courier New",monospace';
-    const prompt = dem ? '> Restarting...' : (C.phase!=='done' ? '> Tap VOTE to continue' : '> Tap to resume');
-    ctx.fillText(prompt, VW/2, voteY+voteH+22);
+  // ---- TWO BIG BUTTONS (Democrat equally inviting — that's the trap) ----
+  const btnW=mW*0.4, btnH=Math.max(44,mH*0.14);
+  const btnY=mY+mH-btnH-mH*0.06;
+  C._btnDem={x:mX+mW*0.06,y:btnY,w:btnW,h:btnH};
+  C._btnVote={x:mX+mW-mW*0.06-btnW,y:btnY,w:btnW,h:btnH};
+  const bf=clamp(btnW*0.11,12,18);
+  // DEMOCRAT (blue, shiny, very pressable)
+  roundRectPath(ctx,C._btnDem.x,C._btnDem.y,btnW,btnH,8);
+  ctx.fillStyle=rejecting?'#7a1f1f':'#1565c0'; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2.5;
+  roundRectPath(ctx,C._btnDem.x+1,C._btnDem.y+1,btnW-2,btnH-2,7); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font=`800 ${bf}px system-ui`; ctx.textBaseline='middle';
+  ctx.fillText(rejecting?'⚠ '+C.reject.text:'DEMOCRAT', C._btnDem.x+btnW/2, btnY+btnH/2);
+  // TRUMP / VOTE (gold)
+  roundRectPath(ctx,C._btnVote.x,C._btnVote.y,btnW,btnH,8);
+  ctx.fillStyle='#ffd700'; ctx.fill();
+  ctx.strokeStyle='#8a6d00'; ctx.lineWidth=2.5;
+  roundRectPath(ctx,C._btnVote.x+1,C._btnVote.y+1,btnW-2,btnH-2,7); ctx.stroke();
+  ctx.fillStyle='#1a0f00';
+  ctx.fillText(C.phase==='done'?'CONTINUE ▶':'★ VOTE ★', C._btnVote.x+btnW/2, btnY+btnH/2);
+  ctx.textBaseline='alphabetic';
+  // ---- Trump figure beside the machine (space permitting) ----
+  const sideSpace=(VW-mW)/2;
+  if (sideSpace>70){
+    const tCX=mX+mW+sideSpace*0.5, tScale=Math.min(sideSpace/110, mH/240);
+    ctx.save(); ctx.translate(tCX, mY+mH+VH*0.06); ctx.scale(tScale*1.6,tScale*1.6); ctx.translate(0,-95);
+    ctx.fillStyle='#2b2b2b'; ctx.fillRect(-15,15,30,60);
+    ctx.fillStyle='#d8e6ff'; ctx.fillRect(-12,18,24,36);
+    ctx.fillStyle='#e02424'; ctx.fillRect(-3,24,6,28);
+    ctx.fillStyle='#ffaa66'; ctx.fillRect(-15,-15,30,30);
+    ctx.fillStyle='#ffdd44'; ctx.fillRect(-18,-24,36,15);
+    ctx.fillStyle='#111'; ctx.fillRect(-9,-3,3,3); ctx.fillRect(6,-3,3,3);
+    ctx.fillStyle='#c2185b'; ctx.fillRect(-6,6,12,3);
+    ctx.restore();
   }
+  // Trump speech bubble (above machine, right side)
+  const recentDem = C.lastDemAt && t-C.lastDemAt<2600 && C.phase!=='done';
+  const bubText = C.phase==='done' ? DATA.CONTINUE.bubbleWin
+                : recentDem ? 'The machine is very smart!'
+                : DATA.CONTINUE.bubbleIdle;
+  ctx.font='bold 12px "Courier New",monospace';
+  const bubW=ctx.measureText(bubText).width+22, bubH=30;
+  const bubX=clamp(mX+mW-bubW*0.6, 8, VW-bubW-8), bubY=Math.max(6,mY-38);
+  ctx.fillStyle='#fff'; roundRectPath(ctx,bubX,bubY,bubW,bubH,7); ctx.fill();
+  ctx.strokeStyle='#3a3a3a'; ctx.lineWidth=1.5; roundRectPath(ctx,bubX,bubY,bubW,bubH,7); ctx.stroke();
+  ctx.fillStyle=recentDem?'#c0392b':'#141414';
+  ctx.fillText(bubText, bubX+bubW/2, bubY+19);
+  // ---- prompt + discreet give-up ----
+  if (Math.sin(t/400)>0){
+    ctx.fillStyle='#ff00ff'; ctx.font='12px "Courier New",monospace';
+    const prompt = C.phase==='done' ? '> Tap CONTINUE to resume'
+                 : C.demAttempts>0 ? '> The machine insists. VOTE.'
+                 : '> Cast your vote';
+    ctx.fillText(prompt, VW/2, mY+mH+VH*0.06+34);
+  }
+  ctx.font='11px "Courier New",monospace';
+  const guText='give up and restart';
+  const guW=ctx.measureText(guText).width;
+  const guX=VW/2-guW/2, guY=VH-Math.max(16,VH*0.03);
+  C._giveUp={x:guX-8,y:guY-14,w:guW+16,h:20};
+  ctx.fillStyle='rgba(20,20,20,0.45)';
+  ctx.fillText(guText, VW/2, guY);
+  ctx.fillRect(guX,guY+3,guW,1);
   ctx.textAlign='left';
 }
 
@@ -2489,6 +2669,7 @@ addEventListener('keydown', e=>{
       startContinueOverlay(); handled=true;
     } else if (GS.overMode==='continue'){
       if (k==='r'&&e.shiftKey){ fullRestartToIntro(); }
+      else if (k==='d'){ continueDemocrat(); }
       else continueSpin();
       handled=true;
     }
@@ -2563,12 +2744,9 @@ cvs.addEventListener('pointerdown', e=>{
     if (GS.overMode==='continue' && continueOverlay){
       const C=continueOverlay;
       const hit=(b)=>b&&sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h;
-      if (!C.democratClicked && hit(C._btnDem)){
-        C.democratClicked=true; SFX.error();
-        setTimeout(()=>fullRestartToIntro(),1800);
-        return;
-      }
-      continueSpin();
+      if (hit(C._btnDem)){ continueDemocrat(); return; }
+      if (hit(C._giveUp)){ fullRestartToIntro(); return; }
+      continueSpin(); // VOTE button or anywhere else: democracy happens
     } else if (GS.overMode && String(GS.overMode).startsWith('go_')){
       startContinueOverlay();
     }
@@ -2993,7 +3171,11 @@ const introCanvas=document.getElementById('intro-canvas');
 drawIntroHeliTrump(introCanvas.getContext('2d'),introCanvas.width,introCanvas.height);
 document.getElementById('start-btn').addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
 document.getElementById('intro').addEventListener('click', ()=>{ if (scene===SCENE.INTRO) startGame(); });
-renderAreas(); renderHUD(); renderInv();
+renderAreas();
+// NB: canvas-ikoner malet under selve den indledende script-evaluering kan
+// miste deres backing store ved compositorens første frame (Chromium).
+// Derfor males HUD/inventar først EFTER første frame. (Se LESSONS.md)
+requestAnimationFrame(()=>{ renderHUD(); renderInv(); });
 requestAnimationFrame(step);
 
 // Dev-only debug handle (read-only snapshots; harmless in production)

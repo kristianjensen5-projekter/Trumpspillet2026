@@ -70,6 +70,27 @@ koordinater som tegningen — aldrig på mellemresultater.
 
 ---
 
+## Canvas-tegninger under indledende script-evaluering kan forsvinde — og en anden bug kan skjule det
+
+**Problem:** HUD-ikonerne (Trump-hoved, guldbarre) var blanke — men KUN dem
+der blev malet ved boot. Senere renderHUD-kald malede fint.
+**Årsag (to lag):** (1) Canvas-elementer tegnet synkront under selve den
+indledende script-evaluering kan miste deres backing store når Chromiums
+compositor initialiserer — `getImageData` viste rene nuller trods korrekt
+tegnekode. (2) Fejlen var USYNLIG i starten, fordi en ANDEN bug (mønter
+opsamlet under heli-landing) tilfældigvis udløste et ekstra `renderHUD()`
+efter load og dermed genmalede ikonerne. Da mønt-buggen blev fixet,
+"opstod" ikon-buggen.
+**Fix:** Udskyd al boot-tids canvas-UI-maling til efter første frame:
+`requestAnimationFrame(()=>{ renderHUD(); renderInv(); })`.
+**Generel regel:** (a) Mal aldrig canvas-UI under initial script-eval —
+vent på første rAF. (b) Når en bugfix "skaber" en ny bug et andet sted, så
+mistænk at den gamle bug maskerede en eksisterende — ikke at fixet var
+forkert.
+**Dato:** 2026-07-03
+
+---
+
 ## Automatiserede Playwright-flowtests fanger det manuel test ikke gør
 
 **Indsigt:** Alle tre bugs ovenfor blev fundet med headless Playwright-scripts
