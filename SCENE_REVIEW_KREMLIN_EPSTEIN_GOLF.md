@@ -184,6 +184,74 @@ hundeben på banen (easter egg).
 
 ---
 
+## 4. GAME OVER-SKÆRME (tilføjet efter Kristians input 2026-07-03)
+
+**Idéen:** Hver game over-skærm skal være tematisk bundet til den bane man
+tabte i. **Status:** Idéen er halvt gennemført — og indpakningen udvander den.
+
+### Hvad der er svagt i dag
+1. **Alle dødsfald ligner hinanden.** Samme cremede baggrund, samme layout:
+   overskrift + lille indrammet billedboks + "tap to continue". Temaet
+   lever kun inde i den lille boks — skærmene føles som varianter af én
+   skabelon, ikke som otte forskellige satiriske "slutninger".
+2. **Billedkvaliteten svinger.** Bjørnen (Trump-ben ud af gabet, blodstænk)
+   er sjov og færdig. Men 'ice' er bare en blå flade, 'nuke' to cirkler,
+   'lars-fight' nogle stjerner. Wagner-gulag, golf-avisen og Epstein-avisen
+   (v1's bedste!) mangler helt i v2 endnu.
+3. **Alt står stille.** Ingen bevægelse = intet liv. Canvas-animation er
+   billig her: vand der stiger, sne der falder, stjerner der roterer,
+   paddehatteskyen der vokser.
+
+### Anbefaling (pakke B)
+- **Fuldskærms-tableauer** i stedet for billede-i-boks: temaet ER skærmen.
+  Stor titel henover, Trump-citat som undertekst, diskret pulserende
+  "tap to continue" i bunden. Samme typografiske ramme, otte vidt
+  forskellige verdener:
+  | Cause | Tableau (animeret) |
+  |---|---|
+  | bear | Isblåt Grønland, bjørn m. Trump-ben (findes), faldende sne |
+  | ice | Vand der STIGER mens man ser på, MAGA-kasket + hårtot flyder, isflager vipper |
+  | lars-fight | Trump i gulvtæppet, animerede stjerner i kredsløb, Lars m. pibe og løftet arm |
+  | nuke | Mørke, paddehattesky der vokser, pulserende rød glød |
+  | kremlin | Rødt tomrum, "World Peace?"-tekst, en enkelt duefjer der daler |
+  | wagner | Gulag-tremmer (v1-art), fejende projektørlys henover |
+  | golf-loss | MAGA GAZETTE som HEL forside (v1-art i fuld størrelse) |
+  | epstein_fail | The Daily Tremendous, roteret avis (v1-art i fuld størrelse) |
+- Titler/citater genbruges 1:1 fra v1 — tonen er allerede rigtig.
+
+## 5. CONTINUE-SKÆRMEN (voting machine)
+
+**Idéen (Kristians ord):** en voting machine der — uanset hvor mange gange
+og hvad man trykker — kun kan vælge Trump.
+
+### Hvad der er svagt i dag
+1. **Kerne-gaggen bliver aldrig spillet ud.** DEMOCRAT-knappen viser
+   "RIGGED!" og smider spilleren HELT tilbage til intro-skærmen. Dvs. den
+   nysgerrige spiller, der prøver jokens pointe af, bliver straffet med at
+   miste sit run — i stedet for at få pointen: *maskinen nægter og vælger
+   Trump alligevel.* Det er den omvendte belønningsstruktur.
+2. **Maskinen er for lille og undskyldende.** Slot-vinduet og knapperne er
+   frimærker i et hvidt kort. Maskinen er scenens hovedperson — den skal
+   fylde skærmen.
+3. **Framingen mangler.** Hvorfor stemmer jeg? Én linje mangler: man er
+   løbet tør, og i dette Amerika stemmer man sig til flere liv.
+
+### Anbefaling (pakke B)
+- **Maskinen i fuld skærm.** Stort slot-vindue, stor VOTE-knap/håndtag,
+  DEMOCRAT-knappen stor og indbydende (det er meningen man skal fristes).
+- **ALLE veje fører til Trump:**
+  - VOTE/TRUMP → spin → TRUMP → "+1 LIFE — TREMENDOUS!" → fortsæt.
+  - **DEMOCRAT → maskinen ryster, buzzer-lyd, "INVALID BALLOT" — og
+    spinner så alligevel og lander på TRUMP.** Trump-boble: "Very smart
+    machine!" Gentagne forsøg eskalerer: "RECOUNT DENIED" → "SO RIGGED...
+    FOR YOU". Man kan aldrig tabe her — det er selve pointen.
+  - Genstart-til-intro flyttes til en diskret "Give up"-tekstlinje i
+    hjørnet (+ Shift+R) — væk fra jokens knap.
+- Framing-linje øverst: *"Out of luck? In America, you can always VOTE."*
+- Beholdes: DIEBOLD NIXONDORF™, slot-ordene (DEMOCRAT / INDEPENDENT /
+  REPUBLICAN / TRUMP), dekelererende spin, guldstjerner, Trump-figuren
+  med skiftende talebobler.
+
 ## Tværgående prioritering
 
 | Prioritet | Punkt | Hvorfor |
@@ -194,6 +262,8 @@ hundeben på banen (easter egg).
 | 4 | Kremlin F+K → "Putin fights back" | Fjerner tastaturjagt, bevarer dramaet |
 | 5 | Golf approach-klip + power-farve | Filler væk, intuition ind |
 | 6 | Epstein-kurve + ❌-liv + 🛑-glyf | Finjustering af sværhedsgrad og læsbarhed |
+| 7 | Voting machine: DEMOCRAT → Trump alligevel | Kerne-gaggen findes ikke i spillet i dag — omvendt belønning straffer nysgerrighed |
+| 8 | Game over som fuldskærms-tableauer m. animation | Temaet ER skærmen, ikke et frimærke i en boks |
 
 Alle forslag bevarer de eksisterende tekster, jokes og game over-billeder
 uændret — det er interaktionen og forklaringerne der justeres, ikke satiren.
