@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m 'Add v2 test URL to STATUS *)",
+      "Bash(git commit -q -m 'Fix speech bubble layout on mobile \\(iPhone test feedback\\) *)",
+      "Bash(curl -s -o /dev/null -w \"live v2: HTTP %{http_code}\\\\n\" \"https://trumpspillet2026.pages.dev/trumpspillet-v2\")",
+      "Skill(fewer-permission-prompts)",
+      "Skill(fewer-permission-prompts:*)",
+      "Bash(python3)",
+      "Bash(curl *)",
+      "Bash(npx wrangler pages deployment list*)",
+      "Bash(wrangler pages deployment list*)",
+      "Bash(npx wrangler pages project list*)",
+      "Bash(wrangler pages project list*)",
+      "Bash(npx wrangler whoami*)",
+      "Bash(wrangler whoami*)",
+      "Bash(wrangler --version)",
+      "Bash(npm root *)"
+    ]
+  }
+}

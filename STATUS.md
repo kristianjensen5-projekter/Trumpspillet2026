@@ -47,14 +47,18 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 
 ## Næste skridt
 
-1. **Kristian tester Greenland-v2 på fysisk iPhone** (deploy preview først —
-   afventer OK til commit/deploy)
-2. Derefter Oval Office (byggetrin 3 — kan bygges af Sonnet efter GAME_SPEC.md
+1. Oval Office (byggetrin 3 — kan bygges af Sonnet efter GAME_SPEC.md
    afsnit 4)
+2. Derefter Kremlin → Epstein → Golf
 
-## Afventer
+## iPhone-test 2026-07-03 (Kristian) — GODKENDT ✅
 
-- Kristians test af v2-Greenland på iPhone → resultat tilbage i næste chat
+- ✅ Styring: gå + to-finger-hop virker
+- ✅ Butik: købte selvbruner og brugte den
+- ✅ Lars-kamp: virkede, flag faldt ned
+- ✅ Talebobler stod oveni hinanden og for lavt → FIXET samme dag
+  (layout skrevet om, se LESSONS.md) og deployet
+- Dom: "overordnet super duper godt"
 
 ---
 
