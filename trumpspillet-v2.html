@@ -235,6 +235,32 @@
     "PRAISE": ["Genius move, sir!", "Historic leadership!", "Best decision ever!", "Total victory!", "Markets love it!"],
     "BOO": ["Boooo!", "Not cool!", "Sad!", "Wrong answer!", "Fake decision!"]
   },
+  "KREMLIN": {
+    "INTRO_CARD": "MOSCOW. THE KREMLIN.\n\nPutin wants to settle Ukraine\nthe old way: ARM WRESTLING.\n\nWin the handshake, win the map.\n\nAnd those gold statues?\nNobody is watching... probably.\n\nTap or press any key",
+    "HANDSHAKE_CARD_DESKTOP": "HANDSHAKE BATTLE WITH PUTIN\n\nWho has the strongest handshake?\nThe strongest gets Ukraine!\n\nMash A and D as fast as you can!\n\nTap or press any key to start\n(there are no regrets)",
+    "HANDSHAKE_CARD_TOUCH": "HANDSHAKE BATTLE WITH PUTIN\n\nWho has the strongest handshake?\nThe strongest gets Ukraine!\n\nTAP THE SCREEN as fast as you can!\n\nTap to start\n(there are no regrets)",
+    "COINS": [[400,-40],[700,-35],[240,-38],[520,-65]],
+    "LINES": {
+      "arrive": "Very strong handshake incoming.",
+      "putinSetup": "Do not touch my statues, Donald.",
+      "flagWin": "UKRAINE IS NOW AMERICAN TERRITORY!",
+      "flagLose": "UKRAINE REMAINS UNDER RUSSIAN INFLUENCE!",
+      "nobelLine": "Thanks for the Nobel Prize — finally!",
+      "wagnerAlert": "WAGNER! SEIZE HIM!",
+      "wagnerTrump": "This is fake surveillance!",
+      "wagnerRunShoes": "RUN! Those gold sneakers were a GREAT deal!",
+      "wagnerRunNoShoes": "RUN! (those gold sneakers would have helped...)",
+      "wagnerEscape": "Nobody catches Trump! NOBODY!",
+      "wagnerCaught": "Take him to the gulag!",
+      "caughtTrump": "This is very unfair treatment!"
+    },
+    "PUTIN_WIN": ["Impressive strength, my friend.", "Strong. I respect that.", "Strong."],
+    "PUTIN_LOSE": ["Weakness. Disappointing.", "Too soft.", "Again, little hands?"],
+    "TRUMP_WIN": ["Dominated the handshake!", "Power move successful!"],
+    "TRUMP_LOSE": ["Strategic retreat...", "Next time…", "The table was slippery!"],
+    "BOASTS": ["Only I could get this deal.", "They love me here. Tremendous!", "Beautiful piece. I deserve it.", "Everyone says it belongs with me."],
+    "THOUGHTS": ["These would look great in my office...", "Very classy gold. The best gold.", "Putin won't miss just one...", "I could fit three of these in Mar-a-Lago!"]
+  },
   "GAMEOVER": {
     "lars-fight": { "title": "KO!", "subtitle": "Lars got you. Try again." },
     "ice":        { "title": "Game Over", "subtitle": "Maybe don't melt the ice caps, Donald" },
@@ -513,7 +539,7 @@ function renderHUD(){
   if (player.capOn) { const c=document.createElement('span'); c.className='chip'; c.textContent='🧢'; hudEl.appendChild(c); }
   if (player.goldenShoesOn){ const c=document.createElement('span'); c.className='chip'; c.textContent='👟 x2'; hudEl.appendChild(c); }
 }
-function totalCoinCount(){ return DATA.GREENLAND.COINS.length + DATA.OVAL.COINS.length; /* + kremlin in later build step */ }
+function totalCoinCount(){ return DATA.GREENLAND.COINS.length + DATA.OVAL.COINS.length + DATA.KREMLIN.COINS.length; }
 
 function drawSlotIcon(g,id){
   g.save(); g.translate(33,16); g.scale(1,1);
@@ -1844,8 +1870,9 @@ function openHeliMenu(){
     closeChoice();
     if (k==='1') return;
     if (k==='2'){ SFX.whoosh(); switchScene(SCENE.OVAL); return; }
-    // Build step 4+: remaining scenes. For now: honest placeholder.
-    const dest={'3':'Moscow','4':'The Epstein files','5':'Mar-a-Lago'}[k];
+    if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); return; }
+    // Build step 6+: remaining scenes. For now: honest placeholder.
+    const dest={'4':'The Epstein files','5':'Mar-a-Lago'}[k];
     SFX.whoosh();
     say(player, dest+' is being rebuilt — coming in the next build step!', 2500);
   });
@@ -2168,6 +2195,7 @@ function interactOval(){
       ['Stay here','Fly to Greenland','Fly to Moscow (meeting)','Epstein files','Fly to Mar-a-Lago (mini-putt)'], k=>{
       closeChoice();
       if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
+      else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); }
       else if (k!=='1'){ SFX.whoosh(); say(player,'That trip is being rebuilt — coming soon!',2200); }
     });
   }
@@ -2490,17 +2518,21 @@ function drawOvalBackdrop(){
       ctx.beginPath(); ctx.ellipse(x,y,18,8,0,0,Math.PI*2); ctx.fill();
     }
   ctx.restore();
-  // floating shelves with gold statues
+  // floating shelves with gold statues (+ anything stolen from the Kremlin)
   const shelfY=GROUND_Y-160;
-  [[40,240],[860,300]].forEach(([sx,sw])=>{
+  const loot=OV.shelfLoot||[];
+  [[40,240],[860,300]].forEach(([sx,sw],shelfIdx)=>{
     ctx.fillStyle='#d9d2c4'; ctx.fillRect(sx,shelfY,sw,8);
     ctx.fillStyle='#cfc7b6'; ctx.fillRect(sx,shelfY+8,sw,3);
-    for (let i=1;i<=3;i++){
-      const stx=Math.round(sx+sw/(4)*i);
+    const extra=loot.filter((_,i)=>i%2===shelfIdx);
+    const slots=3+extra.length;
+    for (let i=1;i<=slots;i++){
+      const stx=Math.round(sx+sw/(slots+1)*i);
+      const variant = i<=3 ? i : extra[i-4];
       ctx.fillStyle='#8a6b2f'; ctx.fillRect(stx-10,shelfY-16,20,16);
       ctx.fillStyle='#d4af37';
-      if (i===1){ ctx.fillRect(stx-3,shelfY-40,6,24); ctx.fillRect(stx-12,shelfY-28,24,8); }
-      else if (i===2){ ctx.fillRect(stx-2,shelfY-42,4,26); ctx.fillRect(stx-10,shelfY-34,20,6); }
+      if (variant===1){ ctx.fillRect(stx-3,shelfY-40,6,24); ctx.fillRect(stx-12,shelfY-28,24,8); }
+      else if (variant===2){ ctx.fillRect(stx-2,shelfY-42,4,26); ctx.fillRect(stx-10,shelfY-34,20,6); }
       else { ctx.fillRect(stx-4,shelfY-36,8,20); ctx.fillRect(stx-2,shelfY-44,4,8); }
     }
   });
@@ -2576,13 +2608,519 @@ function drawOvalAnswerCards(){
 }
 
 /* ================================================================
+   10C. KREMLIN SCENE — handshake battle, statue heists, Wagner
+   Package B: tap-mash on mobile (A+D on desktop), no F+K switch —
+   phase 2 is "PUTIN FIGHTS BACK!". Visible camera watch-status.
+   ================================================================ */
+const KL = DATA.KREMLIN.LINES;
+const KR = {
+  door:{x:120,y:GROUND_Y,type:'door'},
+  heli:{x:160,y:GROUND_Y-18,type:'heli'},
+  putin:{x:980,y:GROUND_Y,type:'putin',say:'',speakingUntil:0,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28},
+  statues:[],
+  cameras:[],
+  coins:[],
+  wagner:null,           // {soldiers:[{x,y,speed}], startedAt, escaped, caught}
+  flashUntil:0,
+  handshakeWon:false
+};
+let tug=null;            // {pos,lastKey,start,dur,taps}
+let flagOverlay=null;    // {type:'american'|'russian', start}
+let nobelDrop=null;
+function resetKremlin(){
+  player.x=200; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
+  Object.assign(KR.putin,{x:980,y:GROUND_Y,say:'',speakingUntil:0});
+  KR.statues=[
+    {id:'stat1',x:420,y:GROUND_Y,type:'statue',collected:false,variant:1},
+    {id:'stat2',x:560,y:GROUND_Y,type:'statue',collected:false,variant:2},
+    {id:'stat3',x:700,y:GROUND_Y,type:'statue',collected:false,variant:3}
+  ];
+  KR.cameras=[
+    {x:360,y:170,angle:Math.PI/4,offset:0},
+    {x:840,y:170,angle:Math.PI/4,offset:0.5}
+  ];
+  KR.coins=DATA.KREMLIN.COINS.map(([x,dy])=>({x,y:GROUND_Y+dy,collected:false,type:'coin'}));
+  KR.wagner=null; KR.flashUntil=0;
+  tug=null; flagOverlay=null;
+  playEntryHeli(KL.arrive);
+}
+function nearestKR(){
+  const arr=[KR.door,KR.heli,KR.putin,...KR.statues.filter(s=>!s.collected)];
+  let best=null,bd=1e9;
+  for (const o of arr){
+    const d = o.type==='heli' ? distToRect(player.x,player.y,o.x+20,o.y-6,220,120)
+            : dist2(player.x,player.y,o.x,o.y);
+    if (d<bd){ bd=d; best=o; }
+  }
+  return bd<CFG.INTERACT_DIST*1.3 ? best : null;
+}
+function interactKremlin(){
+  if (player.selectedItem==='dynamite'){
+    const obj=nearestKR();
+    if (obj && obj.type==='putin'){ kremlinPlant(obj); return; }
+    kremlinPlant({type:'ground',x:player.x+(player.facing>0?12:-12),y:GROUND_Y});
+    return;
+  }
+  const obj=nearestKR(); if (!obj) return;
+  if (obj.type==='door'){
+    openChoice('Leave the meeting?', ['Stay here','Back to Greenland'], k=>{
+      closeChoice(); if (k==='2') switchScene(SCENE.GREENLAND);
+    });
+  }
+  else if (obj.type==='putin'){ startHandshake(); }
+  else if (obj.type==='statue'){ tryStealStatue(obj); }
+  else if (obj.type==='heli'){
+    // an active Wagner chase blocks the polite travel menu — you ESCAPE (with
+    // sneakers, via proximity) or you get caught. No free rides.
+    if (KR.wagner && !KR.wagner.escaped && !KR.wagner.caught){
+      say(player,"They're blocking the helicopter!",1200);
+      return;
+    }
+    ensureAudio(); SFX.helicopter();
+    openChoice(DATA.GREENLAND.HELI_MENU_HEADER,
+      ['Stay here','Fly to Greenland','Fly to The White House','Epstein files','Fly to Mar-a-Lago (mini-putt)'], k=>{
+      closeChoice();
+      if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
+      else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.OVAL); }
+      else if (k!=='1'){ SFX.whoosh(); say(player,'That trip is being rebuilt — coming soon!',2200); }
+    });
+  }
+}
+function kremlinPlant(obj){
+  const t=now();
+  if (t-lastPlantAt<900) return;
+  lastPlantAt=t;
+  SFX.buttonPress(); consumeDynamite(); ensureAudio();
+  spawnSparks(obj.x,obj.y-20,12);
+  if (obj.type==='putin'){
+    SFX.explosion(); triggerShake(10,600);
+    KR.putin.say='…'; KR.putin.speakingUntil=t+1200;
+    setTimeout(()=>gameOverCause('kremlin',{delayMs:0}),500);
+  } else {
+    SFX.explosion(); triggerShake(4,300);
+    spawnSparks(obj.x,obj.y-10,15);
+    say(player, DATA.GREENLAND.LINES.plantGround, 1200);
+  }
+}
+/* ---- Security cameras ---- */
+function updateCameras(){
+  const t=now()/1000;
+  KR.cameras.forEach(cam=>{
+    const cyc=((t/8)+cam.offset)%1;
+    const sweep = cyc<0.5 ? cyc*2 : 2-cyc*2;
+    cam.angle = Math.PI/6 + (2*Math.PI/3)*sweep;
+  });
+}
+function pointWatched(px,py){
+  for (const cam of KR.cameras){
+    const dx=px-cam.x, dy=py-cam.y;
+    const a=Math.atan2(dy,dx);
+    let diff=Math.abs(cam.angle-a);
+    if (diff>Math.PI) diff=2*Math.PI-diff;
+    if (diff<=Math.PI/16) return true;
+  }
+  return false;
+}
+function tryStealStatue(st){
+  if (pointWatched(st.x,st.y-20)){ triggerWagner(); return; }
+  st.collected=true;
+  OV.shelfLoot=OV.shelfLoot||[];
+  OV.shelfLoot.push(st.variant);
+  say(player, pick(DATA.KREMLIN.BOASTS), 1500);
+  spawnSparks(st.x,st.y-20,12); SFX.success();
+}
+/* ---- Wagner chase ---- */
+function triggerWagner(){
+  if (KR.wagner) return;
+  KR.flashUntil=now()+500;
+  say(KR.putin, KL.wagnerAlert, 2500);
+  say(player, KL.wagnerTrump, 2000);
+  ensureAudio(); SFX.error(); setTimeout(()=>SFX.heartbeat(),400);
+  triggerShake(8,500);
+  KR.wagner={
+    soldiers:[{x:KR.door.x,y:GROUND_Y,speed:150},{x:KR.door.x+40,y:GROUND_Y,speed:135}],
+    startedAt:now(), escaped:false, caught:false
+  };
+  setTimeout(()=>{ toast(player.goldenShoesOn ? KL.wagnerRunShoes : KL.wagnerRunNoShoes); }, 900);
+}
+function updateWagner(dt){
+  const w=KR.wagner;
+  if (!w||w.escaped||w.caught) return;
+  w.soldiers.forEach(s=>{
+    const dx=player.x-s.x;
+    if (Math.abs(dx)>8) s.x+=Math.sign(dx)*s.speed*dt;
+  });
+  // escape: reach the helicopter WITH gold sneakers
+  const heliD=distToRect(player.x,player.y,KR.heli.x+20,KR.heli.y-6,220,120);
+  if (heliD<40 && player.goldenShoesOn){
+    w.escaped=true;
+    say(player, KL.wagnerEscape, 2000);
+    SFX.whoosh();
+    setTimeout(()=>{
+      openChoice('ESCAPE! Where to?', ['Greenland','The White House','Mar-a-Lago'], k=>{
+        closeChoice();
+        if (k==='1') switchScene(SCENE.GREENLAND);
+        else if (k==='2') switchScene(SCENE.OVAL);
+        else { say(player,'Mar-a-Lago is being rebuilt — Greenland it is!',2000); switchScene(SCENE.GREENLAND); }
+      });
+    },600);
+    return;
+  }
+  // caught: soldier reaches you, or 6s without sneakers-escape
+  const caught = w.soldiers.some(s=>Math.abs(player.x-s.x)<26) ||
+                 (now()-w.startedAt>6000 && !player.goldenShoesOn);
+  if (caught){
+    w.caught=true;
+    say(KR.putin, KL.wagnerCaught, 3000);
+    say(player, KL.caughtTrump, 2000);
+    setTimeout(()=>gameOverCause('wagner',{delayMs:0}),1800);
+  }
+}
+/* ---- Handshake battle (tug) ---- */
+function startHandshake(){
+  if (tug) return;
+  openInfoCard(IS_TOUCH ? DATA.KREMLIN.HANDSHAKE_CARD_TOUCH : DATA.KREMLIN.HANDSHAKE_CARD_DESKTOP, ()=>{
+    closeInfoCard();
+    tug={pos:0,lastKey:'',start:now(),dur:6000,taps:0};
+    ensureAudio();
+  });
+}
+function tugInput(key){ // key: 'a'|'d'|'tap'
+  if (!tug) return;
+  if (key==='tap'){ tug.pos+=0.11; tug.taps++; }
+  else if ((key==='a'||key==='d') && key!==tug.lastKey){ tug.pos+=0.15; tug.lastKey=key; }
+  tug.pos=Math.min(1.2,tug.pos);
+}
+function endHandshake(win){
+  tug=null;
+  const P=DATA.KREMLIN;
+  say(KR.putin, pick(win?P.PUTIN_WIN:P.PUTIN_LOSE), 1800);
+  say(player, pick(win?P.TRUMP_WIN:P.TRUMP_LOSE), 1400);
+  KR.handshakeWon=win;
+  // dismissReady-grace: the player is still hammering keys when the duel
+  // ends — without this the map closes before anyone sees it (v1 golf-
+  // tutorial had the exact same key-leak, solved the same way)
+  flagOverlay={type:win?'american':'russian',start:now(),dismissAt:now()+1200};
+  if (win) SFX.achievement(); else SFX.error();
+}
+function updateTug(){
+  if (!tug) return;
+  const e=now()-tug.start;
+  const pull = e<3000 ? 0.18 : 0.27; // phase 2: PUTIN FIGHTS BACK
+  tug.pos -= pull/60;
+  tug.pos = Math.max(-1,Math.min(1.2,tug.pos));
+  if (e>=tug.dur) endHandshake(tug.pos>0.5);
+}
+function drawTug(){
+  if (!tug) return;
+  beginScreen();
+  const e=now()-tug.start, phase2=e>=3000;
+  ctx.fillStyle='rgba(0,0,0,.75)'; ctx.fillRect(0,0,VW,VH);
+  if (phase2){ // red pulse in phase 2
+    ctx.fillStyle=`rgba(180,20,20,${0.1+0.08*Math.sin(now()/120)})`;
+    ctx.fillRect(0,0,VW,VH);
+  }
+  const cx=VW/2, cy=VH*0.42, S=Math.min(VW,VH)/340;
+  // shake in phase 2
+  ctx.save();
+  if (phase2) ctx.translate((Math.random()-0.5)*6,(Math.random()-0.5)*4);
+  // table
+  ctx.fillStyle='#5d4037'; ctx.fillRect(cx-90*S,cy+20*S,180*S,15*S);
+  ctx.fillStyle='#4e342e'; ctx.fillRect(cx-90*S,cy+33*S,180*S,6*S);
+  const armAngle=tug.pos*0.6, elbowY=cy+15*S;
+  // Trump arm (left)
+  ctx.save(); ctx.translate(cx-15*S,elbowY); ctx.rotate(-Math.PI/2+armAngle);
+  ctx.fillStyle='#f5cba7'; ctx.fillRect(-8*S,-50*S,16*S,50*S);
+  ctx.fillStyle='#1a237e'; ctx.fillRect(-10*S,-10*S,20*S,15*S);
+  ctx.fillStyle='#f5cba7'; ctx.beginPath(); ctx.arc(0,-55*S,10*S,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // Putin arm (right)
+  ctx.save(); ctx.translate(cx+15*S,elbowY); ctx.rotate(-Math.PI/2-armAngle);
+  ctx.fillStyle='#fdebd0'; ctx.fillRect(-8*S,-50*S,16*S,50*S);
+  ctx.fillStyle='#212121'; ctx.fillRect(-10*S,-10*S,20*S,15*S);
+  ctx.fillStyle='#fdebd0'; ctx.beginPath(); ctx.arc(0,-55*S,10*S,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // gripped hands
+  const handY=elbowY-50*S-Math.abs(armAngle)*20*S;
+  ctx.fillStyle='#e8daef'; ctx.beginPath();
+  ctx.arc(cx+armAngle*30*S,handY,14*S,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.stroke();
+  // strain sparks near win/lose
+  if (Math.abs(tug.pos)>0.5){
+    ctx.strokeStyle=tug.pos>0?'#27ae60':'#e74c3c'; ctx.lineWidth=2;
+    for (let i=0;i<4;i++){
+      const a=(i/4)*Math.PI*2+now()/200;
+      ctx.beginPath();
+      ctx.moveTo(cx+armAngle*30*S+Math.cos(a)*18*S,handY+Math.sin(a)*18*S);
+      ctx.lineTo(cx+armAngle*30*S+Math.cos(a)*25*S,handY+Math.sin(a)*25*S);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+  ctx.textAlign='center';
+  ctx.fillStyle='#fff'; ctx.font=`bold ${clamp(VW*0.045,18,26)}px system-ui`;
+  ctx.fillText('ARM WRESTLING!', cx, cy-110*S);
+  // mash prompt
+  const flash=Math.sin(now()/100)>0?'#f1c40f':'#fff';
+  ctx.fillStyle=flash; ctx.font=`800 ${clamp(VW*0.06,22,34)}px system-ui`;
+  ctx.fillText(IS_TOUCH?'TAP! TAP! TAP!':'MASH A + D!', cx, cy+95*S);
+  if (phase2){
+    ctx.fillStyle='#ff5555'; ctx.font=`800 ${clamp(VW*0.04,15,22)}px system-ui`;
+    ctx.fillText('PUTIN FIGHTS BACK!', cx, cy+95*S+30);
+  }
+  // progress bar
+  const barW=Math.min(300,VW*0.7), barH=18, by=cy+95*S+52;
+  ctx.fillStyle='#333'; ctx.fillRect(cx-barW/2,by,barW,barH);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.strokeRect(cx-barW/2,by,barW,barH);
+  ctx.fillStyle='#27ae60'; ctx.fillRect(cx,by,(barW/2)*Math.max(0,Math.min(1,tug.pos)),barH);
+  ctx.fillStyle='#c0392b'; ctx.fillRect(cx-(barW/2)*Math.max(0,-tug.pos),by,(barW/2)*Math.max(0,-tug.pos),barH);
+  ctx.fillStyle='#fff'; ctx.fillRect(cx-2,by-4,4,barH+8);
+  ctx.font='bold 12px system-ui';
+  ctx.fillStyle='#27ae60'; ctx.fillText('TRUMP', cx+barW/2-30, by-8);
+  ctx.fillStyle='#c0392b'; ctx.fillText('PUTIN', cx-barW/2+30, by-8);
+  ctx.fillStyle='#aaa'; ctx.font='12px system-ui';
+  ctx.fillText(`Time: ${Math.max(0,(tug.dur-e)/1000).toFixed(1)}s`, cx, by+38);
+  ctx.textAlign='left';
+}
+/* ---- Ukraine map flag overlay ---- */
+function drawFlagOverlayScreen(){
+  if (!flagOverlay) return;
+  beginScreen();
+  ctx.fillStyle='rgba(0,0,0,.6)'; ctx.fillRect(0,0,VW,VH);
+  const w=Math.min(VW*0.86,620), h=w*0.6, x=(VW-w)/2, y=(VH-h)/2;
+  ctx.fillStyle='#f7f5ee'; ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=6; ctx.strokeRect(x-6,y-6,w+12,h+12);
+  // map: ocean, europe, russia, ukraine
+  ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+  ctx.fillStyle='#1a5276'; ctx.fillRect(x,y,w,h);
+  ctx.fillStyle='#5d6d7e';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.05,y+h*0.25); ctx.lineTo(x+w*0.25,y+h*0.20); ctx.lineTo(x+w*0.35,y+h*0.30);
+  ctx.lineTo(x+w*0.35,y+h*0.55); ctx.lineTo(x+w*0.20,y+h*0.65); ctx.lineTo(x+w*0.05,y+h*0.50);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#c0392b';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.55,y+h*0.10); ctx.lineTo(x+w*0.95,y+h*0.08); ctx.lineTo(x+w*0.98,y+h*0.35);
+  ctx.lineTo(x+w*0.90,y+h*0.55); ctx.lineTo(x+w*0.65,y+h*0.60); ctx.lineTo(x+w*0.55,y+h*0.45);
+  ctx.closePath(); ctx.fill();
+  // Ukraine (the prize)
+  ctx.fillStyle='#f4d03f';
+  ctx.beginPath();
+  ctx.moveTo(x+w*0.38,y+h*0.32); ctx.lineTo(x+w*0.52,y+h*0.28); ctx.lineTo(x+w*0.58,y+h*0.35);
+  ctx.lineTo(x+w*0.62,y+h*0.42); ctx.lineTo(x+w*0.58,y+h*0.55); ctx.lineTo(x+w*0.50,y+h*0.58);
+  ctx.lineTo(x+w*0.42,y+h*0.55); ctx.lineTo(x+w*0.36,y+h*0.45);
+  ctx.closePath(); ctx.fill();
+  const pulse=Math.sin(now()/300)*0.3+0.7;
+  ctx.strokeStyle='#2874a6'; ctx.lineWidth=4;
+  ctx.shadowColor='#f4d03f'; ctx.shadowBlur=15*pulse; ctx.stroke(); ctx.shadowBlur=0;
+  ctx.fillStyle='#1a5276'; ctx.font=`bold ${Math.floor(h*0.08)}px system-ui`; ctx.textAlign='center';
+  ctx.fillText('UKRAINE', x+w*0.50, y+h*0.46);
+  ctx.fillStyle='#ecf0f1'; ctx.font=`bold ${Math.floor(h*0.05)}px system-ui`;
+  ctx.fillText('🇪🇺 EUROPE', x+w*0.18, y+h*0.40);
+  ctx.fillText('🇷🇺 RUSSIA', x+w*0.76, y+h*0.30);
+  // flag drops with bounce onto Ukraine
+  const el=now()-flagOverlay.start, prog=Math.min(1,el/2000);
+  const bounce=(t)=>{ // easeOutBounce
+    if (t<1/2.75) return 7.5625*t*t;
+    if (t<2/2.75) return 7.5625*(t-=1.5/2.75)*t+0.75;
+    if (t<2.5/2.75) return 7.5625*(t-=2.25/2.75)*t+0.9375;
+    return 7.5625*(t-=2.625/2.75)*t+0.984375;
+  };
+  const ap=bounce(prog);
+  const ux=x+w*0.50, uy0=y+h*0.50-60, uy=uy0+60*ap;
+  const scale=(0.3+0.7*ap)*Math.min(2,w/300);
+  ctx.save(); ctx.translate(ux,uy); ctx.rotate((1-ap)*0.3); ctx.scale(scale,scale);
+  if (flagOverlay.type==='american'){
+    ctx.fillStyle='#b22234'; ctx.fillRect(-8,-6,16,12);
+    ctx.fillStyle='#fff'; for (let i=1;i<12;i+=2) ctx.fillRect(-8,-6+i,16,1);
+    ctx.fillStyle='#3c3b6e'; ctx.fillRect(-8,-6,8,6);
+  } else {
+    ctx.fillStyle='#fff'; ctx.fillRect(-8,-6,16,4);
+    ctx.fillStyle='#0039a6'; ctx.fillRect(-8,-2,16,4);
+    ctx.fillStyle='#d52b1e'; ctx.fillRect(-8,2,16,4);
+  }
+  ctx.restore();
+  ctx.restore(); // unclip
+  // message
+  ctx.fillStyle='#fff'; ctx.font=`bold ${clamp(w*0.035,13,19)}px system-ui`; ctx.textAlign='center';
+  ctx.fillText(flagOverlay.type==='american'?KL.flagWin:KL.flagLose, VW/2, y+h-24);
+  ctx.fillStyle='#333'; ctx.font='13px system-ui';
+  ctx.fillText('Tap or press Enter to continue', VW/2, y+h-6);
+  ctx.textAlign='left';
+}
+function closeFlagOverlay(){
+  if (flagOverlay && now()<flagOverlay.dismissAt) return; // key-leak grace
+  const won=flagOverlay && flagOverlay.type==='american';
+  flagOverlay=null;
+  if (won && !GS.medals.kremlin){
+    awardMedal('kremlin');
+    nobelDrop={y:-80,vy:0,swingPhase:0,swingAmp:0.6,active:true};
+  }
+}
+function updateNobelDrop(dt){
+  const m=nobelDrop; if (!m||!m.active) return;
+  m.vy+=300*dt; m.y+=m.vy*dt; m.swingPhase+=dt*4; m.swingAmp*=0.992;
+  const chestY=player.y-24;
+  if (m.y>=chestY){
+    m.y=chestY; m.active=false;
+    spawnConfetti(player.x,chestY,60); SFX.achievement();
+    setTimeout(()=>say(player, KL.nobelLine, 2200),800);
+  }
+}
+function drawNobelDrop(){
+  const m=nobelDrop; if (!m||!m.active) return;
+  ctx.save(); ctx.translate(player.x,m.y); ctx.rotate(Math.sin(m.swingPhase)*m.swingAmp);
+  ctx.fillStyle='#1e88e5'; ctx.fillRect(-2,-18,4,18);
+  ctx.fillStyle='#d4af37'; ctx.beginPath(); ctx.arc(0,0,7,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#8a6b2f'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+}
+/* ---- Kremlin drawing ---- */
+function drawPutin(x,y){
+  const nod=Math.sin(now()/1150+KR.putin.nodPhase)*0.4;
+  ctx.save(); ctx.translate(x,y-44+nod);
+  ctx.fillStyle='#223'; ctx.fillRect(-10,8,20,26);
+  ctx.fillStyle='#111'; ctx.fillRect(-7,34,5,10); ctx.fillRect(2,34,5,10);
+  ctx.fillStyle='#e6c9a8'; ctx.fillRect(-8,-2,16,12);
+  if (!(KR.putin.blinkUntil && now()<KR.putin.blinkUntil)){
+    ctx.fillStyle='#111'; ctx.fillRect(-5,2,2,2); ctx.fillRect(3,2,2,2);
+  } else { ctx.fillStyle='#111'; ctx.fillRect(-5,3,2,1); ctx.fillRect(3,3,2,1); }
+  ctx.fillStyle='#c2a26a'; ctx.fillRect(-9,-5,18,5);
+  ctx.restore();
+}
+function drawStatue(st){
+  const watched=pointWatched(st.x,st.y-20);
+  ctx.save(); ctx.translate(st.x,st.y-30);
+  // package B: visible watch-status
+  if (watched){
+    ctx.shadowColor='#ff2222'; ctx.shadowBlur=12;
+  }
+  ctx.fillStyle='#8a6b2f'; ctx.fillRect(-10,16,20,6);
+  ctx.fillStyle='#d4af37';
+  if (st.variant===1){ ctx.fillRect(-3,0,6,14); ctx.fillRect(-8,6,16,6); ctx.fillRect(-2,-6,4,6); }
+  else if (st.variant===2){ ctx.fillRect(-2,0,4,14); ctx.fillRect(-10,8,20,4); ctx.fillRect(-2,-4,4,4); }
+  else { ctx.fillRect(-4,2,8,12); ctx.fillRect(-2,-2,4,4); }
+  ctx.shadowBlur=0;
+  ctx.restore();
+  if (watched){
+    ctx.font='13px system-ui'; ctx.textAlign='center';
+    ctx.fillText('👁', st.x, st.y-52); ctx.textAlign='left';
+  }
+}
+function drawCameraAndLaser(cam){
+  // housing + lens
+  ctx.save(); ctx.translate(cam.x,cam.y);
+  ctx.fillStyle='#333'; ctx.fillRect(-20,-14,40,28);
+  ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(0,14,9,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f00'; ctx.beginPath(); ctx.arc(0,14,3.5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // laser cone to floor
+  const len=(GROUND_Y-cam.y)/Math.max(0.25,Math.sin(cam.angle))*1.15;
+  const cw=Math.PI/8;
+  const p1=[cam.x+Math.cos(cam.angle-cw/2)*len, cam.y+Math.sin(cam.angle-cw/2)*len];
+  const p2=[cam.x+Math.cos(cam.angle+cw/2)*len, cam.y+Math.sin(cam.angle+cw/2)*len];
+  ctx.save();
+  ctx.fillStyle='rgba(255,0,0,0.13)'; ctx.strokeStyle='rgba(255,0,0,0.4)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(cam.x,cam.y+14); ctx.lineTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle='rgba(255,0,0,0.75)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(cam.x,cam.y+14);
+  ctx.lineTo(cam.x+Math.cos(cam.angle)*len, cam.y+Math.sin(cam.angle)*len); ctx.stroke();
+  ctx.restore();
+}
+function drawWagnerSoldiers(){
+  const w=KR.wagner; if (!w) return;
+  w.soldiers.forEach(s=>{
+    ctx.save(); ctx.translate(s.x,s.y-44);
+    ctx.fillStyle='#1a1a1a'; ctx.fillRect(-8,34,7,10); ctx.fillRect(1,34,7,10);
+    ctx.fillStyle='#4a5d23'; ctx.fillRect(-9,20,8,16); ctx.fillRect(1,20,8,16);
+    ctx.fillStyle='#5d6b2f'; ctx.fillRect(-10,8,20,14);
+    ctx.fillStyle='#d4b896'; ctx.fillRect(-7,-2,14,12);
+    ctx.fillStyle='#111'; ctx.fillRect(-7,0,14,8);
+    ctx.fillStyle='#fff'; ctx.fillRect(-4,2,3,2); ctx.fillRect(1,2,3,2);
+    ctx.fillStyle='#8B0000'; ctx.fillRect(-8,-5,16,4);
+    ctx.fillStyle='#fff'; ctx.fillRect(-3,10,6,4);
+    ctx.fillStyle='#5d6b2f'; ctx.fillRect(-14,10,5,10); ctx.fillRect(9,10,5,10);
+    ctx.restore();
+    ctx.font='bold 9px system-ui'; ctx.fillStyle='#ff0000'; ctx.textAlign='center';
+    ctx.fillText('WAGNER', s.x, s.y-56); ctx.textAlign='left';
+  });
+  // escape hint arrow toward heli
+  if (!w.escaped && !w.caught){
+    const hx=KR.heli.x+30, hy=KR.heli.y-70;
+    const bob=Math.sin(now()/200)*6;
+    ctx.fillStyle='#ffeb3b';
+    ctx.beginPath();
+    ctx.moveTo(hx,hy+bob+14); ctx.lineTo(hx-11,hy+bob); ctx.lineTo(hx+11,hy+bob);
+    ctx.closePath(); ctx.fill();
+    ctx.font='bold 13px system-ui'; ctx.textAlign='center';
+    ctx.fillText('RUN!', hx, hy+bob-6); ctx.textAlign='left';
+  }
+}
+function drawKremlin(){
+  beginWorld();
+  // walls + drapes
+  ctx.fillStyle='#f2e6e6'; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,CFG.WORLD_H);
+  ctx.fillStyle='#b33';
+  for (let i=0;i<4;i++){ const dx=300+i*160; ctx.fillRect(dx,80,80,160); }
+  // Stalin portrait in gold frame
+  ctx.fillStyle='#c9a641'; ctx.fillRect(154,84,102,82);
+  ctx.fillStyle='#f5efe1'; ctx.fillRect(160,90,90,70);
+  ctx.fillStyle='#333'; ctx.fillRect(160+90*0.35,90+70*0.28,90*0.3,70*0.38);
+  ctx.fillRect(160+90*0.42,90+70*0.12,90*0.16,70*0.18);
+  // carpet
+  ctx.fillStyle='#8b0000'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
+  // long black table (behind characters)
+  ctx.fillStyle='#111'; ctx.fillRect(300,GROUND_Y-6,600,60);
+  ctx.fillStyle='#1c1c1c'; ctx.fillRect(294,GROUND_Y-12,612,10);
+  drawDoor(KR.door.x,KR.door.y);
+  updateCameras();
+  KR.cameras.forEach(drawCameraAndLaser);
+  KR.statues.forEach(st=>{ if (!st.collected) drawStatue(st); });
+  KR.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
+  drawPutin(KR.putin.x,KR.putin.y);
+  if (!entryHeli.active) drawHeli(KR.heli.x,KR.heli.y,0.35);
+  drawTrump(player.x,player.y,player.facing);
+  drawWagnerSoldiers();
+  drawFx();
+  if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
+  drawNobelDrop();
+  // thought bubble near statues (when not talking)
+  const nearSt=KR.statues.find(s=>!s.collected && dist2(player.x,player.y,s.x,s.y)<80);
+  if (nearSt && player.speakingUntil<now() && !KR.wagner){
+    const thought=DATA.KREMLIN.THOUGHTS[nearSt.variant%DATA.KREMLIN.THOUGHTS.length];
+    ctx.save();
+    ctx.font='10px system-ui';
+    const tw=ctx.measureText(thought).width+16;
+    const bx=clamp(player.x-tw/2, CAM.x+4, CAM.x+CAM.viewW-tw-4), by=player.y-92;
+    ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+    roundRectPath(ctx,bx,by,tw,20,8); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(player.x-8,by+28,3.5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(player.x-4,by+35,2.5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#333'; ctx.textAlign='center';
+    ctx.fillText(thought, bx+tw/2, by+14); ctx.textAlign='left';
+    ctx.restore();
+  }
+  const placed=[];
+  renderActorBubble(player,placed,'trump');
+  renderActorBubble(KR.putin,placed,'default');
+  endWorld();
+  // camera-caught red flash
+  if (KR.flashUntil && now()<KR.flashUntil){
+    beginScreen();
+    ctx.fillStyle='rgba(255,0,0,0.3)'; ctx.fillRect(0,0,VW,VH);
+  }
+}
+
+/* ================================================================
    11. SCENE SYSTEM
    ================================================================ */
 const SCENES = {
   [SCENE.INTRO]: {},
   [SCENE.GREENLAND]: { reset: resetGreenland, worldW: CFG.GREENLAND_W },
-  [SCENE.OVAL]: { reset: resetOval, worldW: 1200 }
-  // KREMLIN / EPSTEIN / GOLF lander i næste byggetrin
+  [SCENE.OVAL]: { reset: resetOval, worldW: 1200 },
+  [SCENE.KREMLIN]: { reset: resetKremlin, worldW: 1200 }
+  // EPSTEIN / GOLF lander i næste byggetrin
 };
 function switchScene(to){
   const def=SCENES[to];
@@ -2603,8 +3141,11 @@ function fullRestartRun(){
   resetGreenlandRunState();
   resetOvalDecisions();
   OV.introShown=false;
+  OV.shelfLoot=[];
   NUKE.active=false;
   ovalMedalDrop=null;
+  KR.introShown=false;
+  tug=null; flagOverlay=null; nobelDrop=null; KR.wagner=null;
   inventory.length=0; collectedCoins=0; player.gold=0;
   player.baseSpeedMul=1; player.goldenShoesOn=false; updateSpeedMul();
   player.tanLevel=0; player.capOn=false; player.selectedItem=null;
@@ -2652,6 +3193,7 @@ function stepWalkTween(t){
 function interact(){
   if (scene===SCENE.GREENLAND) interactGreenland();
   else if (scene===SCENE.OVAL) interactOval();
+  else if (scene===SCENE.KREMLIN) interactKremlin();
 }
 
 /* --- Keyboard --- */
@@ -2682,6 +3224,17 @@ addEventListener('keydown', e=>{
     else if (k==='e'||e.code==='KeyE'){ FightEngine.tryPunch(); handled=true; }
     else if (k==='escape'){ FightEngine.stop({winner:null}); handled=true; }
     if (handled) e.preventDefault();
+    return;
+  }
+  // Kremlin overlays: arm wrestling + Ukraine map
+  if (tug){
+    if (k==='a'||k==='d') tugInput(k);
+    e.preventDefault();
+    return;
+  }
+  if (flagOverlay){
+    closeFlagOverlay();
+    e.preventDefault();
     return;
   }
   if (choiceOverlay){
@@ -2759,6 +3312,9 @@ cvs.addEventListener('pointerdown', e=>{
     return;
   }
   if (infoCard){ infoCard.onKey && infoCard.onKey('tap'); return; }
+  // Kremlin overlays: every tap is a mash / a dismiss
+  if (tug){ tugInput('tap'); return; }
+  if (flagOverlay){ closeFlagOverlay(); return; }
   // Oval answer cards (screen space) — before world taps
   if (scene===SCENE.OVAL && OV.d && OV.d.phase==='guest_asking'){
     const hb=b=>b&&sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h;
@@ -2824,6 +3380,13 @@ function intentTap(wx,wy){
       const d = dist2(wx,wy,o.x,o.y-20);
       if (d<bd){ bd=d; best=o; }
     }
+  } else if (scene===SCENE.KREMLIN){
+    nearFn=nearestKR;
+    const targets=[KR.door,KR.heli,KR.putin,...KR.statues.filter(s=>!s.collected)];
+    for (const o of targets){
+      const d = dist2(wx,wy,o.x,o.y-20);
+      if (d<bd){ bd=d; best=o; }
+    }
   } else return;
   if (best && bd<110){
     // near enough already? interact now. Otherwise auto-walk then interact.
@@ -2857,6 +3420,13 @@ function updateActors(dt){
     updateOval(dt);
     updateNuke();
     updateOvalMedalDrop(dt);
+    return;
+  }
+  if (scene===SCENE.KREMLIN){
+    if (!KR.putin.nextBlink||t>KR.putin.nextBlink){ KR.putin.blinkUntil=t+120; KR.putin.nextBlink=t+2000+Math.random()*2500; }
+    updateTug();
+    updateWagner(dt);
+    updateNobelDrop(dt);
     return;
   }
   if (scene!==SCENE.GREENLAND) return;
@@ -3034,7 +3604,7 @@ function step(t){
           if (now()-p.startT>200){ if (p.zone<0) tl=true; else tr=true; }
         }
         FightEngine.update(dt,{left:keys.has('fl')||tl, right:keys.has('fr')||tr});
-      } else if (!anyOverlayActive() && !walkTween){
+      } else if (!anyOverlayActive() && !walkTween && !tug && !flagOverlay){
         // keyboard + held-touch movement
         let dx=0;
         if (keys.has('arrowleft')) dx-=1;
@@ -3078,6 +3648,17 @@ function step(t){
               if (!OV.introShown){ OV.introShown=true; ovalStartIntroCard(); }
               else { OV.d.phase='waiting'; OV.d.timer=now()+700; }
             });
+          } else if (scene===SCENE.KREMLIN){
+            startWalkTo(player.x+40, ()=>{
+              if (entryHeli.line) say(player,entryHeli.line,1800);
+              if (!KR.introShown){
+                KR.introShown=true;
+                openInfoCard(DATA.KREMLIN.INTRO_CARD, ()=>{
+                  closeInfoCard();
+                  say(KR.putin, KL.putinSetup, 3200);
+                });
+              }
+            });
           } else {
             startWalkTo(player.x+40, ()=>{ if (entryHeli.line) say(player,entryHeli.line,1800); });
           }
@@ -3086,7 +3667,7 @@ function step(t){
       updateActors(dt);
       updateFx(dt);
       // coin collection while airborne (not while riding the entry heli)
-      const sceneCoins = scene===SCENE.GREENLAND?GL.coins : scene===SCENE.OVAL?OV.coins : null;
+      const sceneCoins = scene===SCENE.GREENLAND?GL.coins : scene===SCENE.OVAL?OV.coins : scene===SCENE.KREMLIN?KR.coins : null;
       if (player.y<GROUND_Y-4 && sceneCoins && !entryHeli.active){
         const hx=player.x, hy=player.y-38;
         sceneCoins.forEach(c=>{
@@ -3115,6 +3696,7 @@ function step(t){
     ctx.clearRect(0,0,VW,VH);
     if (scene===SCENE.GREENLAND) drawGreenland();
     else if (scene===SCENE.OVAL){ drawOval(); drawNuke(); }
+    else if (scene===SCENE.KREMLIN){ drawKremlin(); if (tug) drawTug(); if (flagOverlay) drawFlagOverlayScreen(); }
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
     if (choiceOverlay) drawChoiceOverlay();
@@ -3158,6 +3740,12 @@ function updateActionChip(){
         label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
                 nearObj.type==='surprise'?'☢️' : nearObj.type==='aide'?'🧴' : 'E';
       }
+    } else if (scene===SCENE.KREMLIN && !tug && !flagOverlay){
+      const nearObj=nearestKR();
+      if (nearObj){ show=true;
+        label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
+                nearObj.type==='putin'?'🤝' : nearObj.type==='statue'?'💰' : 'E';
+      }
     }
   }
   actBtn.textContent=label;
@@ -3192,6 +3780,12 @@ window.__tv2 = {
             guest: (ovalCurrentGuest()||{}).id||null,
             correctAnswer: (ovalCurrentGuest()||{}).correctAnswer||null,
             tan: player.tanLevel, aide: OV.aide.phase, nuke: NUKE.active },
+    kremlin: { tug: tug?{pos:+tug.pos.toFixed(2),elapsed:Math.round(now()-tug.start)}:null,
+               flag: flagOverlay?flagOverlay.type:null,
+               statues: KR.statues.filter(s=>s.collected).length,
+               watched: KR.statues.filter(s=>!s.collected).map(s=>pointWatched(s.x,s.y-20)),
+               wagner: KR.wagner?{escaped:KR.wagner.escaped,caught:KR.wagner.caught}:null,
+               shoes: player.goldenShoesOn },
     medals: { ...GS.medals }
   }),
   cheat: { gold: n => { player.gold = n; renderHUD(); } }
