@@ -47,9 +47,28 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 
 ## Næste skridt
 
-1. Oval Office (byggetrin 3 — kan bygges af Sonnet efter GAME_SPEC.md
-   afsnit 4)
+1. Kristian tester Oval Office-v2 på iPhone
 2. Derefter Kremlin → Epstein → Golf
+
+## Oval Office v2 — bygget 2026-07-03 (redesign "pakke B")
+
+Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
+→ tre pakker → Kristian valgte B (forsimpling med jokes intakte):
+- ✅ Infokort forklarer præmissen ("Answer whatever keeps MAGA happy —
+  truth is optional")
+- ✅ Store tappelige YES/NO-svar-kort (tastatur 1/2) i stedet for at gå til
+  skrivebordsknapper — knapperne på bordet er nu dekoration
+- ✅ Selvbruner-joken løses I SCENEN: Shaman afviser bleg Trump → aide løber
+  ind med "Sir! Your emergency tan!" → ét tryk → quiz fortsætter (ingen
+  rejse tilbage til Greenland-butikken). Har man allerede tan ≥2, roser
+  Shamanen den i stedet
+- ✅ Ærlig scoring: 3/3 = Pulitzer-medalje; ellers fail-kort med øjeblikkelig
+  prøv-igen (nye tilfældige gæster)
+- ✅ SURPRISE-knappen: missil → game over → voting machine → respawn i Oval
+- ✅ Alle gæstesvar konsekvent engelsk (v1 var dansk/engelsk-mix)
+- ✅ Kamera indrammer Trump + gæst samtidig på portrait-mobil
+- ✅ Playwright-verificeret: fuld quiz m. tan-detour + medalje, fail/retry,
+  surprise-nuke-respawn, mobil tap-svar, Greenland-regression — 0 fejl
 
 ## iPhone-test 2026-07-03 (Kristian) — GODKENDT ✅
 
