@@ -51,6 +51,25 @@ cutscene-styret bevægelse skal eksplicit undtages fra fysik-triggere.
 
 ---
 
+## Talebobler: klem til skærmen FØR overlap-tjekket, og voks opad
+
+**Problem:** Kristians iPhone-test (2026-07-03): talebobler stod oveni
+hinanden og for lavt. v1's mobiltest ramte samme problem (løst med et
+magisk "-70px løft" på Lars' boble).
+**Årsag:** To fejl: (1) boblens boks voksede NEDAD fra ankerpunktet, så
+flerlinjede bobler dækkede figuren. (2) Overlap-tjekket brugte de u-klemte
+x-positioner, mens tegningen bagefter klemte boblen inden for kameraets
+udsnit — på en smal telefon endte to "ikke-overlappende" bobler derfor
+alligevel samme sted.
+**Fix:** Ét samlet layout-trin: boks placeres HELT over hovedet (bunden ved
+hoved-højde), klemmes til kameraet FØRST, og overlap-undgåelse (stak opad)
+køres på de endelige rects. Halen tegnes fra boblens bund ned mod hovedet.
+Generel regel: kollisions-/overlap-logik skal arbejde på de samme endelige
+koordinater som tegningen — aldrig på mellemresultater.
+**Dato:** 2026-07-03
+
+---
+
 ## Automatiserede Playwright-flowtests fanger det manuel test ikke gør
 
 **Indsigt:** Alle tre bugs ovenfor blev fundet med headless Playwright-scripts

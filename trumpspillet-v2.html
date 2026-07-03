@@ -514,44 +514,42 @@ function roundRectPath(g,x,y,w,h,r){
   g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
   g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
 }
-function textBubble(text,x,y,right,speaker,yOffset){
+/* Bubble layout rules (learned from mobile test 2026-07-03):
+   1. Bubbles grow UPWARD from the speaker — the whole box sits above the
+      head, never over the sprite (multi-line used to grow down over it).
+   2. Clamp to the camera view FIRST, then run overlap-avoidance on the
+      final (clamped) rects — clamping after collision-check was exactly
+      what made bubbles stack on top of each other on narrow phones. */
+function drawBubble(text,x,y,speaker,placed){
   const pad=8, fs=13, lh=17;
   ctx.font=`${fs}px system-ui`;
-  const lines=wrapLines(text,28);
+  const maxChars = CAM.viewW < 420 ? 22 : 28; // narrower wrap on phones
+  const lines=wrapLines(text,maxChars);
   const w=Math.max(80, Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2);
   const h=lines.length*lh+8;
-  let bx = right ? x-w-18 : x+18;
-  const by = y-46+(yOffset||0);
-  // Keep bubble inside camera view so text never gets cut off on narrow phones
-  bx = clamp(bx, CAM.x+4, CAM.x+CAM.viewW-w-4);
+  const headY = y-52;                 // just above the sprite's head
+  let bx = x - w/2;                   // centered over speaker …
+  bx = clamp(bx, CAM.x+6, CAM.x+CAM.viewW-w-6); // … but inside the view
+  let by = headY - h - 10;            // whole box above the head
+  const overlaps=(r1,r2)=>!(r1.x+r1.w<r2.x||r2.x+r2.w<r1.x||r1.y+r1.h<r2.y||r2.y+r2.h<r1.y);
+  let tries=0;
+  while (placed.some(r=>overlaps({x:bx,y:by,w,h},r)) && tries<8){ by-=(h+10); tries++; }
+  by = Math.max(by, 6);               // never off the top of the world
+  placed.push({x:bx,y:by,w,h});
   const pal = BUBBLE_PAL[speaker]||BUBBLE_PAL.default;
-  ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke;
+  ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke; ctx.lineWidth=1.5;
   roundRectPath(ctx,bx,by,w,h,8); ctx.fill(); ctx.stroke();
   ctx.fillStyle=pal.text;
   lines.forEach((l,i)=>ctx.fillText(l,bx+pad,by+lh*(i+0.7)));
+  // tail: from bubble bottom down toward the head
+  const tx = clamp(x, bx+14, bx+w-14);
   ctx.beginPath(); ctx.fillStyle=pal.tail;
-  if (right){ ctx.moveTo(x-10,y-30); ctx.lineTo(bx+w-6,by+h/2-4); ctx.lineTo(bx+w-6,by+h/2+4); }
-  else { ctx.moveTo(x+10,y-30); ctx.lineTo(bx+6,by+h/2-4); ctx.lineTo(bx+6,by+h/2+4); }
+  ctx.moveTo(tx-7,by+h-1); ctx.lineTo(tx+7,by+h-1); ctx.lineTo(x, Math.min(headY, by+h+16));
   ctx.closePath(); ctx.fill();
-}
-function placeBubble(text,x,y,right,placed){
-  ctx.font='13px system-ui';
-  const lines=wrapLines(text,28), lh=17, pad=8;
-  const w=Math.max(80, Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2);
-  const h=lines.length*lh+8;
-  const bx= right? x-w-18 : x+18;
-  let by = y-46-Math.max(0,lines.length-1)*(lh*0.6);
-  const overlaps=(r1,r2)=>!(r1.x+r1.w<r2.x||r2.x+r2.w<r1.x||r1.y+r1.h<r2.y||r2.y+r2.h<r1.y);
-  let rect={x:bx,y:by,w,h}, tries=0;
-  while (placed.some(r=>overlaps(rect,r)) && tries<10){ by-=(h+8); rect={x:bx,y:by,w,h}; tries++; }
-  placed.push(rect);
-  return by-(y-46);
 }
 function renderActorBubble(actor,placed,speaker,yAdjust){
   if (actor.speakingUntil > now()){
-    const right = (actor===player) ? player.facing<0 : true;
-    const yOff = placeBubble(actor.say, actor.x, actor.y+(yAdjust||0), right, placed) + ((actor===player)?-60:0);
-    textBubble(actor.say, actor.x, actor.y+(yAdjust||0), right, speaker, yOff);
+    drawBubble(actor.say, actor.x, actor.y+(yAdjust||0), speaker, placed);
   }
 }
 
@@ -2090,8 +2088,10 @@ function drawGreenland(){
   }
   // speech bubbles
   const placed=[];
+  // Player first, then NPCs — overlap-avoidance stacks later bubbles above.
+  // (The old v1 “raise Lars 70px” hack is gone; stacking handles it now.)
   renderActorBubble(player,placed,'trump');
-  renderActorBubble(GL.lars,placed,'lars',-70);
+  renderActorBubble(GL.lars,placed,'lars');
   renderActorBubble(GL.bear,placed,'bear');
   // nav hints (world space, only until used)
   drawNavHints();
