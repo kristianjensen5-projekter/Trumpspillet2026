@@ -830,8 +830,8 @@ function drawBubble(text,x,y,speaker,placed){
   const lines=wrapLines(text,maxChars);
   const w=Math.max(80, Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2);
   const h=lines.length*lh+8;
-  const headLift = speaker==='trump' ? (IS_TOUCH ? 38 : 28) : 0;
-  const headY = y-52-headLift;        // Trump bubbles sit higher on mobile
+  const headLift = speaker==='trump' ? (IS_TOUCH ? 82 : 48) : 0;
+  const headY = y-52-headLift;        // Trump bubbles sit high enough to clear foreground props on mobile
   let bx = x - w/2;                   // centered over speaker …
   bx = clamp(bx, CAM.x+6, CAM.x+CAM.viewW-w-6); // … but inside the view
   let by = headY - h - 10;            // whole box above the head
@@ -1081,8 +1081,9 @@ function drawMine(x,y){
   ctx.fillStyle='#7b5a2b'; ctx.fillRect(-2,-68,4,10);
   ctx.fillStyle='#9b7a3e'; ctx.fillRect(-30,-76,60,18);
   ctx.strokeStyle='#5a3d1a'; ctx.lineWidth=2; ctx.strokeRect(-30,-76,60,18);
-  ctx.fillStyle='#fff'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
-  ctx.fillText('⛏️ MINE',0,-63); ctx.textAlign='left';
+  ctx.fillStyle='#fff'; ctx.font='bold 12px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('MINE',0,-67);
+  ctx.textBaseline='alphabetic'; ctx.textAlign='left';
   ctx.restore();
 }
 function drawUSFlagPole(x,y){
@@ -3093,7 +3094,7 @@ function startHandshake(){
   if (tug) return;
   openInfoCard(IS_TOUCH ? DATA.KREMLIN.HANDSHAKE_CARD_TOUCH : DATA.KREMLIN.HANDSHAKE_CARD_DESKTOP, ()=>{
     closeInfoCard();
-    tug={pos:0,lastKey:'',start:now(),dur:4800,taps:0};
+    tug={pos:0,lastKey:'',start:now(),dur:6500,taps:0};
     ensureAudio();
   });
 }
@@ -3118,7 +3119,7 @@ function endHandshake(win){
 function updateTug(){
   if (!tug) return;
   const e=now()-tug.start;
-  const pull = e<tug.dur*0.45 ? 0.28 : 0.43; // phase 2: PUTIN FIGHTS BACK
+  const pull = e<tug.dur*0.5 ? 0.24 : 0.36; // phase 2: PUTIN FIGHTS BACK
   tug.pos -= pull/60;
   tug.pos = Math.max(-1,Math.min(1.2,tug.pos));
   if (e>=tug.dur) endHandshake(tug.pos>0.5);
@@ -3126,7 +3127,7 @@ function updateTug(){
 function drawTug(){
   if (!tug) return;
   beginScreen();
-  const e=now()-tug.start, phase2=e>=tug.dur*0.45;
+  const e=now()-tug.start, phase2=e>=tug.dur*0.5;
   ctx.fillStyle='rgba(0,0,0,.75)'; ctx.fillRect(0,0,VW,VH);
   if (phase2){ // red pulse in phase 2
     ctx.fillStyle=`rgba(180,20,20,${0.1+0.08*Math.sin(now()/120)})`;
@@ -3373,6 +3374,10 @@ function drawWagnerSoldiers(){
     ctx.fillText('RUN!', hx, hy+bob-6); ctx.textAlign='left';
   }
 }
+function drawKremlinTable(){
+  ctx.fillStyle='#111'; ctx.fillRect(300,GROUND_Y-6,600,60);
+  ctx.fillStyle='#1c1c1c'; ctx.fillRect(294,GROUND_Y-12,612,10);
+}
 function drawKremlin(){
   beginWorld();
   // walls + drapes
@@ -3389,15 +3394,14 @@ function drawKremlin(){
   drawDoor(KR.door.x,KR.door.y);
   updateCameras();
   KR.cameras.forEach(drawCameraLaser);
-  // long black table (in front of laser cones, behind characters)
-  ctx.fillStyle='#111'; ctx.fillRect(300,GROUND_Y-6,600,60);
-  ctx.fillStyle='#1c1c1c'; ctx.fillRect(294,GROUND_Y-12,612,10);
-  KR.cameras.forEach(drawCameraHousing);
-  KR.statues.forEach(st=>{ if (!st.collected) drawStatue(st); });
-  KR.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
   drawPutin(KR.putin.x,KR.putin.y);
   if (!entryHeli.active) drawHeli(KR.heli.x,KR.heli.y,0.35);
   drawTrump(player.x,player.y,player.facing);
+  // Foreground table: covers legs while leaving torsos/heads visible.
+  drawKremlinTable();
+  KR.cameras.forEach(drawCameraHousing);
+  KR.statues.forEach(st=>{ if (!st.collected) drawStatue(st); });
+  KR.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
   drawWagnerSoldiers();
   drawFx();
   if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
@@ -3481,10 +3485,10 @@ function generateEpsteinDocs(){
     }
   }
   EP.totalTargets=docs.reduce((a,doc)=>a+doc.filter(l=>l.trump).length,0);
-  // 3× each protected name
+  // 6× each protected name: blue decoys should be a visible part of the rhythm.
   D.PROTECTED.forEach(pname=>{
     let put=0, tries=0;
-    while (put<3 && tries++<400){
+    while (put<6 && tries++<500){
       const line=pick(pick(docs));
       if (line.trump||line.protected) continue;
       line.text=pick(D.DOC_TEMPLATES).replace('{name}', pname);
@@ -3531,7 +3535,7 @@ function updateEpstein(dt){
   totalH+=360;
   const k=clamp(EP.scrollY/totalH,0,1);
   // package B curve: readable start, panic ending
-  EP.speed=2.2+k*7.2;
+  EP.speed=3.3+k*10.8;
   if (EP.assistUntil && now()<EP.assistUntil) EP.speed*=0.85;
   let delta=EP.speed*0.75*(dt*60);
   // hold at the final art
@@ -3837,8 +3841,10 @@ function drawEpsteinSuccess(){
       ctx.fillStyle='#d8e6ff'; ctx.fillRect(-8,10,16,18);
       ctx.fillStyle='#e02424'; ctx.fillRect(-2,14,4,14);
       ctx.fillStyle='#f4cda4'; ctx.fillRect(-9,-2,18,12);
-      ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2);
       ctx.fillStyle='#f3a32d'; ctx.fillRect(-10,-6,20,6);
+      ctx.fillStyle='#050505'; // deal-with-it sunglasses
+      ctx.fillRect(-8,1,7,4); ctx.fillRect(2,1,7,4); ctx.fillRect(-2,2,4,2);
+      ctx.fillStyle='#2a2a2a'; ctx.fillRect(-7,2,4,1); ctx.fillRect(3,2,4,1);
       ctx.fillStyle='#111'; ctx.fillRect(-3,7,6,1); ctx.fillRect(-4,6,1,1); ctx.fillRect(3,6,1,1); // smile
     } else {
       ctx.fillStyle='#111'; ctx.fillRect(-7,34,6,10); ctx.fillRect(1,34,6,10);
