@@ -3894,6 +3894,7 @@ const GOLF = {
   aim:{active:false,pointerId:null,x:0,y:0,power:0,angle:0},
   charge:{active:false,power:0},
   view:{scale:1,ox:0,oy:0}, images:new Map(),
+  viewLock:null,
   playerStand:{x:0,y:0}, playerDraw:{x:0,y:0,facing:1,walking:false,walkCycle:0},
   biden:{x:0,y:0,strokes:0,lineIdx:0},
   trophy:null, trophyReady:false, _btnLeave:null, _btnDrop:null
@@ -3919,18 +3920,20 @@ function golfImage(src){
 function golfComputeView(){
   const h=GOLF.hole || golfHole() || {bounds:{x:0,y:0,w:960,h:540}};
   const b=h.bounds || {x:0,y:0,w:960,h:540};
-  const rotated=IS_TOUCH && VH>VW*1.08;
-  const top=VW<520?74:82, bottom=IS_TOUCH?92:54;
+  const lock=GOLF.viewLock || {vw:VW,vh:VH};
+  const vw=lock.vw || VW, vh=lock.vh || VH;
+  const rotated=IS_TOUCH && vh>vw*1.08;
+  const top=vw<520?74:82, bottom=IS_TOUCH?92:54;
   const renderW=rotated ? b.h : b.w;
   const renderH=rotated ? b.w : b.h;
-  const sw=(VW-16)/(renderW||960), sh=(VH-top-bottom)/(renderH||540);
+  const sw=(vw-16)/(renderW||960), sh=(vh-top-bottom)/(renderH||540);
   const scale=Math.min(Math.min(sw,sh), 1.18);
-  const spare=VH-top-bottom-renderH*scale;
+  const spare=vh-top-bottom-renderH*scale;
   return {
     rotated,
     scale,
     ox:(VW-(renderW*scale))/2 - b.x*scale,
-    oy:top + Math.max(0,spare/2) - b.y*scale
+    oy:(rotated ? top+8 : top + Math.max(0,spare/2)) - b.y*scale
   };
 }
 function golfToCourse(sx,sy){
@@ -3986,6 +3989,7 @@ function golfResetBallToTee(penalty){
 function golfResetHole(index){
   GOLF.holeIndex=index;
   GOLF.hole=golfHole();
+  GOLF.viewLock={vw:VW,vh:VH};
   const h=GOLF.hole, b=h.bounds || {x:0,y:0,w:960,h:540};
   const tee=h.teeRect || {x:(h.spawn.x||150)-24,y:(h.spawn.y||150)-24,w:48,h:48};
   const sx=(h.spawn&&typeof h.spawn.x==='number')?h.spawn.x:tee.x+tee.w/2;
@@ -4016,7 +4020,7 @@ function golfSetBanner(text,ms,onDone){
 }
 function golfStartHoleBanner(){
   const h=GOLF.hole;
-  golfSetBanner(GOLF_L.holeStart.replace('{n}',golfDisplayId(h)).replace('{joe}',h.bidenStrokes||0),2200,()=>{
+  golfSetBanner(GOLF_L.holeStart.replace('{n}',golfDisplayId(h)).replace('{joe}',h.bidenStrokes||0),IS_TOUCH?850:2200,()=>{
     GOLF.state='aim';
   });
 }
@@ -4026,7 +4030,7 @@ function resetGolf(){
   entryHeli.active=false; walkTween=null; jumpTween=null;
   GOLF.course=DATA.GOLF.COURSE;
   GOLF.strokes=new Array(GOLF.course.holes.length).fill(0);
-  GOLF.total=0; GOLF.joeTotal=0; GOLF.trophy=null; GOLF.trophyReady=false;
+  GOLF.total=0; GOLF.joeTotal=0; GOLF.trophy=null; GOLF.trophyReady=false; GOLF.viewLock={vw:VW,vh:VH};
   golfResetHole(0);
   GOLF.arrival={start:now(),dur:1500,fromX:GOLF.playerStand.x-170,toX:GOLF.playerStand.x};
   GOLF.playerDraw.x=GOLF.arrival.fromX; GOLF.playerDraw.y=GOLF.playerStand.y; GOLF.playerDraw.walking=true;
@@ -4260,6 +4264,15 @@ function drawGolfBallScreen(){
   const p=golfToScreen(GOLF.ball.x,GOLF.ball.y), v=GOLF.view || golfComputeView();
   const r=GOLF.ball.r*v.scale;
   ctx.save();
+  if (IS_TOUCH && ['aim','charging'].includes(GOLF.state)){
+    const pulse=0.5+0.5*Math.sin(now()/260);
+    ctx.globalAlpha=0.22+0.16*pulse;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(30,r*3.2)+pulse*5,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=0.75;
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(30,r*3.2)+pulse*5,0,Math.PI*2); ctx.stroke();
+    ctx.globalAlpha=1;
+  }
   ctx.fillStyle='#f8f8f8'; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#222'; ctx.lineWidth=Math.max(1,1.5*v.scale); ctx.stroke();
   ctx.globalAlpha=0.22; ctx.fillStyle='#fff'; ctx.beginPath();
@@ -4294,23 +4307,24 @@ function drawGolfBidenScoreScreen(){
 function drawGolfBidenSpeechScreen(){
   if (!(GOLF.biden.speech && now()<GOLF.biden.speech.until)) return;
   const p=golfToScreen(GOLF.biden.x,GOLF.biden.y);
-  const fs=IS_TOUCH?16:12, lh=IS_TOUCH?20:16, pad=IS_TOUCH?10:8;
+  const fs=IS_TOUCH?13:12, lh=IS_TOUCH?17:16, pad=IS_TOUCH?8:8;
   ctx.save();
   ctx.font=`${fs}px system-ui`;
-  const lines=wrapLines(GOLF.biden.speech.text,IS_TOUCH?22:24);
-  const w=Math.min(VW-24,Math.max(IS_TOUCH?178:110,Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2));
+  const lines=wrapLines(GOLF.biden.speech.text,IS_TOUCH?24:24);
+  const w=Math.min(IS_TOUCH?230:VW-24,Math.max(IS_TOUCH?138:110,Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2));
   const bh=lines.length*lh+pad*1.4;
   const bx=clamp(p.x-w/2,12,VW-w-12);
-  let by=p.y-122-bh;
+  let by=p.y-(IS_TOUCH?58:122)-bh;
   if (by<70) by=p.y+28;
   by=clamp(by,70,VH-bh-76);
   ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.strokeStyle='#333'; ctx.lineWidth=1.6;
   roundRectPath(ctx,bx,by,w,bh,8); ctx.fill(); ctx.stroke();
   ctx.fillStyle='#222';
   lines.forEach((l,i)=>ctx.fillText(l,bx+pad,by+pad+fs*0.82+i*lh));
-  const tx=clamp(p.x,bx+14,bx+w-14), tailY=p.y-42*(GOLF.view?.scale||1);
+  const tx=clamp(p.x,bx+14,bx+w-14);
+  const tailY=by+bh<p.y ? Math.min(p.y-28*(GOLF.view?.scale||1),by+bh+(IS_TOUCH?32:48)) : by-14;
   ctx.fillStyle='rgba(255,255,255,0.97)';
-  ctx.beginPath(); ctx.moveTo(tx-8,by+bh-1); ctx.lineTo(tx+8,by+bh-1); ctx.lineTo(p.x,Math.max(by+bh+12,tailY)); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(tx-6,by+bh-1); ctx.lineTo(tx+6,by+bh-1); ctx.lineTo(p.x,tailY); ctx.closePath(); ctx.fill();
   ctx.strokeStyle='#333'; ctx.stroke();
   ctx.restore();
   ctx.textAlign='left'; ctx.textBaseline='alphabetic';
@@ -4352,7 +4366,7 @@ function drawGolf(){
   drawGolfCupScreen(cup,golfDisplayId(h));
   drawGolfBallScreen();
   drawGolfActorsScreen(cup);
-  drawGolfBidenScoreScreen();
+  if (!(GOLF.biden.speech && now()<GOLF.biden.speech.until)) drawGolfBidenScoreScreen();
   drawGolfBidenSpeechScreen();
   if (GOLF.state==='victory' && GOLF.trophy){
     const ty=GOLF.trophy.active?GOLF.trophy.y:GOLF.playerStand.y-60;
@@ -4391,7 +4405,7 @@ function drawGolfHUD(){
     ctx.fillStyle='#fff'; ctx.font='12px system-ui'; ctx.textAlign='center';
     ctx.fillText('release E to putt',VW/2,y-8); ctx.textAlign='left';
   }
-  if (GOLF.banner){
+  if (GOLF.banner && !IS_TOUCH){
     const w=Math.min(VW*0.88,560), x=(VW-w)/2, y=VH*0.18;
     ctx.fillStyle='rgba(0,0,0,0.78)'; roundRectPath(ctx,x,y,w,70,8); ctx.fill();
     ctx.strokeStyle='#ffd700'; ctx.lineWidth=3; roundRectPath(ctx,x+1.5,y+1.5,w-3,67,7); ctx.stroke();
@@ -4452,7 +4466,7 @@ function golfPointerDown(e){
   if (GOLF.state==='victory'){ if (GOLF.trophyReady) golfLeave(); return; }
   if (GOLF.state!=='aim') return;
   const bp=golfToScreen(GOLF.ball.x,GOLF.ball.y);
-  if (dist2(sx,sy,bp.x,bp.y)>Math.max(34,GOLF.ball.r*GOLF.view.scale*3.5)) return;
+  if (dist2(sx,sy,bp.x,bp.y)>Math.max(IS_TOUCH?52:34,GOLF.ball.r*GOLF.view.scale*3.5)) return;
   const p=golfToCourse(sx,sy);
   GOLF.aim.active=true; GOLF.aim.pointerId=e.pointerId; GOLF.aim.x=p.x; GOLF.aim.y=p.y;
   golfPointerMove(e);
@@ -4711,6 +4725,7 @@ cvs.addEventListener('pointerdown', e=>{
     return;
   }
   if (scene===SCENE.GOLF){
+    e.preventDefault();
     golfPointerDown(e);
     return;
   }
@@ -4733,14 +4748,14 @@ cvs.addEventListener('pointerdown', e=>{
   try{cvs.setPointerCapture(e.pointerId);}catch(_){}
 });
 cvs.addEventListener('pointermove', e=>{
-  if (scene===SCENE.GOLF){ golfPointerMove(e); return; }
+  if (scene===SCENE.GOLF){ e.preventDefault(); golfPointerMove(e); return; }
   const p=pointers.get(e.pointerId); if (!p) return;
   p.x=e.clientX; p.y=e.clientY;
   if (Math.hypot(p.x-p.startX,p.y-p.startY)>14) p.moved=true;
   p.zone = p.x<VW/2?-1:1;
 });
 function releasePointer(e){
-  if (scene===SCENE.GOLF){ golfPointerUp(e); return; }
+  if (scene===SCENE.GOLF){ e.preventDefault(); golfPointerUp(e); return; }
   const p=pointers.get(e.pointerId);
   pointers.delete(e.pointerId);
   if (!p) return;
@@ -4754,6 +4769,9 @@ function releasePointer(e){
 }
 cvs.addEventListener('pointerup', releasePointer);
 cvs.addEventListener('pointercancel', releasePointer);
+cvs.addEventListener('touchstart', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
+cvs.addEventListener('touchmove', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
+cvs.addEventListener('touchend', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 
 function intentTap(wx,wy){
   let best=null,bd=1e9,nearFn=null;
