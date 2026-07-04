@@ -4,7 +4,7 @@
 **Live URL:** https://trumpspillet2026.pages.dev/ (gammel version) ·
 **v2-test:** https://trumpspillet2026.pages.dev/trumpspillet-v2
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-02
+**Senest opdateret:** 2026-07-04
 
 ---
 
@@ -32,23 +32,24 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 - ✅ Verificeret med automatiserede Playwright-flowtests (desktop + mobil
   viewport) — alle flows testet ende-til-ende, 0 konsolfejl. 3 bugs fundet og
   fixet undervejs (se LESSONS.md — én var en latent v1-bug!)
-- ⏳ Heli-menuens 4 andre destinationer viser "coming in the next build step"
+- ✅ Oval Office, Kremlin, Epstein Files og Mar-a-Lago Mini-Putt er nu bygget
+  i `trumpspillet-v2.html` og koblet på helikopter-menuen
 - ❌ Gammel mobiltestfil (`Trumpspillet2026Mobil.html`) forældet — erstattes af v2
 
 ## Genopbygningsplan (v2)
 
 1. ✅ Spec + krydstjek (Fable 5, 2026-07-02)
 2. ✅ Fundament + Greenland komplet (Fable 5, 2026-07-02)
-3. ⏳ Oval Office → Kremlin → Epstein → Golf (én bane ad gangen, test imellem)
-4. Musik-engine (chiptune-tracks porteres; disabled by default)
+3. ✅ Oval Office → Kremlin → Epstein → Golf (én bane ad gangen, test imellem)
+4. ⏳ Musik-engine (chiptune-tracks porteres; disabled by default)
 5. Når v2 = feature-paritet: v2 bliver `index.html`, gammel fil arkiveres
 
 ---
 
 ## Næste skridt
 
-1. Kristian tester Oval Office-v2 på iPhone
-2. Derefter Kremlin → Epstein → Golf
+1. Kristian tester Mar-a-Lago Mini-Putt på fysisk iPhone
+2. Derefter samlet v2-regression + musik/polish
 
 ## Oval Office v2 — bygget 2026-07-03 (redesign "pakke B")
 
@@ -78,6 +79,18 @@ Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
 - ✅ Talebobler stod oveni hinanden og for lavt → FIXET samme dag
   (layout skrevet om, se LESSONS.md) og deployet
 - Dom: "overordnet super duper godt"
+
+## Mar-a-Lago Mini-Putt v2 — bygget 2026-07-04 (pakke B)
+
+- ✅ Heli-menuen flyver nu til Mar-a-Lago
+- ✅ Approach-fasen er klippet: Trump auto-går ind, ingen START HER-boks
+- ✅ 3 huller bruger v2's rene JSON-geometri + PNG-overlays; ingen Lottie/CDN
+- ✅ Slingshot-drag med power-farvet sigtelinje; desktop understøtter pil + hold E
+- ✅ Biden er præ-færdig 4/7/4, og scorebannere forklarer total-reglen løbende
+- ✅ Touch-chips: Leave + Reset ball (+1)
+- ✅ Vind: trofæ-drop + golf-medalje; tab: MAGA GAZETTE-tableau + voting machine
+- ✅ Playwright-verificeret lokalt på desktop 1280×720 og iPhone 390×844:
+  heli → golf → tutorial → hole-banner → aim → første putt, 0 console/page errors
 
 ---
 

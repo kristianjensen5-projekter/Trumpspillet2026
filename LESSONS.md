@@ -100,3 +100,25 @@ rasende bjørn). v2 har en permanent debug-hook `window.__tv2` med read-only
 snapshot + gold-cheat til netop dette. Testscripts ligger i sessionens
 scratchpad og kan genskabes billigt.
 **Dato:** 2026-07-02
+
+---
+
+## Statusdokumenter kan være foran koden — tjek altid `SCENES` og ruterne
+
+**Problem:** `BUILD_PLAN_V2.md` markerede Mar-a-Lago som færdig, men
+`trumpspillet-v2.html` havde kun Golf-data. `SCENES` manglede `SCENE.GOLF`,
+helikopter-menuerne sagde stadig "coming soon", og input/render-loop havde
+ingen golfgren.
+**Fix:** Ved kold start: verificér færdig-status mod tre konkrete steder:
+`SCENES`, menuruter og debug-snapshot. Dokumentstatus alene er ikke nok.
+**Dato:** 2026-07-04
+
+---
+
+## Touch-chips er ikke desktop-knapper
+
+**Problem:** Golfens Leave/Reset-chips var nyttige på iPhone, men på desktop
+lå Leave-chippen oven i det eksisterende help-panel nederst til venstre.
+**Fix:** Tegn kun touch-chips når `IS_TOUCH` er sand. Desktop har allerede
+keyboard-kontrakt (`Esc`/`R`), så ekstra canvas-knapper skaber kun overlap.
+**Dato:** 2026-07-04

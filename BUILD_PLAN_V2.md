@@ -70,7 +70,11 @@ nu, tester hver efterfølgende bane automatisk mod det endelige flow.
   avis-fail-tableau (The Daily Tremendous, fuld skærm)
 - P/pause udelades (korte runder); Esc/dør = forlad
 
-### ✅ Trin 7: Mar-a-Lago Mini-Putt (2026-07-03) — STØRSTE TRIN
+### ✅ Trin 7: Mar-a-Lago Mini-Putt (2026-07-04) — STØRSTE TRIN
+**Statusnote:** Fable nåede at indsætte Golf-data, men scenen var ikke koblet
+på `SCENES`/input/render-loop. Codex implementerede og verificerede pakken
+2026-07-04.
+
 - **Forarbejde:** konvertér hul 2+3's Lottie-geometri til rene polygon-
   JSON-data med et engangs-node-script (porter parseLottieGolfHole fra v1,
   kør mod `#course-mar-a-lago-2/3`-blokkene i gamle index.html, gem som
