@@ -34,7 +34,7 @@
   .pill.done{background:rgba(0,150,0,.8)}
   .pill.active{box-shadow:0 0 0 2px rgba(255,255,255,.6) inset}
 
-  /* --- Inventory (right side, toggled) --- */
+  /* --- Inventory (right side on desktop, compact bottom drawer on touch) --- */
   .inv{position:fixed;right:max(10px,env(safe-area-inset-right));top:44%;transform:translateY(-50%);
     z-index:11;background:rgba(0,0,0,.75);color:#fff;border-radius:12px;padding:8px;
     display:flex;flex-direction:column;gap:6px;align-items:center;backdrop-filter:blur(4px)}
@@ -43,6 +43,7 @@
   .slot.empty{background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.28)}
   .slot.selected{outline:2px solid #ff0;background:rgba(255,255,0,.18)}
   .slot canvas{display:block}
+  .inv-close{display:none}
 
   /* --- Help / controls (bottom-left, desktop-oriented) --- */
   .helpbox{position:fixed;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));
@@ -60,10 +61,32 @@
          when standing near something interactable. --- */
   .actbtn{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));
     z-index:12;width:64px;height:64px;border-radius:50%;border:none;
-    background:rgba(0,0,0,.55);color:#fff;font:800 15px system-ui;
+    background:rgba(0,0,0,.55);color:#fff;font:800 30px system-ui;
     box-shadow:0 2px 10px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
   .actbtn.show{display:flex}
   @media (pointer:fine){ .actbtn{display:none !important} }
+  .toolbtn{position:fixed;bottom:max(18px,env(safe-area-inset-bottom));z-index:12;
+    width:50px;height:50px;border-radius:50%;border:none;background:rgba(0,0,0,.55);
+    color:#fff;font:800 22px system-ui;box-shadow:0 2px 10px rgba(0,0,0,.35);
+    display:none;align-items:center;justify-content:center}
+  .toolbtn.show{display:flex}
+  .toolbtn.active{background:rgba(255,215,0,.72);color:#111}
+  .invbtn{right:max(92px,calc(env(safe-area-inset-right) + 92px))}
+  .tweetbtn{right:max(150px,calc(env(safe-area-inset-right) + 150px))}
+  @media (pointer:fine){ .toolbtn{display:none !important} }
+  @media (pointer:coarse){
+    .inv{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));
+      top:auto;bottom:max(84px,calc(env(safe-area-inset-bottom) + 84px));transform:none;
+      flex-direction:row;justify-content:flex-start;align-items:center;gap:7px;
+      padding:8px 38px 8px 8px;border-radius:12px;max-width:calc(100vw - 20px);
+      overflow-x:auto;scrollbar-width:none}
+    .inv::-webkit-scrollbar{display:none}
+    .slot{width:58px;height:50px}
+    .slot canvas{width:58px !important;height:50px !important}
+    .inv-close{display:flex;position:sticky;right:0;align-items:center;justify-content:center;
+      width:30px;height:30px;margin-left:auto;border:none;border-radius:50%;
+      background:rgba(255,255,255,.16);color:#fff;font:900 20px system-ui;flex-shrink:0}
+  }
 
   /* --- Intro screen --- */
   .intro-screen{position:fixed;inset:0;z-index:100;background:#efe8d2;
@@ -317,6 +340,8 @@
 <div id="areas" class="areas"></div>
 <div id="hud" class="hud"></div>
 <div id="inv" class="inv hidden" role="region" aria-label="Inventory"></div>
+<button id="tweetbtn" class="toolbtn tweetbtn" type="button" aria-label="Tweet">𝕏</button>
+<button id="invbtn" class="toolbtn invbtn" type="button" aria-label="Inventory">🎒</button>
 <button id="actbtn" class="actbtn" type="button" aria-label="Interact">E</button>
 
 <div class="helpbox" id="helpbox">
@@ -625,6 +650,8 @@ function consumeDynamite(){
 const hudEl = document.getElementById('hud');
 const areasEl = document.getElementById('areas');
 const invEl = document.getElementById('inv');
+const invBtn = document.getElementById('invbtn');
+const tweetBtn = document.getElementById('tweetbtn');
 const actBtn = document.getElementById('actbtn');
 const helpBox = document.getElementById('helpbox');
 document.getElementById('help-toggle').addEventListener('click', ()=>{
@@ -723,6 +750,16 @@ function renderInv(){
     d.addEventListener('pointerdown', e=>{ e.stopPropagation(); if (item) useItem(id); });
     invEl.appendChild(d);
   });
+  if (IS_TOUCH){
+    const close=document.createElement('button');
+    close.className='inv-close';
+    close.type='button';
+    close.setAttribute('aria-label','Close inventory');
+    close.textContent='×';
+    close.addEventListener('pointerdown', e=>{ e.stopPropagation(); setInventoryOpen(false); });
+    invEl.appendChild(close);
+  }
+  updateMobileToolButtons();
 }
 function isEquipped(id){
   if (id==='shoes') return player.goldenShoesOn;
@@ -730,13 +767,19 @@ function isEquipped(id){
   if (id==='maga') return player.capOn;
   return false;
 }
-function toggleInventory(){ invEl.classList.toggle('hidden'); renderInv(); }
+function setInventoryOpen(open){
+  invEl.classList.toggle('hidden', !open);
+  invBtn.classList.toggle('active', !!open);
+  if (open) renderInv();
+}
+function toggleInventory(){ setInventoryOpen(invEl.classList.contains('hidden')); }
 function useItem(id){
   if (!hasItem(id)) { say(player,'No '+DATA.ITEMS[id].name+' in inventory',900); return; }
   if (id==='tan'){ player.tanLevel=Math.min(5,(player.tanLevel||0)+1); say(player,'Self-tanner +1',1000); spawnSparks(player.x, player.y-44, 10); }
   else if (id==='shoes'){ player.goldenShoesOn=!player.goldenShoesOn; updateSpeedMul(); say(player, player.goldenShoesOn?'Gold shoes on! Speed x2.':'Gold shoes off.',1000); }
   else if (id==='maga'){ player.capOn=!player.capOn; say(player, player.capOn?'Hat on.':'Hat off.',900); }
   else if (id==='dynamite'){ selectDynamite(true); }
+  if (IS_TOUCH) setInventoryOpen(false);
   renderInv(); renderHUD();
 }
 let dynDeselectTimer=null;
@@ -787,7 +830,8 @@ function drawBubble(text,x,y,speaker,placed){
   const lines=wrapLines(text,maxChars);
   const w=Math.max(80, Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2);
   const h=lines.length*lh+8;
-  const headY = y-52;                 // just above the sprite's head
+  const headLift = speaker==='trump' ? (IS_TOUCH ? 38 : 28) : 0;
+  const headY = y-52-headLift;        // Trump bubbles sit higher on mobile
   let bx = x - w/2;                   // centered over speaker …
   bx = clamp(bx, CAM.x+6, CAM.x+CAM.viewW-w-6); // … but inside the view
   let by = headY - h - 10;            // whole box above the head
@@ -3049,14 +3093,14 @@ function startHandshake(){
   if (tug) return;
   openInfoCard(IS_TOUCH ? DATA.KREMLIN.HANDSHAKE_CARD_TOUCH : DATA.KREMLIN.HANDSHAKE_CARD_DESKTOP, ()=>{
     closeInfoCard();
-    tug={pos:0,lastKey:'',start:now(),dur:6000,taps:0};
+    tug={pos:0,lastKey:'',start:now(),dur:4800,taps:0};
     ensureAudio();
   });
 }
 function tugInput(key){ // key: 'a'|'d'|'tap'
   if (!tug) return;
-  if (key==='tap'){ tug.pos+=0.11; tug.taps++; }
-  else if ((key==='a'||key==='d') && key!==tug.lastKey){ tug.pos+=0.15; tug.lastKey=key; }
+  if (key==='tap'){ tug.pos+=0.095; tug.taps++; }
+  else if ((key==='a'||key==='d') && key!==tug.lastKey){ tug.pos+=0.13; tug.lastKey=key; }
   tug.pos=Math.min(1.2,tug.pos);
 }
 function endHandshake(win){
@@ -3074,7 +3118,7 @@ function endHandshake(win){
 function updateTug(){
   if (!tug) return;
   const e=now()-tug.start;
-  const pull = e<3000 ? 0.18 : 0.27; // phase 2: PUTIN FIGHTS BACK
+  const pull = e<tug.dur*0.45 ? 0.28 : 0.43; // phase 2: PUTIN FIGHTS BACK
   tug.pos -= pull/60;
   tug.pos = Math.max(-1,Math.min(1.2,tug.pos));
   if (e>=tug.dur) endHandshake(tug.pos>0.5);
@@ -3082,45 +3126,45 @@ function updateTug(){
 function drawTug(){
   if (!tug) return;
   beginScreen();
-  const e=now()-tug.start, phase2=e>=3000;
+  const e=now()-tug.start, phase2=e>=tug.dur*0.45;
   ctx.fillStyle='rgba(0,0,0,.75)'; ctx.fillRect(0,0,VW,VH);
   if (phase2){ // red pulse in phase 2
     ctx.fillStyle=`rgba(180,20,20,${0.1+0.08*Math.sin(now()/120)})`;
     ctx.fillRect(0,0,VW,VH);
   }
   const cx=VW/2, cy=VH*0.42, S=Math.min(VW,VH)/340;
-  // shake in phase 2
   ctx.save();
   if (phase2) ctx.translate((Math.random()-0.5)*6,(Math.random()-0.5)*4);
-  // table
-  ctx.fillStyle='#5d4037'; ctx.fillRect(cx-90*S,cy+20*S,180*S,15*S);
-  ctx.fillStyle='#4e342e'; ctx.fillRect(cx-90*S,cy+33*S,180*S,6*S);
-  const armAngle=tug.pos*0.6, elbowY=cy+15*S;
-  // Trump arm (left)
-  ctx.save(); ctx.translate(cx-15*S,elbowY); ctx.rotate(-Math.PI/2+armAngle);
-  ctx.fillStyle='#f5cba7'; ctx.fillRect(-8*S,-50*S,16*S,50*S);
-  ctx.fillStyle='#1a237e'; ctx.fillRect(-10*S,-10*S,20*S,15*S);
-  ctx.fillStyle='#f5cba7'; ctx.beginPath(); ctx.arc(0,-55*S,10*S,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-  // Putin arm (right)
-  ctx.save(); ctx.translate(cx+15*S,elbowY); ctx.rotate(-Math.PI/2-armAngle);
-  ctx.fillStyle='#fdebd0'; ctx.fillRect(-8*S,-50*S,16*S,50*S);
-  ctx.fillStyle='#212121'; ctx.fillRect(-10*S,-10*S,20*S,15*S);
-  ctx.fillStyle='#fdebd0'; ctx.beginPath(); ctx.arc(0,-55*S,10*S,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-  // gripped hands
-  const handY=elbowY-50*S-Math.abs(armAngle)*20*S;
-  ctx.fillStyle='#e8daef'; ctx.beginPath();
-  ctx.arc(cx+armAngle*30*S,handY,14*S,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#5d4037'; ctx.fillRect(cx-120*S,cy+48*S,240*S,22*S);
+  ctx.fillStyle='#4e342e'; ctx.fillRect(cx-120*S,cy+68*S,240*S,7*S);
+  const lean=clamp(tug.pos,-1,1), handX=cx+lean*44*S, handY=cy+20*S;
+  const bust=(x,isTrump)=>{
+    ctx.save(); ctx.translate(x,cy+28*S);
+    ctx.fillStyle=isTrump?'#7a5328':'#111'; ctx.fillRect(-18*S,-8*S,36*S,50*S);
+    ctx.fillStyle='#d8e6ff'; ctx.fillRect(-10*S,0,20*S,22*S);
+    ctx.fillStyle=isTrump?'#e02424':'#8b0000'; ctx.fillRect(-3*S,4*S,6*S,24*S);
+    ctx.fillStyle=isTrump?'#f4cda4':'#f1d2b3'; ctx.fillRect(-14*S,-36*S,28*S,22*S);
+    ctx.fillStyle=isTrump?'#f3a32d':'#c0c6cf'; ctx.fillRect(-17*S,-43*S,34*S,9*S);
+    ctx.fillStyle='#111'; ctx.fillRect(-8*S,-27*S,4*S,3*S); ctx.fillRect(5*S,-27*S,4*S,3*S);
+    ctx.fillStyle='#111'; ctx.fillRect(-6*S,-19*S,12*S,3*S);
+    ctx.restore();
+  };
+  bust(cx-92*S,true); bust(cx+92*S,false);
+  ctx.lineCap='round';
+  ctx.lineWidth=13*S;
+  ctx.strokeStyle='#f5cba7';
+  ctx.beginPath(); ctx.moveTo(cx-67*S,cy+20*S); ctx.lineTo(handX-8*S,handY); ctx.stroke();
+  ctx.strokeStyle='#fdebd0';
+  ctx.beginPath(); ctx.moveTo(cx+67*S,cy+20*S); ctx.lineTo(handX+8*S,handY); ctx.stroke();
+  ctx.fillStyle='#e8daef'; ctx.beginPath(); ctx.arc(handX,handY,15*S,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.stroke();
-  // strain sparks near win/lose
   if (Math.abs(tug.pos)>0.5){
     ctx.strokeStyle=tug.pos>0?'#27ae60':'#e74c3c'; ctx.lineWidth=2;
     for (let i=0;i<4;i++){
       const a=(i/4)*Math.PI*2+now()/200;
       ctx.beginPath();
-      ctx.moveTo(cx+armAngle*30*S+Math.cos(a)*18*S,handY+Math.sin(a)*18*S);
-      ctx.lineTo(cx+armAngle*30*S+Math.cos(a)*25*S,handY+Math.sin(a)*25*S);
+      ctx.moveTo(handX+Math.cos(a)*18*S,handY+Math.sin(a)*18*S);
+      ctx.lineTo(handX+Math.cos(a)*25*S,handY+Math.sin(a)*25*S);
       ctx.stroke();
     }
   }
@@ -3276,13 +3320,17 @@ function drawStatue(st){
   }
 }
 function drawCameraAndLaser(cam){
-  // housing + lens
+  drawCameraHousing(cam);
+  drawCameraLaser(cam);
+}
+function drawCameraHousing(cam){
   ctx.save(); ctx.translate(cam.x,cam.y);
   ctx.fillStyle='#333'; ctx.fillRect(-20,-14,40,28);
   ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(0,14,9,0,Math.PI*2); ctx.fill();
   ctx.fillStyle='#f00'; ctx.beginPath(); ctx.arc(0,14,3.5,0,Math.PI*2); ctx.fill();
   ctx.restore();
-  // laser cone to floor
+}
+function drawCameraLaser(cam){
   const len=(GROUND_Y-cam.y)/Math.max(0.25,Math.sin(cam.angle))*1.15;
   const cw=Math.PI/8;
   const p1=[cam.x+Math.cos(cam.angle-cw/2)*len, cam.y+Math.sin(cam.angle-cw/2)*len];
@@ -3338,12 +3386,13 @@ function drawKremlin(){
   ctx.fillRect(160+90*0.42,90+70*0.12,90*0.16,70*0.18);
   // carpet
   ctx.fillStyle='#8b0000'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
-  // long black table (behind characters)
-  ctx.fillStyle='#111'; ctx.fillRect(300,GROUND_Y-6,600,60);
-  ctx.fillStyle='#1c1c1c'; ctx.fillRect(294,GROUND_Y-12,612,10);
   drawDoor(KR.door.x,KR.door.y);
   updateCameras();
-  KR.cameras.forEach(drawCameraAndLaser);
+  KR.cameras.forEach(drawCameraLaser);
+  // long black table (in front of laser cones, behind characters)
+  ctx.fillStyle='#111'; ctx.fillRect(300,GROUND_Y-6,600,60);
+  ctx.fillStyle='#1c1c1c'; ctx.fillRect(294,GROUND_Y-12,612,10);
+  KR.cameras.forEach(drawCameraHousing);
   KR.statues.forEach(st=>{ if (!st.collected) drawStatue(st); });
   KR.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
   drawPutin(KR.putin.x,KR.putin.y);
@@ -3482,7 +3531,7 @@ function updateEpstein(dt){
   totalH+=360;
   const k=clamp(EP.scrollY/totalH,0,1);
   // package B curve: readable start, panic ending
-  EP.speed=1.1+k*3.6;
+  EP.speed=2.2+k*7.2;
   if (EP.assistUntil && now()<EP.assistUntil) EP.speed*=0.85;
   let delta=EP.speed*0.75*(dt*60);
   // hold at the final art
@@ -3726,37 +3775,27 @@ function drawBirthdayArt(x,y,w,h){
 }
 function drawSharpieSuit(r,prog){
   ctx.save();
-  ctx.strokeStyle='#1a1a1a'; ctx.fillStyle='#1a1a1a';
-  ctx.lineCap='round'; ctx.lineJoin='round';
-  const seg=(pts,a,b,lw)=>{
-    if (prog<a) return;
-    const lp=Math.min(1,(prog-a)/(b-a));
-    ctx.lineWidth=lw;
-    ctx.beginPath();
-    ctx.moveTo(r.x+pts[0][0]*r.w, r.y+pts[0][1]*r.h);
-    const n=pts.length-1, upto=Math.max(1,Math.ceil(lp*n));
-    for (let i=1;i<=upto;i++) ctx.lineTo(r.x+pts[i][0]*r.w, r.y+pts[i][1]*r.h);
-    ctx.stroke();
-  };
-  seg([[0.50,0.15],[0.38,0.35],[0.42,0.50]],0,0.15,Math.max(4,r.w*0.03));   // left lapel
-  seg([[0.50,0.15],[0.62,0.35],[0.58,0.50]],0.10,0.25,Math.max(4,r.w*0.03));// right lapel
-  seg([[0.50,0.22],[0.48,0.55],[0.52,0.55],[0.50,0.22]],0.28,0.45,Math.max(5,r.w*0.04)); // tie
-  if (prog>0.35){
-    ctx.beginPath();
-    ctx.moveTo(r.x+0.50*r.w,r.y+0.22*r.h);
-    ctx.lineTo(r.x+0.46*r.w,r.y+0.55*r.h);
-    ctx.lineTo(r.x+0.54*r.w,r.y+0.55*r.h);
-    ctx.closePath(); ctx.fill();
+  const barX=r.x+r.w*0.16, barY=r.y+r.h*0.38;
+  const barW=r.w*0.68, barH=Math.max(18,r.h*0.13);
+  const fillW=barW*clamp(prog/0.72,0,1);
+  ctx.fillStyle='rgba(0,0,0,0.22)';
+  ctx.fillRect(barX-5,barY-5,barW+10,barH+10);
+  ctx.fillStyle='#050505';
+  ctx.fillRect(barX,barY,fillW,barH);
+  ctx.strokeStyle='#111'; ctx.lineWidth=Math.max(3,r.w*0.018);
+  ctx.beginPath();
+  const scribbles=Math.ceil(7*prog);
+  for (let i=0;i<scribbles;i++){
+    const yy=barY+barH*(0.18+i*0.11);
+    ctx.moveTo(barX+2,yy);
+    ctx.lineTo(barX+fillW-2,yy+Math.sin(i*1.7)*3);
   }
-  seg([[0.38,0.35],[0.32,0.50],[0.30,0.70]],0.40,0.55,Math.max(4,r.w*0.035));
-  seg([[0.62,0.35],[0.68,0.50],[0.70,0.70]],0.50,0.65,Math.max(4,r.w*0.035));
-  if (prog>0.60){ ctx.beginPath(); ctx.arc(r.x+0.50*r.w,r.y+0.45*r.h,Math.max(3,r.w*0.017),0,Math.PI*2); ctx.fill(); }
-  if (prog>0.68){ ctx.beginPath(); ctx.arc(r.x+0.50*r.w,r.y+0.55*r.h,Math.max(3,r.w*0.017),0,Math.PI*2); ctx.fill(); }
-  seg([[0.30,0.70],[0.38,0.72],[0.50,0.70],[0.62,0.72],[0.70,0.70]],0.70,0.85,Math.max(4,r.w*0.03));
-  if (prog>0.90){
-    ctx.globalAlpha=Math.min(1,(prog-0.90)/0.10);
+  ctx.stroke();
+  if (prog>0.82){
+    ctx.globalAlpha=Math.min(1,(prog-0.82)/0.18);
+    ctx.fillStyle='#111';
     ctx.font=`bold ${Math.max(11,r.w*0.055)}px system-ui`; ctx.textAlign='center';
-    ctx.fillText('Fixed it! -DJT', r.x+r.w*0.5, r.y+r.h*0.82);
+    ctx.fillText('CENSORED -DJT', r.x+r.w*0.5, r.y+r.h*0.82);
     ctx.globalAlpha=1; ctx.textAlign='left';
   }
   ctx.restore();
@@ -3782,9 +3821,9 @@ function drawEpsteinSuccess(){
   const s=Math.min(1.4,VW/700);
   ctx.scale(s,s);
   ctx.fillStyle='#e0e0e0'; ctx.fillRect(-120,-20,240,40);
-  ctx.beginPath(); ctx.moveTo(-120,-20); ctx.quadraticCurveTo(-150,0,-120,20); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#b71c1c'; ctx.fillRect(90,-40,20,40);
-  ctx.fillStyle='#d0d0d0'; ctx.fillRect(-30,-8,140,16);
+  ctx.beginPath(); ctx.moveTo(120,-20); ctx.quadraticCurveTo(150,0,120,20); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#b71c1c'; ctx.fillRect(-110,-40,20,40);
+  ctx.fillStyle='#d0d0d0'; ctx.fillRect(-110,-8,140,16);
   ctx.fillStyle='#b71c1c'; ctx.font='bold 16px system-ui'; ctx.textAlign='center';
   ctx.fillText('VIRGIN', 10, 6);
   ctx.restore();
@@ -4667,6 +4706,16 @@ actBtn.addEventListener('pointerdown', e=>{
   if (FightEngine.active){ FightEngine.tryPunch(); return; }
   interact();
 });
+invBtn.addEventListener('pointerdown', e=>{
+  e.stopPropagation(); e.preventDefault();
+  ensureAudio();
+  toggleInventory();
+});
+tweetBtn.addEventListener('pointerdown', e=>{
+  e.stopPropagation(); e.preventDefault();
+  ensureAudio();
+  if (tweetBtn.classList.contains('show')) doTweet();
+});
 
 /* ================================================================
    13. MAIN LOOP
@@ -4983,6 +5032,7 @@ function step(t){
     }
     // contextual action chip (mobile)
     updateActionChip();
+    updateMobileToolButtons();
 
     requestAnimationFrame(step);
   }catch(err){
@@ -5021,6 +5071,20 @@ function updateActionChip(){
   }
   actBtn.textContent=label;
   actBtn.classList.toggle('show', show);
+}
+function updateMobileToolButtons(){
+  if (!IS_TOUCH){
+    invBtn.classList.remove('show','active');
+    tweetBtn.classList.remove('show');
+    return;
+  }
+  const blocked = scene===SCENE.INTRO || GS.over || anyOverlayActive() || FightEngine.active || !!tug || !!flagOverlay;
+  const invShow = inventory.length>0 && scene!==SCENE.INTRO && !GS.over;
+  if (!invShow) invEl.classList.add('hidden');
+  invBtn.classList.toggle('show', invShow);
+  invBtn.classList.toggle('active', invShow && !invEl.classList.contains('hidden'));
+  const tweetScenes = [SCENE.GREENLAND, SCENE.OVAL, SCENE.KREMLIN];
+  tweetBtn.classList.toggle('show', !blocked && tweetScenes.includes(scene));
 }
 
 /* ================================================================
