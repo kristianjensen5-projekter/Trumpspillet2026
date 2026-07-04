@@ -261,6 +261,35 @@
     "BOASTS": ["Only I could get this deal.", "They love me here. Tremendous!", "Beautiful piece. I deserve it.", "Everyone says it belongs with me."],
     "THOUGHTS": ["These would look great in my office...", "Very classy gold. The best gold.", "Putin won't miss just one...", "I could fit three of these in Mar-a-Lago!"]
   },
+  "EPSTEIN": {
+    "INTRO_CARD": "THE EPSTEIN FILES\n\nTrump is OBVIOUSLY not mentioned\nin these documents.\n\nCross out the 10 'mistakes' before\nDemocrats spread conspiracy theories!\n\n🖊 Redact RED names in the golden zone\n🛑 NEVER touch the BLUE names\n❌❌❌ three misses and it's over\n\nTap or press any key to begin",
+    "DUMMY_NAMES": ["John Anderson","Sarah Mitchell","Robert Johnson","Emily Davis","Michael Brown","Jessica Wilson","David Martinez","Ashley Taylor","Christopher Lee","Amanda White","James Thompson","Nicole Garcia","Daniel Rodriguez","Melissa Clark","Matthew Lopez","Stephanie Hill","Kevin Green","Lauren Adams","Brian Baker","Christina Nelson","Ryan Carter","Megan Phillips","Justin Turner","Rachel Collins","Tyler Evans","Samantha Stewart","Brandon Morris","Victoria Reed","Jonathan Cook","Heather Bell","Nicholas Wright","Courtney Murphy","Aaron Rivera","Danielle Cooper","Jeremy King"],
+    "TRUMP_VARIATIONS": ["Donald Trump","Donald J. Trump","Donald John Trump","D. Trump","Mr. Trump","President Trump","POTUS Trump","DJ Trump","The Donald","Donald"],
+    "DOC_TEMPLATES": [
+      "{name} — meeting scheduled Tuesday 3:00 PM re: Atlantic City project.",
+      "{name} called to discuss the Manhattan real estate acquisition.",
+      "{name} was present at the Mar-a-Lago dinner, Nov 15th. CONFIDENTIAL.",
+      "{name} traveled to Nassau on private aircraft N218DT per manifests.",
+      "{name} contacted the office requesting a private meeting.",
+      "{name} has been cleared for access to the VIP guest list. Memo.",
+      "{name} — phone records show multiple calls to the executive office.",
+      "{name} photographed at the charity gala, Trump International.",
+      "{name} security clearance approved — Executive Floor only.",
+      "{name} — expenses reimbursed: $15,000, Caribbean business trip."
+    ],
+    "PROTECTED": ["Bill Clinton","Bill Gates"],
+    "LINES": {
+      "successTitle": "Of course I am not mentioned",
+      "successSub": "— never met the guy",
+      "flawless": "★ FLAWLESS COVER-UP ★",
+      "fixIt": "TAP TO FIX IT",
+      "fixedIt": "Fixed it! -DJT",
+      "redacted": "+1 Redacted",
+      "missed": "Missed one!",
+      "penalty": "NOT the blue names!",
+      "tapContinue": "Tap or press Enter to continue"
+    }
+  },
   "GAMEOVER": {
     "lars-fight": { "title": "KO!", "subtitle": "Lars got you. Try again." },
     "ice":        { "title": "Game Over", "subtitle": "Maybe don't melt the ice caps, Donald" },
@@ -269,6 +298,7 @@
     "kremlin":    { "title": "World Peace?", "subtitle": "Historic day in geopolitics" },
     "wagner":     { "title": "CAPTURED BY WAGNER", "subtitle": "Should have worn those gold sneakers..." },
     "golf-loss":  { "title": "LOSER!", "subtitle": "Sleepy Joe wins. Very SAD!" },
+    "epstein_fail": { "title": "FAKE NEWS!", "subtitle": "Witch hunt. Very unfair newspaper." },
     "generic":    { "title": "Game Over", "subtitle": "Better luck next time" }
   },
   "CONTINUE": {
@@ -1342,6 +1372,49 @@ function drawTableau(cause,t){
     for (let i=0;i<nBars;i++) ctx.fillRect(x0+i*(span/(nBars-1))-4,VH*0.08,8,VH*0.78);
     ctx.fillRect(x0-10,VH*0.08,span+20,6);
     ctx.fillRect(x0-10,VH*0.83,span+20,6);
+  } else if (cause==='epstein_fail'){
+    // The Daily Tremendous — full-screen rotated front page
+    ctx.fillStyle='#3a3630'; ctx.fillRect(0,0,VW,VH);
+    const pw=Math.min(VW*0.86,560), ph=Math.min(VH*0.66,pw*1.25);
+    ctx.save();
+    ctx.translate(VW/2,VH*0.60); ctx.rotate(8*Math.PI/180);
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#ccc'; ctx.lineWidth=2;
+    ctx.fillRect(-pw/2,-ph/2,pw,ph); ctx.strokeRect(-pw/2,-ph/2,pw,ph);
+    ctx.textAlign='center';
+    ctx.fillStyle='#111'; ctx.font=`bold ${pw*0.055}px Georgia,serif`;
+    ctx.fillText('The Daily Tremendous', 0, -ph/2+pw*0.075);
+    ctx.fillStyle='#555'; ctx.font=`${pw*0.026}px system-ui`;
+    ctx.fillText('Today • Washington D.C.', 0, -ph/2+pw*0.11);
+    ctx.strokeStyle='#111'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(-pw*0.44,-ph/2+pw*0.13); ctx.lineTo(pw*0.44,-ph/2+pw*0.13); ctx.stroke();
+    ctx.fillStyle='#b71c1c'; ctx.font=`800 ${pw*0.052}px system-ui`;
+    ctx.fillText('BREAKING: DONALD NAMED.', 0, -ph/2+pw*0.20);
+    ctx.fillText('MULTIPLE TIMES.', 0, -ph/2+pw*0.26);
+    // grey photo box with two B/W figures
+    const bx2=-pw*0.38, by2=-ph/2+pw*0.30, bw2=pw*0.76, bh2=ph*0.28;
+    ctx.fillStyle='#d9d9d9'; ctx.fillRect(bx2,by2,bw2,bh2);
+    ctx.strokeStyle='#aaa'; ctx.lineWidth=3; ctx.strokeRect(bx2,by2,bw2,bh2);
+    const bwGuy=(gx,hair)=>{
+      const s2=bh2/60;
+      ctx.save(); ctx.translate(gx,by2+bh2); ctx.scale(s2,s2); ctx.translate(0,-50);
+      ctx.fillStyle='#666'; ctx.fillRect(-10,8,20,26);
+      ctx.fillStyle='#bbb'; ctx.fillRect(-6,12,12,12);
+      ctx.fillStyle='#caa'; ctx.fillRect(-8,-2,16,12);
+      ctx.fillStyle='#222'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2);
+      ctx.fillStyle=hair; ctx.fillRect(-9,-6,18,5);
+      ctx.restore();
+    };
+    bwGuy(-pw*0.13,'#999'); bwGuy(pw*0.13,'#aaa');
+    // quote + article lines
+    ctx.fillStyle='#333'; ctx.font=`italic ${pw*0.028}px Georgia,serif`;
+    ctx.fillText('"Witch hunt. Very unfair newspaper."', 0, by2+bh2+pw*0.05);
+    ctx.fillStyle='#bbb';
+    for (let i=0;i<6;i++){
+      ctx.fillRect(bx2, by2+bh2+pw*0.08+i*pw*0.028, bw2-(i%2?pw*0.08:0), pw*0.014);
+    }
+    ctx.textAlign='left';
+    ctx.restore();
+    darkText=false;
   } else {
     ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
   }
@@ -1871,10 +1944,9 @@ function openHeliMenu(){
     if (k==='1') return;
     if (k==='2'){ SFX.whoosh(); switchScene(SCENE.OVAL); return; }
     if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); return; }
-    // Build step 6+: remaining scenes. For now: honest placeholder.
-    const dest={'4':'The Epstein files','5':'Mar-a-Lago'}[k];
+    if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); return; }
     SFX.whoosh();
-    say(player, dest+' is being rebuilt — coming in the next build step!', 2500);
+    say(player, 'Mar-a-Lago is being rebuilt — coming in the next build step!', 2500);
   });
 }
 
@@ -2196,6 +2268,7 @@ function interactOval(){
       closeChoice();
       if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
       else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); }
+      else if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); }
       else if (k!=='1'){ SFX.whoosh(); say(player,'That trip is being rebuilt — coming soon!',2200); }
     });
   }
@@ -2682,6 +2755,7 @@ function interactKremlin(){
       closeChoice();
       if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
       else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.OVAL); }
+      else if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); }
       else if (k!=='1'){ SFX.whoosh(); say(player,'That trip is being rebuilt — coming soon!',2200); }
     });
   }
@@ -3113,14 +3187,466 @@ function drawKremlin(){
 }
 
 /* ================================================================
+   10D. EPSTEIN FILES — rhythm-redaction minigame
+   Package B: big REDACT button / tap = E, misses shown as ❌-lives,
+   ≤2 misses = success + medal (v1 punished allowed misses at the
+   finish line), gentler start / harder ending, 🛑 glyph on blue names.
+   ================================================================ */
+const EL = DATA.EPSTEIN.LINES;
+const EP = {
+  active:false, docs:[], scrollY:0, speed:1,
+  found:0, missed:0, missesAllowed:2,
+  protectedClicks:0, protectedLimit:1,
+  assistUntil:0, lastRedact:0,
+  targets:[],           // rebuilt each frame: {y,lineRef,kind}
+  artRect:null, atArt:false,
+  finalArt:{redacted:false, start:0},
+  success:null,         // {flawless} success card showing
+  toasts:[], markerAnim:null,
+  totalTargets:10, introShown:false
+};
+function generateEpsteinDocs(){
+  const D=DATA.EPSTEIN;
+  const docs=[];
+  for (let d=0;d<12;d++){
+    const lines=[];
+    const n=15+Math.floor(Math.random()*8);
+    for (let i=0;i<n;i++){
+      lines.push({ text: pick(D.DOC_TEMPLATES).replace('{name}', pick(D.DUMMY_NAMES)),
+                   trump:false, protected:false, redacted:false, redactAt:0, missed:false });
+    }
+    docs.push(lines);
+  }
+  // exactly 10 Trump targets, spread evenly, last doc guaranteed ≥1
+  let placed=0;
+  for (let i=0;i<EP.totalTargets;i++){
+    const dIdx=Math.min(11, Math.floor(i*12/EP.totalTargets)+(Math.random()<0.5?0:1));
+    const doc=docs[Math.min(11,dIdx)];
+    for (let tries=0;tries<40;tries++){
+      const line=pick(doc);
+      if (line.trump||line.protected) continue;
+      line.text=pick(D.DOC_TEMPLATES).replace('{name}', pick(D.TRUMP_VARIATIONS));
+      line.trump=true; placed++; break;
+    }
+  }
+  if (!docs[11].some(l=>l.trump)){
+    for (let tries=0;tries<200;tries++){
+      const line=pick(docs[11]);
+      if (line.trump||line.protected) continue;
+      line.text=pick(D.DOC_TEMPLATES).replace('{name}', pick(D.TRUMP_VARIATIONS));
+      line.trump=true; placed++; break;
+    }
+  }
+  EP.totalTargets=docs.reduce((a,doc)=>a+doc.filter(l=>l.trump).length,0);
+  // 3× each protected name
+  D.PROTECTED.forEach(pname=>{
+    let put=0, tries=0;
+    while (put<3 && tries++<400){
+      const line=pick(pick(docs));
+      if (line.trump||line.protected) continue;
+      line.text=pick(D.DOC_TEMPLATES).replace('{name}', pname);
+      line.protected=true; put++;
+    }
+  });
+  return docs;
+}
+function resetEpstein(){
+  Object.assign(EP,{
+    active:false, docs:generateEpsteinDocs(), scrollY:-140,
+    found:0, missed:0, protectedClicks:0, assistUntil:0, lastRedact:0,
+    targets:[], artRect:null, atArt:false,
+    finalArt:{redacted:false,start:0}, success:null, toasts:[], markerAnim:null
+  });
+  openInfoCard(DATA.EPSTEIN.INTRO_CARD, ()=>{
+    closeInfoCard();
+    EP.active=true;
+  });
+}
+/* geometry helpers (screen space) */
+function epPaper(){
+  const narrow=VW<640;
+  const px=narrow?8:VW*0.16, pw=narrow?VW-16:VW*0.68;
+  return { x:px, y:VH*0.08, w:pw, h:VH*0.84,
+           fs: clamp(pw/34, 10, 14) };
+}
+function epZone(){
+  const p=epPaper();
+  const zh=Math.max(48,p.h*0.09);
+  let cy=p.y+p.h*0.5;
+  if (EP.atArt && EP.artRect && !EP.finalArt.redacted){
+    const artC=EP.artRect.y+EP.artRect.h*0.33;
+    if (artC>p.y && artC<p.y+p.h) cy=artC;
+  }
+  return { top:cy-zh/2, bottom:cy+zh/2, cy, h:zh };
+}
+function updateEpstein(dt){
+  if (!EP.active || anyOverlayActive() || GS.over || EP.success) return;
+  const p=epPaper(), lineH=p.fs*1.6;
+  // total content height
+  let totalH=30;
+  EP.docs.forEach(doc=>{ totalH+=lineH*1.5+doc.length*lineH+lineH; });
+  totalH+=360;
+  const k=clamp(EP.scrollY/totalH,0,1);
+  // package B curve: readable start, panic ending
+  EP.speed=1.1+k*3.6;
+  if (EP.assistUntil && now()<EP.assistUntil) EP.speed*=0.85;
+  let delta=EP.speed*0.75*(dt*60);
+  // hold at the final art
+  const sharpie=EP.finalArt.redacted && (now()-EP.finalArt.start<2500);
+  if (EP.artRect && (!EP.finalArt.redacted || sharpie)){
+    const targetTop=p.y+50;
+    if (EP.artRect.y-delta<=targetTop || sharpie){
+      delta=sharpie?0:Math.max(0,EP.artRect.y-targetTop);
+      EP.atArt=true;
+    } else EP.atArt=false;
+  }
+  EP.scrollY+=delta;
+  // misses: trump lines that scrolled past the top
+  let y=p.y+30-EP.scrollY;
+  EP.docs.forEach(doc=>{
+    y+=lineH*1.5;
+    doc.forEach(line=>{
+      if (line.trump && !line.redacted && !line.missed && y<p.y-40){
+        line.missed=true;
+        EP.missed++;
+        SFX.error(); triggerShake(5,200);
+        EP.assistUntil=now()+3500;
+        EP.toasts.push({x:p.x+70,y:p.y+26,text:EL.missed,color:'#ff5555',start:now(),ttl:900});
+        if (EP.missed>EP.missesAllowed){ epsteinFail(); }
+      }
+      y+=lineH;
+    });
+    y+=lineH;
+  });
+}
+function epsteinFail(){
+  EP.active=false;
+  gameOverCause('epstein_fail',{delayMs:700});
+}
+function epsteinRedact(){ // E key / tap / REDACT button
+  if (!EP.active || GS.over || EP.success) return;
+  const t=now();
+  if (t-EP.lastRedact<150) return;
+  const zone=epZone();
+  // Intent over geometry: if a RED name is anywhere in the window, that's
+  // what the player means — a BLUE name 5px closer must not steal the hit.
+  // The blue-trap only fires when a protected name is ALONE in the window.
+  let best=null,bd=1e9;
+  const inWin=EP.targets.filter(tg=>tg.y>=zone.top-22 && tg.y<=zone.bottom+22);
+  const pool=inWin.some(tg=>tg.kind==='trump') ? inWin.filter(tg=>tg.kind==='trump') : inWin;
+  for (const tg of pool){
+    const d=Math.abs(tg.y-zone.cy);
+    if (d<bd){ bd=d; best=tg; }
+  }
+  if (best){
+    EP.lastRedact=t;
+    const line=best.line;
+    if (best.kind==='protected'){
+      EP.protectedClicks++;
+      SFX.error(); triggerShake(6,300);
+      EP.toasts.push({x:VW/2,y:zone.cy-30,text:EL.penalty,color:'#ff5555',start:t,ttl:1100});
+      if (EP.protectedClicks>EP.protectedLimit){ epsteinFail(); }
+      return;
+    }
+    line.redacted=true; line.redactAt=t;
+    EP.found++;
+    SFX.success();
+    EP.markerAnim={y:best.y,x:best.x,w:best.w,start:t,dur:300};
+    spawnSparks(VW/2,zone.cy,8);
+    EP.toasts.push({x:best.x+best.w/2,y:zone.cy-24,text:EL.redacted,color:'#6cff6c',start:t,ttl:700});
+    return;
+  }
+  // the drawing itself
+  if (EP.atArt && EP.artRect && !EP.finalArt.redacted){
+    EP.finalArt.redacted=true;
+    EP.finalArt.start=t;
+    SFX.success();
+    EP.toasts.push({x:VW/2,y:EP.artRect.y-10,text:EL.fixedIt,color:'#6cff6c',start:t,ttl:2200});
+    setTimeout(()=>{
+      // Package B: surviving (≤2 misses) IS success — misses already hurt
+      EP.success={flawless: EP.missed===0 && EP.protectedClicks===0};
+      awardMedal('epstein');
+      SFX.achievement();
+    },2400);
+    return;
+  }
+  SFX.click();
+}
+function drawEpstein(){
+  beginScreen();
+  const p=epPaper(), lineH=p.fs*1.6, t=now();
+  // desk
+  ctx.fillStyle='#8B4513'; ctx.fillRect(0,0,VW,VH);
+  ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(p.x+5,p.y+5,p.w,p.h);
+  ctx.fillStyle='#f8f8f8'; ctx.fillRect(p.x,p.y,p.w,p.h);
+  // document lines
+  ctx.save();
+  ctx.beginPath(); ctx.rect(p.x,p.y,p.w,p.h); ctx.clip();
+  EP.targets=[];
+  let y=p.y+30-EP.scrollY;
+  const lm=p.x+14;
+  EP.docs.forEach((doc,di)=>{
+    if (y>-lineH*2 && y<VH+lineH){
+      ctx.fillStyle='#666'; ctx.font=`bold ${p.fs}px monospace`;
+      ctx.fillText(`--- CLASSIFIED DOCUMENT ${di+1} ---`, lm, y);
+    }
+    y+=lineH*1.5;
+    doc.forEach(line=>{
+      if (y>p.y-lineH && y<p.y+p.h+lineH){
+        if (line.redacted){
+          const prog=line.redactAt?clamp((t-line.redactAt)/300,0,1):1;
+          ctx.fillStyle='#000';
+          ctx.font=`bold ${p.fs}px monospace`;
+          const tw=Math.min(ctx.measureText(line.text).width, p.w-28);
+          ctx.fillRect(lm,y-p.fs*0.8,tw*prog,p.fs*1.15);
+        } else if (line.missed){
+          ctx.fillStyle='#f4b8b8'; ctx.font=`${p.fs}px monospace`;
+          ctx.fillText(line.text, lm, y);
+        } else if (line.trump || line.protected){
+          const isT=line.trump;
+          const label=(isT?'':'🛑 ')+line.text;
+          ctx.font=`bold ${p.fs}px monospace`;
+          const tw=Math.min(ctx.measureText(label).width, p.w-28);
+          ctx.fillStyle=isT?'#ffcccc':'#cce5ff';
+          ctx.fillRect(lm-3,y-p.fs*0.85,tw+6,p.fs*1.2);
+          ctx.fillStyle=isT?'#d32f2f':'#1565c0';
+          ctx.save(); ctx.beginPath(); ctx.rect(p.x,y-lineH,p.w-14,lineH*2); ctx.clip();
+          ctx.fillText(label, lm, y);
+          ctx.restore();
+          // assist pulse after a miss
+          if (isT && EP.assistUntil && t<EP.assistUntil){
+            const pulse=0.5+0.5*Math.sin(t/200);
+            ctx.strokeStyle=`rgba(211,47,47,${0.5+0.4*pulse})`;
+            ctx.lineWidth=2+2*pulse;
+            ctx.strokeRect(lm-5,y-p.fs*0.95,tw+10,p.fs*1.4);
+          }
+          EP.targets.push({y, x:lm, w:tw, line, kind:isT?'trump':'protected'});
+        } else {
+          ctx.fillStyle='#222'; ctx.font=`${p.fs}px monospace`;
+          ctx.save(); ctx.beginPath(); ctx.rect(p.x,y-lineH,p.w-14,lineH*2); ctx.clip();
+          ctx.fillText(line.text, lm, y);
+          ctx.restore();
+        }
+      }
+      y+=lineH;
+    });
+    y+=lineH;
+  });
+  // final art (birthday drawing)
+  const artW=Math.min(p.w*0.7,300), artH=artW*1.1;
+  const artX=p.x+(p.w-artW)/2, artY=y+20;
+  EP.artRect={x:artX,y:artY,w:artW,h:artH};
+  if (artY<VH+50) drawBirthdayArt(artX,artY,artW,artH);
+  ctx.restore(); // unclip
+  // golden hit zone
+  if (EP.active && !EP.success){
+    const z=epZone();
+    ctx.fillStyle='rgba(255,215,0,0.15)'; ctx.fillRect(p.x,z.top,p.w,z.h);
+    ctx.strokeStyle='rgba(255,215,0,0.8)'; ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(p.x,z.top); ctx.lineTo(p.x+p.w,z.top);
+    ctx.moveTo(p.x,z.bottom); ctx.lineTo(p.x+p.w,z.bottom);
+    ctx.stroke();
+    ctx.setLineDash([5,5]); ctx.strokeStyle='rgba(255,215,0,0.4)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(p.x,z.cy); ctx.lineTo(p.x+p.w,z.cy); ctx.stroke();
+    ctx.setLineDash([]);
+    // TAP TO FIX IT when the art holds in the zone
+    if (EP.atArt && !EP.finalArt.redacted){
+      ctx.save(); ctx.globalAlpha=0.7+0.3*Math.sin(t/250);
+      ctx.fillStyle='#d32f2f'; ctx.font=`800 ${clamp(VW*0.045,18,26)}px system-ui`;
+      ctx.textAlign='center';
+      ctx.fillText(EL.fixIt, p.x+p.w/2, z.top-14);
+      ctx.restore(); ctx.textAlign='left';
+    }
+  }
+  // sharpie suit animation over the art
+  if (EP.finalArt.redacted && EP.artRect){
+    drawSharpieSuit(EP.artRect, clamp((t-EP.finalArt.start)/2000,0,1));
+  }
+  // HUD: ❌-lives + found counter + REDACT button
+  if (EP.active && !EP.success){
+    ctx.font='bold 15px system-ui';
+    ctx.fillStyle='rgba(0,0,0,0.75)';
+    roundRectPath(ctx,p.x, Math.max(4,p.y-34), 210, 28, 8); ctx.fill();
+    let hud=`Redacted ${EP.found}/${EP.totalTargets}   `;
+    ctx.fillStyle='#fff';
+    ctx.fillText(hud, p.x+10, Math.max(4,p.y-34)+19);
+    const hw=ctx.measureText(hud).width;
+    for (let i=0;i<3;i++){
+      ctx.fillStyle = i<EP.missed ? '#ff4444' : 'rgba(255,255,255,0.25)';
+      ctx.fillText('✖', p.x+10+hw+i*18, Math.max(4,p.y-34)+19);
+    }
+    // big REDACT button (touch primary, E on desktop)
+    const bw=Math.min(200,VW*0.5), bh=54;
+    const bx=(VW-bw)/2, by2=VH-bh-Math.max(10,VH*0.02);
+    EP._btn={x:bx,y:by2,w:bw,h:bh};
+    ctx.fillStyle='#1a1a1a';
+    roundRectPath(ctx,bx,by2,bw,bh,27); ctx.fill();
+    ctx.strokeStyle='#ffd700'; ctx.lineWidth=3;
+    roundRectPath(ctx,bx+1.5,by2+1.5,bw-3,bh-3,25); ctx.stroke();
+    ctx.fillStyle='#ffd700'; ctx.font='800 20px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(IS_TOUCH?'🖊 REDACT':'🖊 REDACT [E]', bx+bw/2, by2+bh/2);
+    ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+  }
+  // toasts
+  EP.toasts=EP.toasts.filter(x=>t-x.start<x.ttl);
+  EP.toasts.forEach(x=>{
+    const k=(t-x.start)/x.ttl;
+    ctx.globalAlpha=1-k;
+    ctx.fillStyle=x.color; ctx.font='bold 14px system-ui'; ctx.textAlign='center';
+    ctx.fillText(x.text, x.x, x.y-14*k);
+    ctx.globalAlpha=1; ctx.textAlign='left';
+  });
+  // success card
+  if (EP.success) drawEpsteinSuccess();
+}
+function drawBirthdayArt(x,y,w,h){
+  const img=EP._artImg;
+  if (img===undefined){
+    EP._artImg=null;
+    const im=new Image();
+    im.onload=()=>{ EP._artImg=im; };
+    im.onerror=()=>{ EP._artImg=null; };
+    im.src='assets/drawing.png';
+  }
+  if (img){
+    ctx.save(); ctx.imageSmoothingEnabled=false;
+    const iw=img.naturalWidth||1, ih=img.naturalHeight||1;
+    const s=Math.min(w/iw,h/ih), dw=iw*s, dh=ih*s;
+    ctx.drawImage(img, x+(w-dw)/2, y+(h-dh)/2, dw, dh);
+    ctx.restore();
+    return;
+  }
+  // vector fallback: the silhouette
+  ctx.save();
+  ctx.lineWidth=Math.max(5,w*0.03); ctx.lineCap='round'; ctx.strokeStyle='#2a2a2a';
+  const P=(pts)=>{ ctx.beginPath(); pts.forEach(([nx,ny],i)=>i?ctx.lineTo(x+nx*w,y+ny*h):ctx.moveTo(x+nx*w,y+ny*h)); ctx.stroke(); };
+  const left=[[0.40,0.00],[0.40,0.06],[0.32,0.12],[0.10,0.18],[0.12,0.32],[0.18,0.48],[0.22,0.62],[0.18,0.76],[0.22,0.90]];
+  P(left); P(left.map(([nx,ny])=>[1-nx,ny]));
+  P([[0.38,0.28],[0.32,0.34],[0.38,0.38]]);
+  P([[0.62,0.28],[0.68,0.34],[0.62,0.38]]);
+  ctx.lineWidth=Math.max(2,w*0.012);
+  P([[0.30,0.82],[0.32,0.79],[0.34,0.84],[0.36,0.79],[0.38,0.84],[0.40,0.79],[0.42,0.83]]);
+  P([[0.42,0.85],[0.70,0.85]]);
+  ctx.restore();
+}
+function drawSharpieSuit(r,prog){
+  ctx.save();
+  ctx.strokeStyle='#1a1a1a'; ctx.fillStyle='#1a1a1a';
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  const seg=(pts,a,b,lw)=>{
+    if (prog<a) return;
+    const lp=Math.min(1,(prog-a)/(b-a));
+    ctx.lineWidth=lw;
+    ctx.beginPath();
+    ctx.moveTo(r.x+pts[0][0]*r.w, r.y+pts[0][1]*r.h);
+    const n=pts.length-1, upto=Math.max(1,Math.ceil(lp*n));
+    for (let i=1;i<=upto;i++) ctx.lineTo(r.x+pts[i][0]*r.w, r.y+pts[i][1]*r.h);
+    ctx.stroke();
+  };
+  seg([[0.50,0.15],[0.38,0.35],[0.42,0.50]],0,0.15,Math.max(4,r.w*0.03));   // left lapel
+  seg([[0.50,0.15],[0.62,0.35],[0.58,0.50]],0.10,0.25,Math.max(4,r.w*0.03));// right lapel
+  seg([[0.50,0.22],[0.48,0.55],[0.52,0.55],[0.50,0.22]],0.28,0.45,Math.max(5,r.w*0.04)); // tie
+  if (prog>0.35){
+    ctx.beginPath();
+    ctx.moveTo(r.x+0.50*r.w,r.y+0.22*r.h);
+    ctx.lineTo(r.x+0.46*r.w,r.y+0.55*r.h);
+    ctx.lineTo(r.x+0.54*r.w,r.y+0.55*r.h);
+    ctx.closePath(); ctx.fill();
+  }
+  seg([[0.38,0.35],[0.32,0.50],[0.30,0.70]],0.40,0.55,Math.max(4,r.w*0.035));
+  seg([[0.62,0.35],[0.68,0.50],[0.70,0.70]],0.50,0.65,Math.max(4,r.w*0.035));
+  if (prog>0.60){ ctx.beginPath(); ctx.arc(r.x+0.50*r.w,r.y+0.45*r.h,Math.max(3,r.w*0.017),0,Math.PI*2); ctx.fill(); }
+  if (prog>0.68){ ctx.beginPath(); ctx.arc(r.x+0.50*r.w,r.y+0.55*r.h,Math.max(3,r.w*0.017),0,Math.PI*2); ctx.fill(); }
+  seg([[0.30,0.70],[0.38,0.72],[0.50,0.70],[0.62,0.72],[0.70,0.70]],0.70,0.85,Math.max(4,r.w*0.03));
+  if (prog>0.90){
+    ctx.globalAlpha=Math.min(1,(prog-0.90)/0.10);
+    ctx.font=`bold ${Math.max(11,r.w*0.055)}px system-ui`; ctx.textAlign='center';
+    ctx.fillText('Fixed it! -DJT', r.x+r.w*0.5, r.y+r.h*0.82);
+    ctx.globalAlpha=1; ctx.textAlign='left';
+  }
+  ctx.restore();
+}
+function drawEpsteinSuccess(){
+  const t=now();
+  ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
+  ctx.textAlign='center';
+  ctx.fillStyle='#141414'; ctx.font=`800 ${clamp(VW*0.045,18,30)}px system-ui`;
+  ctx.fillText(EL.successTitle, VW/2, VH*0.14);
+  ctx.font=`italic ${clamp(VW*0.032,14,20)}px system-ui`; ctx.fillStyle='#2a2a2a';
+  ctx.fillText(EL.successSub, VW/2, VH*0.14+32);
+  if (EP.success.flawless){
+    ctx.save(); ctx.globalAlpha=0.8+0.2*Math.sin(t/250);
+    ctx.fillStyle='#b8860b'; ctx.font=`800 ${clamp(VW*0.03,13,19)}px system-ui`;
+    ctx.fillText(EL.flawless, VW/2, VH*0.14+62);
+    ctx.restore();
+  }
+  // VIRGIN plane flying across
+  const px=((t/16)%(VW+500))-250;
+  const py=VH*0.36+Math.sin(t/900)*10;
+  ctx.save(); ctx.translate(px,py);
+  const s=Math.min(1.4,VW/700);
+  ctx.scale(s,s);
+  ctx.fillStyle='#e0e0e0'; ctx.fillRect(-120,-20,240,40);
+  ctx.beginPath(); ctx.moveTo(-120,-20); ctx.quadraticCurveTo(-150,0,-120,20); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#b71c1c'; ctx.fillRect(90,-40,20,40);
+  ctx.fillStyle='#d0d0d0'; ctx.fillRect(-30,-8,140,16);
+  ctx.fillStyle='#b71c1c'; ctx.font='bold 16px system-ui'; ctx.textAlign='center';
+  ctx.fillText('VIRGIN', 10, 6);
+  ctx.restore();
+  // two smiling gentlemen on the ground
+  const gy=VH*0.72, sc=Math.min(2.2,VH/380);
+  const guy=(gx,isTrump)=>{
+    ctx.save(); ctx.translate(gx,gy); ctx.scale(sc,sc); ctx.translate(0,-44);
+    if (isTrump){
+      ctx.fillStyle='#2b2b2b'; ctx.fillRect(-10,34,9,10); ctx.fillRect(2,34,9,10);
+      ctx.fillStyle='#7a5328'; ctx.fillRect(-12,6,24,26);
+      ctx.fillStyle='#d8e6ff'; ctx.fillRect(-8,10,16,18);
+      ctx.fillStyle='#e02424'; ctx.fillRect(-2,14,4,14);
+      ctx.fillStyle='#f4cda4'; ctx.fillRect(-9,-2,18,12);
+      ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2);
+      ctx.fillStyle='#f3a32d'; ctx.fillRect(-10,-6,20,6);
+      ctx.fillStyle='#111'; ctx.fillRect(-3,7,6,1); ctx.fillRect(-4,6,1,1); ctx.fillRect(3,6,1,1); // smile
+    } else {
+      ctx.fillStyle='#111'; ctx.fillRect(-7,34,6,10); ctx.fillRect(1,34,6,10);
+      ctx.fillStyle='#333'; ctx.fillRect(-10,8,20,26);
+      ctx.fillStyle='#ddd'; ctx.fillRect(-6,12,12,12);
+      ctx.fillStyle='#e6c9a8'; ctx.fillRect(-8,-2,16,12);
+      ctx.fillStyle='#111'; ctx.fillRect(-7,2,6,3); ctx.fillRect(1,2,6,3); ctx.fillRect(-1,3,2,1); // sunglasses
+      ctx.fillStyle='#bbb'; ctx.fillRect(-9,-5,18,5);
+    }
+    ctx.restore();
+  };
+  guy(VW/2-40*sc,false);
+  guy(VW/2+40*sc,true);
+  ctx.save(); ctx.globalAlpha=0.65+0.35*Math.sin(t/350);
+  ctx.fillStyle='#1f1f1f'; ctx.font='bold 15px system-ui';
+  ctx.fillText(EL.tapContinue, VW/2, VH-Math.max(24,VH*0.045));
+  ctx.restore();
+  ctx.textAlign='left';
+}
+function epsteinDismissSuccess(){
+  if (!EP.success) return;
+  EP.success=null; EP.active=false;
+  switchScene(SCENE.GREENLAND);
+}
+function epsteinLeave(){
+  openChoice('Leave the document review?', ['Keep redacting','Back to Greenland'], k=>{
+    closeChoice();
+    if (k==='2'){ EP.active=false; switchScene(SCENE.GREENLAND); }
+  });
+}
+
+/* ================================================================
    11. SCENE SYSTEM
    ================================================================ */
 const SCENES = {
   [SCENE.INTRO]: {},
   [SCENE.GREENLAND]: { reset: resetGreenland, worldW: CFG.GREENLAND_W },
   [SCENE.OVAL]: { reset: resetOval, worldW: 1200 },
-  [SCENE.KREMLIN]: { reset: resetKremlin, worldW: 1200 }
-  // EPSTEIN / GOLF lander i næste byggetrin
+  [SCENE.KREMLIN]: { reset: resetKremlin, worldW: 1200 },
+  [SCENE.EPSTEIN]: { reset: resetEpstein, worldW: 1200 }
+  // GOLF lander i næste byggetrin
 };
 function switchScene(to){
   const def=SCENES[to];
@@ -3146,6 +3672,7 @@ function fullRestartRun(){
   ovalMedalDrop=null;
   KR.introShown=false;
   tug=null; flagOverlay=null; nobelDrop=null; KR.wagner=null;
+  EP.active=false; EP.success=null;
   inventory.length=0; collectedCoins=0; player.gold=0;
   player.baseSpeedMul=1; player.goldenShoesOn=false; updateSpeedMul();
   player.tanLevel=0; player.capOn=false; player.selectedItem=null;
@@ -3253,6 +3780,14 @@ addEventListener('keydown', e=>{
     e.preventDefault();
     return;
   }
+  // Epstein: E = redact, Esc = leave, any key dismisses the success card
+  if (scene===SCENE.EPSTEIN){
+    if (EP.success){ epsteinDismissSuccess(); }
+    else if (k==='escape'){ epsteinLeave(); }
+    else if (k==='e'||e.code==='KeyE'){ epsteinRedact(); }
+    e.preventDefault();
+    return;
+  }
   // Oval answer cards get first claim on 1/2 while a question is live
   if (scene===SCENE.OVAL && OV.d.phase==='guest_asking' && (k==='1'||k==='2')){
     ovalAnswer(k==='1'?'yes':'no');
@@ -3315,6 +3850,12 @@ cvs.addEventListener('pointerdown', e=>{
   // Kremlin overlays: every tap is a mash / a dismiss
   if (tug){ tugInput('tap'); return; }
   if (flagOverlay){ closeFlagOverlay(); return; }
+  // Epstein: every tap is a redaction attempt (success card: dismiss)
+  if (scene===SCENE.EPSTEIN){
+    if (EP.success){ epsteinDismissSuccess(); return; }
+    epsteinRedact();
+    return;
+  }
   // Oval answer cards (screen space) — before world taps
   if (scene===SCENE.OVAL && OV.d && OV.d.phase==='guest_asking'){
     const hb=b=>b&&sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h;
@@ -3422,6 +3963,7 @@ function updateActors(dt){
     updateOvalMedalDrop(dt);
     return;
   }
+  if (scene===SCENE.EPSTEIN){ return; } // updateEpstein runs from step (needs dt even under GS.over=false gating)
   if (scene===SCENE.KREMLIN){
     if (!KR.putin.nextBlink||t>KR.putin.nextBlink){ KR.putin.blinkUntil=t+120; KR.putin.nextBlink=t+2000+Math.random()*2500; }
     updateTug();
@@ -3665,6 +4207,7 @@ function step(t){
         }
       }
       updateActors(dt);
+      if (scene===SCENE.EPSTEIN) updateEpstein(dt);
       updateFx(dt);
       // coin collection while airborne (not while riding the entry heli)
       const sceneCoins = scene===SCENE.GREENLAND?GL.coins : scene===SCENE.OVAL?OV.coins : scene===SCENE.KREMLIN?KR.coins : null;
@@ -3697,6 +4240,7 @@ function step(t){
     if (scene===SCENE.GREENLAND) drawGreenland();
     else if (scene===SCENE.OVAL){ drawOval(); drawNuke(); }
     else if (scene===SCENE.KREMLIN){ drawKremlin(); if (tug) drawTug(); if (flagOverlay) drawFlagOverlayScreen(); }
+    else if (scene===SCENE.EPSTEIN){ drawEpstein(); }
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
     if (choiceOverlay) drawChoiceOverlay();
@@ -3740,6 +4284,8 @@ function updateActionChip(){
         label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
                 nearObj.type==='surprise'?'☢️' : nearObj.type==='aide'?'🧴' : 'E';
       }
+    } else if (scene===SCENE.EPSTEIN){
+      show=false;
     } else if (scene===SCENE.KREMLIN && !tug && !flagOverlay){
       const nearObj=nearestKR();
       if (nearObj){ show=true;
@@ -3780,6 +4326,11 @@ window.__tv2 = {
             guest: (ovalCurrentGuest()||{}).id||null,
             correctAnswer: (ovalCurrentGuest()||{}).correctAnswer||null,
             tan: player.tanLevel, aide: OV.aide.phase, nuke: NUKE.active },
+    epstein: { active: EP.active, found: EP.found, total: EP.totalTargets,
+               missed: EP.missed, protectedClicks: EP.protectedClicks,
+               atArt: EP.atArt, artDone: EP.finalArt.redacted,
+               success: EP.success?{...EP.success}:null,
+               zoneKinds: EP.targets.filter(tg=>{const z=epZone(); return tg.y>=z.top-22&&tg.y<=z.bottom+22;}).map(tg=>tg.kind) },
     kremlin: { tug: tug?{pos:+tug.pos.toFixed(2),elapsed:Math.round(now()-tug.start)}:null,
                flag: flagOverlay?flagOverlay.type:null,
                statues: KR.statues.filter(s=>s.collected).length,
