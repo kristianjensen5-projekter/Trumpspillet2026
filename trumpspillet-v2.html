@@ -3919,23 +3919,47 @@ function golfImage(src){
 function golfComputeView(){
   const h=GOLF.hole || golfHole() || {bounds:{x:0,y:0,w:960,h:540}};
   const b=h.bounds || {x:0,y:0,w:960,h:540};
+  const rotated=IS_TOUCH && VH>VW*1.08;
   const top=VW<520?74:82, bottom=IS_TOUCH?92:54;
-  const sw=(VW-16)/(b.w||960), sh=(VH-top-bottom)/(b.h||540);
-  const scale=clamp(Math.min(sw,sh), VW<520?0.42:0.5, 1.18);
-  const spare=VH-top-bottom-b.h*scale;
+  const renderW=rotated ? b.h : b.w;
+  const renderH=rotated ? b.w : b.h;
+  const sw=(VW-16)/(renderW||960), sh=(VH-top-bottom)/(renderH||540);
+  const scale=Math.min(Math.min(sw,sh), 1.18);
+  const spare=VH-top-bottom-renderH*scale;
   return {
+    rotated,
     scale,
-    ox:(VW-(b.w*scale))/2 - b.x*scale,
-    oy:top + (IS_TOUCH ? Math.min(170,Math.max(16,spare*0.25)) : Math.max(0,spare/2)) - b.y*scale
+    ox:(VW-(renderW*scale))/2 - b.x*scale,
+    oy:top + Math.max(0,spare/2) - b.y*scale
   };
 }
 function golfToCourse(sx,sy){
   const v=GOLF.view || golfComputeView();
-  return {x:(sx-v.ox)/v.scale, y:(sy-v.oy)/v.scale};
+  const h=GOLF.hole || golfHole() || {bounds:{x:0,y:0,w:960,h:540}};
+  const b=h.bounds || {x:0,y:0,w:960,h:540};
+  const qx=(sx-v.ox)/v.scale, qy=(sy-v.oy)/v.scale;
+  if (v.rotated){
+    return {x:b.x+(qy-b.y), y:b.y+(b.h-(qx-b.x))};
+  }
+  return {x:qx, y:qy};
 }
 function golfToScreen(x,y){
   const v=GOLF.view || golfComputeView();
+  const h=GOLF.hole || golfHole() || {bounds:{x:0,y:0,w:960,h:540}};
+  const b=h.bounds || {x:0,y:0,w:960,h:540};
+  if (v.rotated){
+    return {x:(b.x+b.h-(y-b.y))*v.scale+v.ox, y:(b.y+(x-b.x))*v.scale+v.oy};
+  }
   return {x:x*v.scale+v.ox, y:y*v.scale+v.oy};
+}
+function golfApplyCourseView(v,b){
+  ctx.translate(v.ox,v.oy);
+  ctx.scale(v.scale,v.scale);
+  if (v.rotated){
+    ctx.translate(b.x+b.h,b.y);
+    ctx.rotate(Math.PI/2);
+    ctx.translate(-b.x,-b.y);
+  }
 }
 function golfFillPoly(poly){
   if (!Array.isArray(poly)||poly.length<3) return;
@@ -4123,8 +4147,13 @@ function updateGolf(dt){
   }
   if (GOLF.state==='rolling'){
     const ball=GOLF.ball;
-    ball.x+=ball.vx*dt; ball.y+=ball.vy*dt;
-    golfResolveWalls();
+    const speed0=Math.hypot(ball.vx,ball.vy);
+    const steps=Math.max(1,Math.min(24,Math.ceil((speed0*dt)/(ball.r*0.55))));
+    const stepDt=dt/steps;
+    for (let i=0;i<steps;i++){
+      ball.x+=ball.vx*stepDt; ball.y+=ball.vy*stepDt;
+      golfResolveWalls();
+    }
     const cup=GOLF.hole.cup;
     const speed=Math.hypot(ball.vx,ball.vy);
     if (cup){
@@ -4200,12 +4229,98 @@ function golfPowerColor(p){
   if (p<0.75) return '#ffd23f';
   return '#ff4d3d';
 }
+function drawGolfAtCoursePoint(x,y,draw){
+  const p=golfToScreen(x,y), v=GOLF.view || golfComputeView();
+  ctx.save();
+  ctx.translate(p.x,p.y);
+  ctx.scale(v.scale,v.scale);
+  draw(p,v);
+  ctx.restore();
+}
+function drawGolfCupScreen(cup,id){
+  if (!cup) return;
+  const p=golfToScreen(cup.x,cup.y), v=GOLF.view || golfComputeView();
+  const r=(cup.r||18)*v.scale;
+  ctx.save();
+  ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ffd700'; ctx.beginPath(); ctx.arc(p.x,p.y,r*0.48,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=Math.max(1.5,2*v.scale);
+  ctx.beginPath(); ctx.moveTo(p.x+2*v.scale,p.y); ctx.lineTo(p.x+2*v.scale,p.y-58*v.scale); ctx.stroke();
+  ctx.fillStyle='#e63946';
+  ctx.beginPath();
+  ctx.moveTo(p.x+2*v.scale,p.y-58*v.scale);
+  ctx.lineTo(p.x+32*v.scale,p.y-49*v.scale);
+  ctx.lineTo(p.x+2*v.scale,p.y-40*v.scale);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.max(10,11*v.scale)}px system-ui`;
+  ctx.fillText(String(id),p.x+7*v.scale,p.y-45*v.scale);
+  ctx.restore();
+}
+function drawGolfBallScreen(){
+  const p=golfToScreen(GOLF.ball.x,GOLF.ball.y), v=GOLF.view || golfComputeView();
+  const r=GOLF.ball.r*v.scale;
+  ctx.save();
+  ctx.fillStyle='#f8f8f8'; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#222'; ctx.lineWidth=Math.max(1,1.5*v.scale); ctx.stroke();
+  ctx.globalAlpha=0.22; ctx.fillStyle='#fff'; ctx.beginPath();
+  ctx.arc(p.x,p.y,Math.max(18*v.scale,r*1.8),0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawGolfActorsScreen(cup){
+  const bp=golfToScreen(GOLF.biden.x,GOLF.biden.y);
+  const cp=cup?golfToScreen(cup.x,cup.y):{x:bp.x+1,y:bp.y};
+  drawGolfAtCoursePoint(GOLF.biden.x,GOLF.biden.y,()=>drawBidenGolf(0,0));
+  drawGolfAtCoursePoint(GOLF.biden.x,GOLF.biden.y,()=>drawGolfClub(0,0,bp.x<cp.x?1:-1));
+
+  const tp=golfToScreen(GOLF.playerDraw.x,GOLF.playerDraw.y);
+  const facing=cp.x>=tp.x?1:-1;
+  const opts={...GOLF.playerDraw,facing};
+  drawGolfAtCoursePoint(GOLF.playerDraw.x,GOLF.playerDraw.y,()=>drawTrumpGolf(0,0,opts));
+  drawGolfAtCoursePoint(GOLF.playerDraw.x,GOLF.playerDraw.y,()=>drawGolfClub(0,0,facing));
+}
+function drawGolfBidenScoreScreen(){
+  const p=golfToScreen(GOLF.biden.x,GOLF.biden.y);
+  const w=IS_TOUCH?92:78, h=IS_TOUCH?30:26;
+  const bx=clamp(p.x-w/2,10,VW-w-10), by=clamp(p.y-(IS_TOUCH?92:76),58,VH-h-76);
+  ctx.save();
+  ctx.fillStyle='rgba(255,255,255,0.94)'; ctx.strokeStyle='#1565c0'; ctx.lineWidth=2;
+  roundRectPath(ctx,bx,by,w,h,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#1565c0'; ctx.font=`bold ${IS_TOUCH?14:13}px system-ui`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(`${GOLF.biden.strokes} strokes`,bx+w/2,by+h/2);
+  ctx.restore();
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+function drawGolfBidenSpeechScreen(){
+  if (!(GOLF.biden.speech && now()<GOLF.biden.speech.until)) return;
+  const p=golfToScreen(GOLF.biden.x,GOLF.biden.y);
+  const fs=IS_TOUCH?16:12, lh=IS_TOUCH?20:16, pad=IS_TOUCH?10:8;
+  ctx.save();
+  ctx.font=`${fs}px system-ui`;
+  const lines=wrapLines(GOLF.biden.speech.text,IS_TOUCH?22:24);
+  const w=Math.min(VW-24,Math.max(IS_TOUCH?178:110,Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2));
+  const bh=lines.length*lh+pad*1.4;
+  const bx=clamp(p.x-w/2,12,VW-w-12);
+  let by=p.y-122-bh;
+  if (by<70) by=p.y+28;
+  by=clamp(by,70,VH-bh-76);
+  ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.strokeStyle='#333'; ctx.lineWidth=1.6;
+  roundRectPath(ctx,bx,by,w,bh,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#222';
+  lines.forEach((l,i)=>ctx.fillText(l,bx+pad,by+pad+fs*0.82+i*lh));
+  const tx=clamp(p.x,bx+14,bx+w-14), tailY=p.y-42*(GOLF.view?.scale||1);
+  ctx.fillStyle='rgba(255,255,255,0.97)';
+  ctx.beginPath(); ctx.moveTo(tx-8,by+bh-1); ctx.lineTo(tx+8,by+bh-1); ctx.lineTo(p.x,Math.max(by+bh+12,tailY)); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.stroke();
+  ctx.restore();
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
 function drawGolf(){
   beginScreen();
   GOLF.view=golfComputeView();
   const v=GOLF.view, h=GOLF.hole || golfHole(), b=h.bounds || {x:0,y:0,w:960,h:540};
   ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
-  ctx.save(); ctx.translate(v.ox,v.oy); ctx.scale(v.scale,v.scale);
+  ctx.save(); golfApplyCourseView(v,b);
   ctx.fillStyle='#d9b77d'; ctx.fillRect(b.x,b.y,b.w,b.h);
   if (Array.isArray(h.surfaces)){
     h.surfaces.forEach(s=>{ if (!s||!s.poly) return; ctx.fillStyle=GOLF_SURFACE_COLORS[(s.type||'').toLowerCase()]||'#5ba64d'; golfFillPoly(s.poly); });
@@ -4226,13 +4341,6 @@ function drawGolf(){
   ctx.restore();
   const tee=h.teeRect, cup=h.cup;
   if (tee){ ctx.save(); ctx.strokeStyle='rgba(0,150,255,0.85)'; ctx.lineWidth=2; ctx.strokeRect(tee.x,tee.y,tee.w,tee.h); ctx.restore(); }
-  if (cup){
-    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(cup.x,cup.y,cup.r||18,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#ffd700'; ctx.beginPath(); ctx.arc(cup.x,cup.y,(cup.r||18)*0.48,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cup.x+2,cup.y); ctx.lineTo(cup.x+2,cup.y-58); ctx.stroke();
-    ctx.fillStyle='#e63946'; ctx.beginPath(); ctx.moveTo(cup.x+2,cup.y-58); ctx.lineTo(cup.x+32,cup.y-49); ctx.lineTo(cup.x+2,cup.y-40); ctx.closePath(); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.fillText(String(golfDisplayId(h)),cup.x+7,cup.y-45);
-  }
   if (['aim','charging'].includes(GOLF.state)){
     const p=GOLF.state==='charging'?GOLF.charge.power:(GOLF.aim.active?GOLF.aim.power:0.28);
     const len=70+p*190, a=GOLF.aim.active?GOLF.aim.angle:GOLF.aim.angle;
@@ -4240,30 +4348,17 @@ function drawGolf(){
     ctx.beginPath(); ctx.moveTo(GOLF.ball.x,GOLF.ball.y); ctx.lineTo(GOLF.ball.x+Math.cos(a)*len,GOLF.ball.y+Math.sin(a)*len); ctx.stroke();
     ctx.setLineDash([]);
   }
-  ctx.fillStyle='#f8f8f8'; ctx.beginPath(); ctx.arc(GOLF.ball.x,GOLF.ball.y,GOLF.ball.r,0,Math.PI*2); ctx.fill();
-  ctx.strokeStyle='#222'; ctx.lineWidth=1.5; ctx.stroke();
-  ctx.save(); ctx.globalAlpha=0.22; ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(GOLF.ball.x,GOLF.ball.y,Math.max(18,GOLF.ball.r*1.8),0,Math.PI*2); ctx.fill(); ctx.restore();
-  drawBidenGolf(GOLF.biden.x,GOLF.biden.y); drawGolfClub(GOLF.biden.x,GOLF.biden.y, GOLF.biden.x<cup.x?1:-1);
-  ctx.save(); ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.strokeStyle='#1565c0'; ctx.lineWidth=2;
-  roundRectPath(ctx,GOLF.biden.x-28,GOLF.biden.y-82,56,26,7); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#1565c0'; ctx.font='bold 14px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(`${GOLF.biden.strokes} strokes`,GOLF.biden.x,GOLF.biden.y-69);
-  ctx.textBaseline='alphabetic'; ctx.textAlign='left'; ctx.restore();
-  if (GOLF.biden.speech && now()<GOLF.biden.speech.until){
-    ctx.save(); ctx.font='12px system-ui'; const lines=wrapLines(GOLF.biden.speech.text,24);
-    const w=Math.max(90,Math.max(...lines.map(l=>ctx.measureText(l).width))+16), bh=lines.length*16+10;
-    const bx=clamp(GOLF.biden.x-w/2,b.x+8,b.x+b.w-w-8), by=GOLF.biden.y-125;
-    ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
-    roundRectPath(ctx,bx,by,w,bh,8); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#222'; lines.forEach((l,i)=>ctx.fillText(l,bx+8,by+18+i*16)); ctx.restore();
-  }
-  drawTrumpGolf(GOLF.playerDraw.x,GOLF.playerDraw.y,GOLF.playerDraw);
-  drawGolfClub(GOLF.playerDraw.x,GOLF.playerDraw.y,GOLF.playerDraw.facing);
-  if (GOLF.state==='victory' && GOLF.trophy){
-    drawGolfTrophy(GOLF.playerStand.x,GOLF.trophy.active?GOLF.trophy.y:GOLF.playerStand.y-60,
-      GOLF.trophy.active?Math.sin(GOLF.trophy.swing)*GOLF.trophy.amp:0);
-  }
   ctx.restore();
+  drawGolfCupScreen(cup,golfDisplayId(h));
+  drawGolfBallScreen();
+  drawGolfActorsScreen(cup);
+  drawGolfBidenScoreScreen();
+  drawGolfBidenSpeechScreen();
+  if (GOLF.state==='victory' && GOLF.trophy){
+    const ty=GOLF.trophy.active?GOLF.trophy.y:GOLF.playerStand.y-60;
+    drawGolfAtCoursePoint(GOLF.playerStand.x,ty,()=>drawGolfTrophy(0,0,
+      GOLF.trophy.active?Math.sin(GOLF.trophy.swing)*GOLF.trophy.amp:0));
+  }
   drawGolfHUD();
 }
 function drawGolfHUD(){
