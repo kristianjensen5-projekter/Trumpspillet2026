@@ -2163,7 +2163,8 @@
     const h = (lines.length*lineH + 8*bubbleScale);
     const bx = right? x - w - 18 : x + 18;
     // Raise bubbles more the larger they are, so they don't sag downward
-    let by = y - 46*CFG.SCALE - Math.max(0, (lines.length-1)) * (lineH*0.6);
+    const mobileLift = mobileBubble ? 34*CFG.SCALE : 0;
+    let by = y - 46*CFG.SCALE - mobileLift - Math.max(0, (lines.length-1)) * (lineH*0.6);
     const spacing = 8*CFG.SCALE;
     let tries = 0;
     function overlaps(r1, r2){ return !(r1.x + r1.w < r2.x || r2.x + r2.w < r1.x || r1.y + r1.h < r2.y || r2.y + r2.h < r1.y); }
@@ -5572,8 +5573,23 @@
 
   cvs.addEventListener('pointerdown', e=>{
     if (!canUseMobileTouch()) return;
-    if (choiceOverlay || infoCard || flagOverlay || borderDraw || scene === 'golf') return;
     const p = pointerToWorld(e);
+    if (choiceOverlay) {
+      if (handleChoiceOverlayTap(p.screenX, p.screenY)) {
+        MOBILE.suppressClickUntil = nowMs() + 250;
+      }
+      e.preventDefault();
+      return;
+    }
+    if (infoCard || flagOverlay || borderDraw || scene === 'golf') return;
+
+    if (MOBILE.activePointerId !== null && MOBILE.activePointerId !== e.pointerId) {
+      doJump();
+      MOBILE.suppressClickUntil = nowMs() + 250;
+      e.preventDefault();
+      return;
+    }
+
     MOBILE.activePointerId = e.pointerId;
     MOBILE.downX = p.screenX;
     MOBILE.downY = p.screenY;
@@ -5967,6 +5983,81 @@
     choiceOverlay = { text, onKey };
   }
   function closeChoice(){ choiceOverlay = null; }
+  function getChoiceOverlayLayout(){
+    if (!choiceOverlay) return null;
+    const lines = choiceOverlay.text.split('\n');
+    const mobileChoice = !!(MOBILE && MOBILE.enabled);
+    if (!mobileChoice) return { mobileChoice, lines, optionRects: [] };
+
+    const titleLines = [];
+    const options = [];
+    lines.forEach(line => {
+      const match = String(line).match(/^(\d)\)\s*(.*)$/);
+      if (match) options.push({ key: match[1], label: match[2] });
+      else if (String(line).trim()) titleLines.push(line);
+    });
+
+    const cardW = Math.min(W - 28, 520*CFG.SCALE);
+    const optionH = Math.max(44, 46*CFG.SCALE);
+    const gap = 8*CFG.SCALE;
+    const pad = 14*CFG.SCALE;
+    const titleH = titleLines.length ? titleLines.length * 22*CFG.SCALE + 10*CFG.SCALE : 0;
+    const cardH = Math.min(H - 28, pad*2 + titleH + options.length*optionH + Math.max(0, options.length-1)*gap);
+    const cardX = (W - cardW) / 2;
+    const cardY = (H - cardH) / 2;
+    let y = cardY + pad + titleH;
+    const optionRects = options.map(option => {
+      const rect = { key: option.key, label: option.label, x: cardX + pad, y, w: cardW - pad*2, h: optionH };
+      y += optionH + gap;
+      return rect;
+    });
+    return { mobileChoice, lines, titleLines, cardX, cardY, cardW, cardH, optionRects };
+  }
+  function handleChoiceOverlayTap(screenX, screenY){
+    const layout = getChoiceOverlayLayout();
+    if (!layout || !layout.mobileChoice) return false;
+    const hit = layout.optionRects.find(r => screenX >= r.x && screenX <= r.x+r.w && screenY >= r.y && screenY <= r.y+r.h);
+    if (!hit) return false;
+    choiceOverlay.onKey(hit.key);
+    return true;
+  }
+  function drawChoiceOverlay(){
+    const layout = getChoiceOverlayLayout();
+    if (!layout) return;
+    ctx.fillStyle='rgba(0,0,0,.55)';
+    ctx.fillRect(0,0,W,H);
+    if (!layout.mobileChoice){
+      ctx.fillStyle='#fff'; ctx.font=`bold ${18*CFG.SCALE}px system-ui`; ctx.textAlign='center';
+      layout.lines.forEach((ln,i)=>ctx.fillText(ln, W/2, H/2 + (i-1)*24*CFG.SCALE));
+      ctx.textAlign='left';
+      return;
+    }
+
+    ctx.fillStyle='rgba(16,18,22,.92)';
+    roundRect(layout.cardX, layout.cardY, layout.cardW, layout.cardH, 14*CFG.SCALE);
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.22)';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+
+    ctx.textAlign='center';
+    ctx.fillStyle='#fff';
+    ctx.font=`800 ${18*CFG.SCALE}px system-ui`;
+    layout.titleLines.forEach((line, i) => {
+      ctx.fillText(line, W/2, layout.cardY + 24*CFG.SCALE + i*22*CFG.SCALE);
+    });
+
+    ctx.textAlign='left';
+    ctx.font=`700 ${15*CFG.SCALE}px system-ui`;
+    layout.optionRects.forEach(rect => {
+      ctx.fillStyle='rgba(255,255,255,.12)';
+      roundRect(rect.x, rect.y, rect.w, rect.h, 10*CFG.SCALE);
+      ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.fillText(`${rect.key}) ${rect.label}`, rect.x + 14*CFG.SCALE, rect.y + rect.h*0.62);
+    });
+    ctx.textAlign='left';
+  }
 
   // ---------- Info card overlay ----------
   let infoCard = null; // {text, onKey} - styled like flag overlay card
@@ -8922,11 +9013,7 @@
 
     // choice overlay
     if (choiceOverlay){
-      ctx.fillStyle='rgba(0,0,0,.55)'; ctx.fillRect(0,0,W,H);
-      const lines = choiceOverlay.text.split('\n');
-      ctx.fillStyle='#fff'; ctx.font=`bold ${18*CFG.SCALE}px system-ui`; ctx.textAlign='center';
-      lines.forEach((ln,i)=>ctx.fillText(ln, W/2, H/2 + (i-1)*24*CFG.SCALE));
-      ctx.textAlign='left';
+      drawChoiceOverlay();
     }
 
     // info card overlay

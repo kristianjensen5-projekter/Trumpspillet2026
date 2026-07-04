@@ -15,7 +15,22 @@
       "Bash(npx wrangler whoami*)",
       "Bash(wrangler whoami*)",
       "Bash(wrangler --version)",
-      "Bash(npm root *)"
+      "Bash(npm root *)",
+      "Bash(python3 -c ' *)",
+      "Bash(node v2oval.mjs)",
+      "Bash(node v2ovalm.mjs)",
+      "Bash(git commit -q -m 'Add Oval Office scene to v2 \\(package B redesign\\) *)",
+      "Bash(git commit -q -m 'Add UX review of Kremlin, Epstein and Mar-a-Lago scenes *)",
+      "Bash(git commit -q -m 'Add game over + continue screen review \\(voting machine gag analysis\\) *)",
+      "Bash(git commit -q -m 'Add build plan for completing v2 \\(Fable builds all scenes\\) *)",
+      "Bash(node v2hud4.mjs)",
+      "Bash(sed -i '' 's|for \\(let i=0;i<120;i++\\){\\\\n  s = await snap\\(\\);\\\\n  if \\(s.kremlin.wagner\\) break;\\\\n  await page.keyboard.press\\(.e.\\);\\\\n  await page.waitForTimeout\\(150\\);\\\\n}|X|' v2kesc.mjs)",
+      "Bash(python3 -)",
+      "Bash(node v2kesc.mjs)",
+      "Bash(git commit -q -m 'Step 5: Kremlin scene \\(package B\\) *)",
+      "Bash(curl -s -o /dev/null -w \"live: HTTP %{http_code}\\\\n\" \"https://trumpspillet2026.pages.dev/trumpspillet-v2\")",
+      "Bash(node v2ep.mjs)",
+      "Bash(git commit -q -m 'Step 6: Epstein Files scene \\(package B\\) *)"
     ]
   }
 }

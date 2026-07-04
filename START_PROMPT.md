@@ -50,6 +50,10 @@ Implementeret:
 - Talebobler i Greenland er gjort større og mere læsbare i mobilmode.
 - Hold venstre/højre side af canvas = Trump går venstre/højre.
 - Kort tap = interaktion.
+- Hold retning med én finger + tap med anden finger = hop uden at slippe bevægelsen.
+- Choice overlays har mobil-layout med tappelige nummer-valg, så helikopter/shop-lignende menuer kan bruges uden tastatur.
+- Talebobler i Greenland har ekstra mobile-only løft, så teksten ikke ligger for lavt i billedet.
+- `mobile-layout-editor.html` er oprettet som første prototype til at teste mobilramme, zoom, offset, flytbare UI-guidebokse og JSON-export. Editorens default-kilde er nu originalspillet `index.html?layoutEditor=1`; `Trumpspillet2026Mobil.html?mobileTest=1` kan loades separat til sammenligning.
 - Mobil-only “intent tap” i Greenland:
   - tap nær butik → auto-walk + åbn butik
   - tap nær Lars/Mette → auto-walk + tal
@@ -59,7 +63,6 @@ Implementeret:
 
 Kendte mobil-observationer / næste punkter:
 - Mobilfilen er ældre end desktop: Greenland bruger stadig Mette-figur i stedet for Lars Løkke.
-- Hop mangler i det nye touch-flow. Mulig løsning: swipe-up = `doJump()`.
 - Butikken kan åbnes, men shopknapper er ikke touch-optimeret endnu.
 - Kamera/beskæring er tæt på korrekt, men Trump kan muligvis zoomes lidt større.
 - To-fils-strategi giver vedligeholdelsesrisiko; overvej senere fælles data for dialoger/assets/scene config.

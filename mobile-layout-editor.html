@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trumpspillet Mobil Layout Editor</title>
+  <style>
+    :root{
+      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg:#151719;
+      --panel:#202327;
+      --panel-2:#2a2e34;
+      --line:rgba(255,255,255,.13);
+      --text:#f5f5f2;
+      --muted:#b8b8b0;
+      --accent:#f2c94c;
+      --blue:#3da5ff;
+      --danger:#ff5b5b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
+    body{display:grid;grid-template-columns:minmax(320px,380px) 1fr;min-height:100vh;overflow:hidden}
+    button,input,select,textarea{font:inherit}
+    button{
+      appearance:none;border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+      border-radius:7px;padding:9px 11px;font-weight:700;cursor:pointer
+    }
+    button:hover{border-color:rgba(255,255,255,.28)}
+    button.primary{background:var(--blue);border-color:var(--blue);color:#061018}
+    button.small{padding:6px 8px;font-size:13px}
+    label{display:block;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+    input[type="range"]{width:100%}
+    input[type="number"], select, textarea{
+      width:100%;border:1px solid var(--line);border-radius:7px;background:#111315;color:var(--text);
+      padding:8px 10px
+    }
+    textarea{min-height:170px;resize:vertical;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:12px;line-height:1.45}
+    .sidebar{height:100vh;overflow:auto;border-right:1px solid var(--line);background:#191b1f;padding:16px}
+    .title{font-size:20px;font-weight:900;margin:0 0 4px}
+    .subtitle{color:var(--muted);font-size:13px;line-height:1.35;margin:0 0 16px}
+    .section{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
+    .row{display:grid;grid-template-columns:1fr 84px;gap:8px;align-items:center;margin:10px 0}
+    .button-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .scene-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .scene-btn.active{background:var(--accent);border-color:var(--accent);color:#17130a}
+    .stage-shell{height:100vh;display:grid;grid-template-rows:auto 1fr;background:#0f1012}
+    .topbar{
+      min-height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+      padding:9px 14px;background:#181a1d
+    }
+    .topbar strong{font-size:14px}
+    .topbar span{color:var(--muted);font-size:12px}
+    .workspace{position:relative;overflow:auto;padding:28px;display:grid;place-items:center}
+    .phone{
+      position:relative;width:390px;height:844px;border-radius:34px;padding:16px;background:#08090a;
+      box-shadow:0 24px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08)
+    }
+    .phone.landscape{width:844px;height:390px}
+    .screen{
+      position:relative;width:100%;height:100%;border-radius:24px;overflow:hidden;background:#000;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+    }
+    .game-transform{
+      position:absolute;left:50%;top:50%;width:100%;height:100%;
+      transform-origin:center center
+    }
+    iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+    .safe-area{
+      position:absolute;inset:12px;border:1px dashed rgba(255,255,255,.28);border-radius:18px;
+      pointer-events:none;display:none
+    }
+    .show-safe .safe-area{display:block}
+    .hide-guides .overlay-item{display:none}
+    .overlay-item{
+      position:absolute;left:20px;top:20px;min-width:88px;min-height:36px;border:1.5px solid var(--accent);
+      background:rgba(242,201,76,.14);color:#fff;border-radius:7px;padding:8px 10px;
+      display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:12px;
+      cursor:grab;user-select:none;touch-action:none;text-shadow:0 1px 2px #000
+    }
+    .overlay-item:active{cursor:grabbing}
+    .overlay-item.active{border-color:var(--blue);background:rgba(61,165,255,.16)}
+    .overlay-item.choice{min-width:250px;min-height:190px;border-color:#fff;background:rgba(255,255,255,.12)}
+    .overlay-item.bubbles{min-width:220px;min-height:72px;border-color:#c58cff;background:rgba(197,140,255,.15)}
+    .hint{color:var(--muted);font-size:12px;line-height:1.35}
+    .status{color:var(--muted);font-size:12px;min-height:18px;margin-top:8px}
+    .toggle-row{display:flex;align-items:center;gap:9px;margin-top:10px;color:var(--muted);font-size:13px}
+    .toggle-row input{width:auto}
+    @media (max-width: 980px){
+      body{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto}
+      .sidebar{height:auto;max-height:none;border-right:0;border-bottom:1px solid var(--line)}
+      .stage-shell{height:72vh}
+      .workspace{padding:16px}
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h1 class="title">Mobil-layout editor</h1>
+    <p class="subtitle">Find zoom, beskæring og placering af UI-lag. Når det ser rigtigt ud, kopierer du JSON-værdierne.</p>
+
+    <div class="section">
+      <label for="gameFile">Spilfil</label>
+      <input id="gameFile" type="file" accept=".html,text/html">
+      <div class="button-grid" style="margin-top:8px">
+        <button id="loadDefault" type="button">Load original</button>
+        <button id="loadMobile" type="button">Load mobilfil</button>
+        <button id="reloadFrame" type="button">Reload</button>
+      </div>
+      <p class="hint">Default loader `index.html`, så mobilrammen ligger ovenpå originalspillet. Mobilfilen kan bruges til sammenligning.</p>
+    </div>
+
+    <div class="section">
+      <label>Bane</label>
+      <div class="scene-grid" id="sceneButtons">
+        <button class="scene-btn active" type="button" data-scene="greenland">Grønland</button>
+        <button class="scene-btn" type="button" data-scene="oval">Oval</button>
+        <button class="scene-btn" type="button" data-scene="kremlin">Kremlin</button>
+        <button class="scene-btn" type="button" data-scene="epstein">Epstein</button>
+        <button class="scene-btn" type="button" data-scene="golf">Golf</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>Ramme</label>
+      <div class="button-grid">
+        <button id="portraitBtn" type="button">Portræt</button>
+        <button id="landscapeBtn" type="button">Landscape</button>
+      </div>
+      <div class="toggle-row">
+        <input id="safeToggle" type="checkbox">
+        <span>Vis safe area</span>
+      </div>
+      <div class="toggle-row">
+        <input id="guidesToggle" type="checkbox" checked>
+        <span>Vis guidebokse</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>Spiludsnit</label>
+      <div class="row">
+        <input id="zoomRange" type="range" min="0.7" max="2.2" step="0.01">
+        <input id="zoomValue" type="number" min="0.7" max="2.2" step="0.01">
+      </div>
+      <div class="row">
+        <input id="offsetXRange" type="range" min="-320" max="320" step="1">
+        <input id="offsetXValue" type="number" min="-320" max="320" step="1">
+      </div>
+      <div class="row">
+        <input id="offsetYRange" type="range" min="-320" max="320" step="1">
+        <input id="offsetYValue" type="number" min="-320" max="320" step="1">
+      </div>
+      <div class="button-grid">
+        <button class="small" id="zoomOut" type="button">Zoom -</button>
+        <button class="small" id="zoomIn" type="button">Zoom +</button>
+        <button class="small" id="nudgeUp" type="button">Op</button>
+        <button class="small" id="nudgeDown" type="button">Ned</button>
+        <button class="small" id="nudgeLeft" type="button">Venstre</button>
+        <button class="small" id="nudgeRight" type="button">Højre</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>Lag</label>
+      <div class="button-grid">
+        <button class="small" type="button" data-layer="hud">HUD</button>
+        <button class="small" type="button" data-layer="inventory">Inventory</button>
+        <button class="small" type="button" data-layer="choice">Choice-menu</button>
+        <button class="small" type="button" data-layer="bubbles">Talebobler</button>
+      </div>
+      <p class="hint">Træk lagene rundt direkte ovenpå mobilrammen. De er guidebokse, ikke spillets rigtige UI endnu.</p>
+    </div>
+
+    <div class="section">
+      <label for="jsonOut">Export</label>
+      <textarea id="jsonOut" spellcheck="false"></textarea>
+      <div class="button-grid" style="margin-top:8px">
+        <button class="primary" id="copyJson" type="button">Copy JSON</button>
+        <button id="resetScene" type="button">Reset bane</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+  </aside>
+
+  <main class="stage-shell">
+    <div class="topbar">
+      <div>
+        <strong id="activeTitle">Grønland</strong>
+        <span id="activeMeta"> zoom 1.00, x 0, y 0</span>
+      </div>
+      <span>Drag UI-lag direkte i rammen</span>
+    </div>
+    <div class="workspace">
+      <div class="phone" id="phone">
+        <div class="screen" id="screen">
+          <div class="game-transform" id="gameTransform">
+            <iframe id="gameFrame" title="Trumpspillet mobil preview"></iframe>
+          </div>
+          <div class="safe-area"></div>
+          <div class="overlay-item active" data-layer="hud">HUD</div>
+          <div class="overlay-item" data-layer="inventory">Inventory</div>
+          <div class="overlay-item choice" data-layer="choice">Choice-menu</div>
+          <div class="overlay-item bubbles" data-layer="bubbles">Talebobler</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const DEFAULT_GAME_URL = 'index.html?layoutEditor=1';
+    const MOBILE_GAME_URL = 'Trumpspillet2026Mobil.html?mobileTest=1';
+    const SCENE_NAMES = {
+      greenland: 'Grønland',
+      oval: 'Oval Office',
+      kremlin: 'Kremlin',
+      epstein: 'Epstein',
+      golf: 'Golf'
+    };
+    const DEFAULT_SCENE = {
+      zoom: 1,
+      offsetX: 0,
+      offsetY: 0,
+      frame: 'portrait',
+      layers: {
+        hud: { x: 14, y: 14, w: 92, h: 38 },
+        inventory: { x: 14, y: 62, w: 120, h: 46 },
+        choice: { x: 56, y: 280, w: 278, h: 200 },
+        bubbles: { x: 72, y: 172, w: 230, h: 74 }
+      }
+    };
+    const state = {
+      activeScene: 'greenland',
+      gameUrl: DEFAULT_GAME_URL,
+      scenes: {}
+    };
+    for (const key of Object.keys(SCENE_NAMES)) state.scenes[key] = clone(DEFAULT_SCENE);
+
+    const els = {
+      gameFile: document.getElementById('gameFile'),
+      loadDefault: document.getElementById('loadDefault'),
+      loadMobile: document.getElementById('loadMobile'),
+      reloadFrame: document.getElementById('reloadFrame'),
+      frame: document.getElementById('gameFrame'),
+      phone: document.getElementById('phone'),
+      screen: document.getElementById('screen'),
+      transform: document.getElementById('gameTransform'),
+      sceneButtons: document.getElementById('sceneButtons'),
+      zoomRange: document.getElementById('zoomRange'),
+      zoomValue: document.getElementById('zoomValue'),
+      offsetXRange: document.getElementById('offsetXRange'),
+      offsetXValue: document.getElementById('offsetXValue'),
+      offsetYRange: document.getElementById('offsetYRange'),
+      offsetYValue: document.getElementById('offsetYValue'),
+      activeTitle: document.getElementById('activeTitle'),
+      activeMeta: document.getElementById('activeMeta'),
+      jsonOut: document.getElementById('jsonOut'),
+      copyJson: document.getElementById('copyJson'),
+      resetScene: document.getElementById('resetScene'),
+      status: document.getElementById('status'),
+      safeToggle: document.getElementById('safeToggle'),
+      guidesToggle: document.getElementById('guidesToggle')
+    };
+
+    function clone(value){
+      return JSON.parse(JSON.stringify(value));
+    }
+    function activeConfig(){
+      return state.scenes[state.activeScene];
+    }
+    function setStatus(text){
+      els.status.textContent = text;
+      if (text) setTimeout(() => { if (els.status.textContent === text) els.status.textContent = ''; }, 1800);
+    }
+    function loadFrame(url){
+      state.gameUrl = url;
+      els.frame.src = url;
+      setStatus('Spilfil loaded');
+    }
+    function sceneExport(){
+      return {
+        activeScene: state.activeScene,
+        source: state.gameUrl,
+        scenes: state.scenes
+      };
+    }
+    function updateJson(){
+      els.jsonOut.value = JSON.stringify(sceneExport(), null, 2);
+    }
+    function syncInputs(){
+      const cfg = activeConfig();
+      els.zoomRange.value = cfg.zoom;
+      els.zoomValue.value = cfg.zoom;
+      els.offsetXRange.value = cfg.offsetX;
+      els.offsetXValue.value = cfg.offsetX;
+      els.offsetYRange.value = cfg.offsetY;
+      els.offsetYValue.value = cfg.offsetY;
+    }
+    function applyLayout(){
+      const cfg = activeConfig();
+      els.phone.classList.toggle('landscape', cfg.frame === 'landscape');
+      els.transform.style.transform = `translate(calc(-50% + ${cfg.offsetX}px), calc(-50% + ${cfg.offsetY}px)) scale(${cfg.zoom})`;
+      document.querySelectorAll('.overlay-item').forEach(item => {
+        const layer = cfg.layers[item.dataset.layer];
+        if (!layer) return;
+        item.style.left = `${layer.x}px`;
+        item.style.top = `${layer.y}px`;
+        item.style.width = `${layer.w}px`;
+        item.style.height = `${layer.h}px`;
+      });
+      els.activeTitle.textContent = SCENE_NAMES[state.activeScene];
+      els.activeMeta.textContent = ` zoom ${cfg.zoom.toFixed(2)}, x ${cfg.offsetX}, y ${cfg.offsetY}`;
+      document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scene === state.activeScene);
+      });
+      syncInputs();
+      updateJson();
+    }
+    function setScene(scene){
+      state.activeScene = scene;
+      applyLayout();
+    }
+    function setFrame(frame){
+      activeConfig().frame = frame;
+      applyLayout();
+    }
+    function setNumber(key, value){
+      const cfg = activeConfig();
+      cfg[key] = Number(value);
+      applyLayout();
+    }
+    function nudge(dx, dy){
+      const cfg = activeConfig();
+      cfg.offsetX += dx;
+      cfg.offsetY += dy;
+      applyLayout();
+    }
+    function resizeLayerToElement(item){
+      const cfg = activeConfig();
+      const layer = cfg.layers[item.dataset.layer];
+      const rect = item.getBoundingClientRect();
+      const screenRect = els.screen.getBoundingClientRect();
+      layer.x = Math.round(rect.left - screenRect.left);
+      layer.y = Math.round(rect.top - screenRect.top);
+      layer.w = Math.round(rect.width);
+      layer.h = Math.round(rect.height);
+      updateJson();
+    }
+
+    els.loadDefault.addEventListener('click', () => loadFrame(DEFAULT_GAME_URL));
+    els.loadMobile.addEventListener('click', () => loadFrame(MOBILE_GAME_URL));
+    els.reloadFrame.addEventListener('click', () => loadFrame(state.gameUrl));
+    els.gameFile.addEventListener('change', event => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      loadFrame(URL.createObjectURL(file));
+    });
+    els.sceneButtons.addEventListener('click', event => {
+      const btn = event.target.closest('[data-scene]');
+      if (btn) setScene(btn.dataset.scene);
+    });
+    document.getElementById('portraitBtn').addEventListener('click', () => setFrame('portrait'));
+    document.getElementById('landscapeBtn').addEventListener('click', () => setFrame('landscape'));
+    els.safeToggle.addEventListener('change', () => {
+      els.screen.classList.toggle('show-safe', els.safeToggle.checked);
+    });
+    els.guidesToggle.addEventListener('change', () => {
+      els.screen.classList.toggle('hide-guides', !els.guidesToggle.checked);
+    });
+    [['zoomRange','zoom'],['zoomValue','zoom'],['offsetXRange','offsetX'],['offsetXValue','offsetX'],['offsetYRange','offsetY'],['offsetYValue','offsetY']].forEach(([id, key]) => {
+      document.getElementById(id).addEventListener('input', event => setNumber(key, event.target.value));
+    });
+    document.getElementById('zoomIn').addEventListener('click', () => setNumber('zoom', Math.min(2.2, activeConfig().zoom + 0.05).toFixed(2)));
+    document.getElementById('zoomOut').addEventListener('click', () => setNumber('zoom', Math.max(0.7, activeConfig().zoom - 0.05).toFixed(2)));
+    document.getElementById('nudgeUp').addEventListener('click', () => nudge(0, -8));
+    document.getElementById('nudgeDown').addEventListener('click', () => nudge(0, 8));
+    document.getElementById('nudgeLeft').addEventListener('click', () => nudge(-8, 0));
+    document.getElementById('nudgeRight').addEventListener('click', () => nudge(8, 0));
+    document.querySelectorAll('[data-layer].small').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = document.querySelector(`.overlay-item[data-layer="${btn.dataset.layer}"]`);
+        if (!item) return;
+        document.querySelectorAll('.overlay-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+    els.copyJson.addEventListener('click', async () => {
+      updateJson();
+      try {
+        await navigator.clipboard.writeText(els.jsonOut.value);
+        setStatus('JSON kopieret');
+      } catch (_) {
+        els.jsonOut.select();
+        document.execCommand('copy');
+        setStatus('JSON markeret/kopieret');
+      }
+    });
+    els.resetScene.addEventListener('click', () => {
+      state.scenes[state.activeScene] = clone(DEFAULT_SCENE);
+      applyLayout();
+    });
+
+    document.querySelectorAll('.overlay-item').forEach(item => {
+      item.addEventListener('pointerdown', event => {
+        document.querySelectorAll('.overlay-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const cfg = activeConfig();
+        const layer = cfg.layers[item.dataset.layer];
+        const initial = { x: layer.x, y: layer.y };
+        item.setPointerCapture(event.pointerId);
+        function move(moveEvent){
+          layer.x = Math.round(initial.x + moveEvent.clientX - startX);
+          layer.y = Math.round(initial.y + moveEvent.clientY - startY);
+          applyLayout();
+        }
+        function up(){
+          item.removeEventListener('pointermove', move);
+          item.removeEventListener('pointerup', up);
+          item.removeEventListener('pointercancel', up);
+          resizeLayerToElement(item);
+        }
+        item.addEventListener('pointermove', move);
+        item.addEventListener('pointerup', up);
+        item.addEventListener('pointercancel', up);
+        event.preventDefault();
+      });
+    });
+
+    loadFrame(DEFAULT_GAME_URL);
+    applyLayout();
+  </script>
+</body>
+</html>
