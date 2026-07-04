@@ -92,6 +92,23 @@ Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
 - ✅ Playwright-verificeret lokalt på desktop 1280×720 og iPhone 390×844:
   heli → golf → tutorial → hole-banner → aim → første putt, 0 console/page errors
 
+### Mar-a-Lago mobil-polish — opdateret 2026-07-04
+
+- ✅ Banerne roterer nu til højkant på touch/portrait uden at rotere Trump,
+  Biden, bold, flag, labels eller talebobler
+- ✅ Biden-taleboblen er gjort mobil-læsbar uden at dominere banen; hans
+  stroke-label skjules mens kommentaren vises, så UI ikke overlapper
+- ✅ Det store mobile hole-start-banner er fjernet/auto-kortet, fordi det
+  dækkede Trump og tee-området
+- ✅ Golf-viewet bruger nu låst layout pr. hul + touch `preventDefault`, så
+  banen ikke små-zoomer eller rykker under drag/slag på mobil
+- ✅ Boldens mobile touch-target er gjort større og synligt med en subtil
+  pulserende ring
+- ✅ Hul 2-vægge er gjort mere robuste med substep-collision; lokal simulation
+  med 72 fuldkraftsvinkler endte med 0 bolde uden for fairway
+- ✅ Playwright-verificeret lokalt på iPhone 390×844: aim-state, touch-ring,
+  drag fra udvidet hitområde → slag registreret, Biden-kommentar, 0 errors
+
 ## Musik v2 — bygget 2026-07-04
 
 - ✅ Originale MP3-numre i `Musik til trumpspillet/` er koblet på som
