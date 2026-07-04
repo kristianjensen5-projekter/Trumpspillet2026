@@ -95,13 +95,22 @@ på `SCENES`/input/render-loop. Codex implementerede og verificerede pakken
 - Hole 19-easter egg (hundeben) bevares
 
 ### Trin 8: Polish + paritet
-- Musik-engine porteres (5 chiptune-tracks, disabled by default, M-mute)
-- Gennemgang mod GAME_SPEC §2: tweets per scene, mønt-bonusser på tværs,
-  medalje-pills, non-violent mode
+- ✅ Musik-engine: original MP3-underlægning er koblet på sceneskift med
+  Web Audio GainNode-volume og `M`-mute. Mapping 2026-07-04: Greenland_1 →
+  Greenland, Greenland_2.2 → Oval, Greenland_3 → Kremlin, Greenland_4 →
+  Epstein + Golf (Golf deler spor indtil et femte nummer findes).
+- ✅ GAME_SPEC §2-paritet: scene-specifikke tweets, Kremlin/Putin-trust
+  flavor, mønt-bonusser på tværs, medalje-pills og non-violent bear-flow
+  er auditeret/tilrettet.
+- ✅ Samlet automatiseret regression kørt 2026-07-04: desktop + mobil-
+  viewport, scene-routing, musik, Epstein/Golf entrypoints, voting-machine
+  continue, tweets/Putin-trust og non-violent bear-flow.
+- Mangler stadig: fysisk iPhone-test før `v2 → index.html`.
 - **Bevidst udeladt fra v1** (beslutninger, kan genåbnes): borderDraw
   (forældreløs), relations-flavor-tekster (delvist med), legacy-endings
   fra determineEnding (erstattet af medaljer + tableauer), TTS-helper
-- Fuld regressionssuite + Kristians totale gennemspilning på iPhone
+- ✅ Automatiseret regressionssuite kørt lokalt; mangler Kristians totale
+  gennemspilning på fysisk iPhone
 
 ### Trin 9: Skiftet
 - `trumpspillet-v2.html` → `index.html`; gammel version arkiveres som

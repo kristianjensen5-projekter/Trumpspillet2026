@@ -413,7 +413,7 @@ function beginScreen(){ ctx.setTransform(DPR,0,0,DPR,0,0); }
 function screenToWorld(sx,sy){ return { x: sx/CAM.scale + CAM.x, y: sy/CAM.scale }; }
 
 /* ================================================================
-   2. AUDIO — SFX + music engine (music disabled by default, as in v1)
+   2. AUDIO — SFX + scene music
    iOS rule: volume ONLY via GainNodes, never HTMLMediaElement.volume.
    ================================================================ */
 let audioCtx=null, audioReady=false;
@@ -447,12 +447,121 @@ const SFX = {
   heartbeat:()=>{ tone(80,.1,'sine',.4); setTimeout(()=>tone(80,.1,'sine',.4),150); },
   punchHit:()=>{ tone(120,.06,'sawtooth',.3); setTimeout(()=>tone(60,.04,'square',.25),30); }
 };
-/* Music engine placeholder — chiptune tracks live in v1 and will be ported
-   in a later build step. Disabled by default (matches v1 decision). */
+const MUSIC_TRACKS = {
+  greenland: { key:'greenland-1', src:'Musik til trumpspillet/Greenland_1.mp3', name:'Greenland_1' },
+  oval:      { key:'greenland-2', src:'Musik til trumpspillet/Greenland_2.2.mp3', name:'Greenland_2.2' },
+  kremlin:   { key:'greenland-3', src:'Musik til trumpspillet/Greenland_3.mp3', name:'Greenland_3' },
+  epstein:   { key:'greenland-4', src:'Musik til trumpspillet/Greenland_4.mp3', name:'Greenland_4' },
+  golf:      { key:'greenland-4', src:'Musik til trumpspillet/Greenland_4.mp3', name:'Greenland_4' }
+};
 const Music = {
-  disabled:true, muted:(localStorage.getItem('trumpv2-music-muted')==='1'),
-  start(){}, stop(){},
-  setMuted(m){ this.muted=!!m; try{localStorage.setItem('trumpv2-music-muted', m?'1':'0');}catch(_){} }
+  disabled:false,
+  muted:(localStorage.getItem('trumpv2-music-muted')==='1'),
+  volume:0.42,
+  masterGain:null,
+  tracks:{},
+  current:null,
+  pendingScene:null,
+  retryTimer:null,
+  _init(){
+    if (this.disabled) return false;
+    ensureAudio();
+    if (!audioCtx || audioCtx.state!=='running') return false;
+    if (!this.masterGain){
+      this.masterGain=audioCtx.createGain();
+      this.masterGain.gain.value=this.muted?0:this.volume;
+      this.masterGain.connect(audioCtx.destination);
+    }
+    return true;
+  },
+  _retrySoon(){
+    if (this.retryTimer) return;
+    this.retryTimer=setTimeout(()=>{
+      this.retryTimer=null;
+      if (this.pendingScene) this.startForScene(this.pendingScene);
+    }, 250);
+  },
+  _getTrack(def){
+    if (this.tracks[def.key]) return this.tracks[def.key];
+    const el=new Audio(def.src);
+    el.loop=true;
+    el.preload='auto';
+    el.playsInline=true;
+    const source=audioCtx.createMediaElementSource(el);
+    const gain=audioCtx.createGain();
+    gain.gain.value=0;
+    source.connect(gain);
+    gain.connect(this.masterGain);
+    this.tracks[def.key]={...def, el, source, gain};
+    return this.tracks[def.key];
+  },
+  _fadeIn(track){
+    if (!audioCtx || !track) return;
+    const t=audioCtx.currentTime;
+    const g=track.gain.gain;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value, t);
+    g.linearRampToValueAtTime(1, t+0.35);
+  },
+  _fadeOut(track){
+    if (!track) return;
+    if (!audioCtx){
+      try{ track.el.pause(); }catch(_){}
+      return;
+    }
+    const t=audioCtx.currentTime;
+    const g=track.gain.gain;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value, t);
+    g.linearRampToValueAtTime(0, t+0.35);
+    setTimeout(()=>{
+      if (this.current!==track){
+        try{ track.el.pause(); }catch(_){}
+      }
+    }, 450);
+  },
+  startForScene(sceneName){
+    if (this.disabled) return;
+    const def=MUSIC_TRACKS[sceneName];
+    if (!def){ this.stop(); return; }
+    this.pendingScene=sceneName;
+    if (!this._init()){ this._retrySoon(); return; }
+    const track=this._getTrack(def);
+    if (this.current && this.current.key===track.key){
+      this.pendingScene=null;
+      if (this.current.el.paused){
+        const p=this.current.el.play();
+        if (p && p.catch) p.catch(()=>{ this.pendingScene=sceneName; this._retrySoon(); });
+      }
+      this._fadeIn(this.current);
+      return;
+    }
+    const prev=this.current;
+    this.current=track;
+    this.pendingScene=null;
+    if (prev) this._fadeOut(prev);
+    const p=track.el.play();
+    if (p && p.catch) p.catch(()=>{ this.pendingScene=sceneName; this._retrySoon(); });
+    this._fadeIn(track);
+  },
+  stop(){
+    if (this.retryTimer){ clearTimeout(this.retryTimer); this.retryTimer=null; }
+    this.pendingScene=null;
+    const prev=this.current;
+    this.current=null;
+    if (prev) this._fadeOut(prev);
+  },
+  setMuted(m){
+    this.muted=!!m;
+    try{ localStorage.setItem('trumpv2-music-muted', this.muted?'1':'0'); }catch(_){}
+    if (this.masterGain && audioCtx){
+      const t=audioCtx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(t);
+      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, t);
+      this.masterGain.gain.linearRampToValueAtTime(this.muted?0:this.volume, t+0.12);
+    }
+    if (!this.muted && typeof scene!=='undefined' && scene!==SCENE.INTRO) this.startForScene(scene);
+  }
 };
 
 /* ================================================================
@@ -1924,7 +2033,7 @@ function interactGreenland(){
   else if (obj.type==='bear'){
     if (!GL.bear.alive){ say(player,'...it is gone.',900); return; }
     if (GS.nonViolent){
-      say(player, L.bearPeace, 1400); say(GL.bear,'Brumm?',1000);
+      pacifyBear();
     } else if (GL.bear.angry){
       // Poking an already-angry bear: no "healing" (v1 had a `hp||4` bug here
       // that reset hp and silently disarmed the chase). Just consequences.
@@ -2088,6 +2197,7 @@ function updateBear(dt){
 function bearAttack(dxT){
   const bear=GL.bear;
   if ((bear.biteCount||0)>=3 || GO.pending || GS.over) return;
+  if (GS.nonViolent){ pacifyBear(); return; }
   bear.biteCount=(bear.biteCount||0)+1;
   const fatal=bear.biteCount>=3;
   say(bear, fatal?'CHOMP! 🦷🦷🦷':'CHOMP! 🦷', 800);
@@ -2097,23 +2207,65 @@ function bearAttack(dxT){
   toast(fatal?'🐻 Fatal bear attack!':`🐻 Bear attack! (${bear.biteCount}/3)`);
   if (fatal) setTimeout(()=>gameOverCause('bear',{delayMs:0}),600);
 }
+function pacifyBear(){
+  const bear=GL.bear;
+  if (!bear || !bear.alive) return;
+  bear.hp=Math.max(bear.hp||0,1);
+  bear.angry=false;
+  bear.chasing=false;
+  bear.biteCount=0;
+  bear.vx=0;
+  say(player, L.bearPeace, 1500);
+  say(bear,'Brumm?',1200);
+  spawnSparks(bear.x,bear.y-24,12);
+  SFX.success();
+}
 let toastMsg=null, toastUntil=0;
 function toast(msg){ toastMsg=msg; toastUntil=now()+1800; }
 
 /* ---- Tweets ---- */
 let tweetCount=0;
+const tweetCounts={ greenland:0, oval:0, kremlin:0, epstein:0, golf:0 };
+const RELATIONSHIPS={ putin:{trust:100}, mette:{respect:50,trust:50,fear:30} };
+function resetTweetState(){
+  tweetCount=0;
+  Object.keys(tweetCounts).forEach(k=>tweetCounts[k]=0);
+  RELATIONSHIPS.putin.trust=100;
+  RELATIONSHIPS.mette.respect=50; RELATIONSHIPS.mette.trust=50; RELATIONSHIPS.mette.fear=30;
+}
 function doTweet(){
   const lines=[];
+  const nextSceneTweetCount=(tweetCounts[scene]||0)+1;
   if (scene===SCENE.GREENLAND){
-    if (GL.state.flagPlanted) lines.push('We planted a small flag. Very legal & very cool.');
+    if (GL.state.mineFlagPlanted || GS.medals.greenland) lines.push('Greenland deal is practically done. Very legal & very cool.');
+    else if (GL.state.glaciersBlown) lines.push('Great day in Greenland. Some ice problems, but tremendous water views.');
     else lines.push('Great day in Greenland. Beautiful ice!');
-  } else lines.push('Working hard!');
+    GL.state.hasTweeted=true;
+  } else if (scene===SCENE.OVAL){
+    const score = OV.d && typeof OV.d.correct==='number' ? ` Approval numbers: ${OV.d.correct}/3 perfect decisions.` : '';
+    lines.push('Working hard in the Oval Office.'+score);
+  } else if (scene===SCENE.KREMLIN){
+    RELATIONSHIPS.putin.trust=clamp(RELATIONSHIPS.putin.trust-18,0,100);
+    if (KR.statues.some(s=>s.collected)) lines.push('Many beautiful Russian statues. People say they were gifts.');
+    else if (KR.handshakeWon) lines.push('Won the strongest handshake in history. Ukraine deal looking fantastic.');
+    else lines.push('Meeting Putin. Very strong handshake diplomacy.');
+    if (nextSceneTweetCount>3 && RELATIONSHIPS.putin.trust<50){
+      say(KR.putin,'Perhaps less... social media?',2200);
+    }
+  } else if (scene===SCENE.EPSTEIN){
+    lines.push('The files are totally clean. I checked very carefully with a Sharpie.');
+  } else if (scene===SCENE.GOLF){
+    lines.push('Best golfer ever. Sleepy Joe cannot compete on a fair course.');
+  } else {
+    lines.push('Working hard!');
+  }
   if (hasItem('maga')) lines.push('Wearing my favorite hat. Crowds go wild!');
   else if (hasItem('shoes')) lines.push('The gold shoes are on. Faster than ever!');
   lines.push(DATA.TWEETS.PRESETS[tweetCount%DATA.TWEETS.PRESETS.length]);
-  const text=lines.slice(0,2).join(' ');
+  const text=lines.join(' ');
   say(player, 'Tweet: "'+text+'"', 2400);
-  tweetCount++; GL.state.hasTweeted=true;
+  tweetCounts[scene]=nextSceneTweetCount;
+  tweetCount++;
   SFX.tweet();
 }
 
@@ -4200,6 +4352,7 @@ function switchScene(to){
   if (def.worldW) CAM.worldW=def.worldW;
   if (def.reset) def.reset();
   renderAreas();
+  Music.startForScene(scene);
 }
 function startGame(){
   document.getElementById('intro').style.display='none';
@@ -4219,6 +4372,7 @@ function fullRestartRun(){
   tug=null; flagOverlay=null; nobelDrop=null; KR.wagner=null;
   EP.active=false; EP.success=null;
   GOLF.state='idle'; GOLF.banner=null; GOLF.aim.active=false; GOLF.charge.active=false; GOLF.trophy=null;
+  resetTweetState();
   inventory.length=0; collectedCoins=0; player.gold=0;
   player.baseSpeedMul=1; player.goldenShoesOn=false; updateSpeedMul();
   player.tanLevel=0; player.capOn=false; player.selectedItem=null;
@@ -4230,6 +4384,7 @@ function fullRestartToIntro(){
   GS.over=false; GS.overMode=null;
   introPlayed=false;
   scene=SCENE.INTRO;
+  Music.stop();
   document.getElementById('intro').style.display='flex';
 }
 
@@ -4346,7 +4501,12 @@ addEventListener('keydown', e=>{
   }
   // normal gameplay
   keys.add(k);
-  if (k==='n'){ GS.nonViolent=!GS.nonViolent; toast(GS.nonViolent?'Non-violent mode ON':'Non-violent mode OFF'); handled=true; }
+  if (k==='n'){
+    GS.nonViolent=!GS.nonViolent;
+    toast(GS.nonViolent?'Non-violent mode ON':'Non-violent mode OFF');
+    if (GS.nonViolent && scene===SCENE.GREENLAND && GL.bear.angry) pacifyBear();
+    handled=true;
+  }
   else if (k==='m'){ Music.setMuted(!Music.muted); toast(Music.muted?'🔇 Music off':'🔊 Music on'); handled=true; }
   else if (k==='t'){ doTweet(); handled=true; }
   else if (k===' '||k==='arrowup'){ doJump(); handled=true; }
@@ -4881,6 +5041,7 @@ requestAnimationFrame(step);
 window.__tv2 = {
   snapshot: () => ({
     scene, over: GS.over, overMode: GS.overMode, lives: GS.lives,
+    nonViolent: GS.nonViolent,
     player: { x: Math.round(player.x), y: Math.round(player.y), gold: player.gold },
     bear: { x: Math.round(GL.bear.x), hp: GL.bear.hp, angry: GL.bear.angry,
             chasing: GL.bear.chasing, bites: GL.bear.biteCount, alive: GL.bear.alive },
@@ -4907,6 +5068,10 @@ window.__tv2 = {
             joe:GOLF.joeTotal, ball:{x:Math.round(GOLF.ball.x),y:Math.round(GOLF.ball.y),
             speed:Math.round(Math.hypot(GOLF.ball.vx,GOLF.ball.vy))}, banner:!!GOLF.banner,
             trophyReady:GOLF.trophyReady },
+    music: { muted: Music.muted, current: Music.current?Music.current.name:null,
+             pendingScene: Music.pendingScene },
+    tweets: { total: tweetCount, byScene: { ...tweetCounts },
+              putinTrust: RELATIONSHIPS.putin.trust },
     medals: { ...GS.medals }
   }),
   cheat: { gold: n => { player.gold = n; renderHUD(); } }

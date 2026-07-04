@@ -48,8 +48,8 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 
 ## Næste skridt
 
-1. Kristian tester Mar-a-Lago Mini-Putt på fysisk iPhone
-2. Derefter samlet v2-regression + musik/polish
+1. Kristian tester hele `trumpspillet-v2.html` på fysisk iPhone
+2. Hvis iPhone-testen er godkendt: kør Trin 9 (`v2 → index.html`)
 
 ## Oval Office v2 — bygget 2026-07-03 (redesign "pakke B")
 
@@ -92,6 +92,28 @@ Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
 - ✅ Playwright-verificeret lokalt på desktop 1280×720 og iPhone 390×844:
   heli → golf → tutorial → hole-banner → aim → første putt, 0 console/page errors
 
+## Musik v2 — bygget 2026-07-04
+
+- ✅ Originale MP3-numre i `Musik til trumpspillet/` er koblet på som
+  underlægningsmusik via Web Audio GainNode (ingen `.volume` på iOS)
+- ✅ Musik starter efter brugerens første start/tap og skifter på `switchScene()`
+- ✅ `M`-mute gemmer stadig i `localStorage` (`trumpv2-music-muted`)
+- Mapping: `Greenland_1.mp3` → Greenland, `Greenland_2.2.mp3` → Oval,
+  `Greenland_3.mp3` → Kremlin, `Greenland_4.mp3` → Epstein + Golf
+  (Golf deler spor indtil et femte nummer findes)
+
+## Trin 8-paritet — opdateret 2026-07-04
+
+- ✅ Tweets er nu scene-specifikke; Kremlin-tweets sænker Putin-trust og kan
+  trigge Putins "Perhaps less... social media?"-flavor
+- ✅ Non-violent mode pacificerer bjørnen reelt (stopper chase/bid og nulstiller
+  bite-count), ikke kun med tekst
+- ✅ Mønt-bonusser og medalje-pills er auditeret mod `GAME_SPEC.md` og matcher
+  den aktuelle v2-implementation
+- ✅ Samlet automatiseret regression kørt lokalt: scene-routing, musik,
+  Epstein/Golf entrypoints, voting-machine continue, tweets/Putin-trust,
+  non-violent bear-flow og mobil-viewport smoke — 5/5 testblokke grønne
+
 ---
 
 ## Tekniske beslutninger
@@ -103,7 +125,7 @@ Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
 - Draw-funktioner (pixel-art-figurerne) porteres næsten 1:1 fra original —
   det er spillets look
 - Lottie-web-CDN droppes; golfbane-geometri konverteres til ren JSON
-- Musik-engine genopbygges men er disabled by default (som i original)
+- Musik-engine bruger nu originale MP3-loops; mute gemmes stadig som i original
 - Redaktionel tekst holdes i JSON-blokke adskilt fra kode
 - localStorage-nøgler bevares (`trumpv2-medals` osv.) så medaljer overlever
 
