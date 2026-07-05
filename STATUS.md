@@ -4,7 +4,7 @@
 **Live URL:** https://trumpspillet2026.pages.dev/ (gammel version) ·
 **v2-test:** https://trumpspillet2026.pages.dev/trumpspillet-v2
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-04
+**Senest opdateret:** 2026-07-05
 
 ---
 
@@ -79,6 +79,13 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
   (layout skrevet om, se LESSONS.md) og deployet
 - Dom: "overordnet super duper godt"
 
+### Greenland mobil-polish — opdateret 2026-07-05
+
+- ✅ Talebobler på touch løftes højere for både Trump og NPC'er, så de ikke
+  lægger sig oven på mine-/helikopter-skilte
+- ✅ Mobil-inventory viser nu kun købte varer i en kompakt boks i stedet for
+  alle fire mulige slots med tomme pladser
+
 ## Mar-a-Lago Mini-Putt v2 — bygget 2026-07-04 (pakke B)
 
 - ✅ Heli-menuen flyver nu til Mar-a-Lago
@@ -95,8 +102,8 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
 
 - ✅ Banerne roterer nu til højkant på touch/portrait uden at rotere Trump,
   Biden, bold, flag, labels eller talebobler
-- ✅ Biden-taleboblen er gjort mobil-læsbar uden at dominere banen; hans
-  stroke-label skjules mens kommentaren vises, så UI ikke overlapper
+- ✅ Biden-visningen er gjort mobil-læsbar uden at dominere banen; hans
+  stroke-label holdes kompakt, så UI ikke overlapper
 - ✅ Det store mobile hole-start-banner er fjernet/auto-kortet, fordi det
   dækkede Trump og tee-området
 - ✅ Golf-viewet bruger nu låst layout pr. hul + touch `preventDefault`, så
@@ -106,7 +113,14 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
 - ✅ Hul 2-vægge er gjort mere robuste med substep-collision; lokal simulation
   med 72 fuldkraftsvinkler endte med 0 bolde uden for fairway
 - ✅ Playwright-verificeret lokalt på iPhone 390×844: aim-state, touch-ring,
-  drag fra udvidet hitområde → slag registreret, Biden-kommentar, 0 errors
+  drag fra udvidet hitområde → slag registreret, 0 errors
+
+### Mar-a-Lago Biden-søvn — opdateret 2026-07-05
+
+- ✅ Biden-citatboblerne er fjernet fra aktivt golf-gameplay
+- ✅ Efter Trumps første slag falder Biden i søvn med lukkede øjne og `Zzz`
+- ✅ Hvert af de tre huller har sin egen soveposition: stående nik, siddende
+  lur og liggende lur
 
 ## Musik v2 — bygget 2026-07-04
 

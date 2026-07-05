@@ -80,11 +80,12 @@
       flex-direction:row;justify-content:flex-start;align-items:center;gap:7px;
       padding:8px 38px 8px 8px;border-radius:12px;max-width:calc(100vw - 20px);
       overflow-x:auto;scrollbar-width:none}
+    .inv.compact{right:auto;width:auto;min-width:0;padding-right:8px}
     .inv::-webkit-scrollbar{display:none}
     .slot{width:58px;height:50px}
     .slot canvas{width:58px !important;height:50px !important}
     .inv-close{display:flex;position:sticky;right:0;align-items:center;justify-content:center;
-      width:30px;height:30px;margin-left:auto;border:none;border-radius:50%;
+      width:30px;height:30px;margin-left:6px;border:none;border-radius:50%;
       background:rgba(255,255,255,.16);color:#fff;font:900 20px system-ui;flex-shrink:0}
   }
 
@@ -679,8 +680,11 @@ function drawSlotIcon(g,id){
 }
 function renderInv(){
   invEl.innerHTML='';
-  Object.keys(DATA.ITEMS).forEach(id=>{
+  invEl.classList.toggle('compact', IS_TOUCH);
+  const itemIds = IS_TOUCH ? inventory.map(it=>it.id) : Object.keys(DATA.ITEMS);
+  itemIds.forEach(id=>{
     const item = inventory.find(it=>it.id===id) || null;
+    if (IS_TOUCH && !item) return;
     const d=document.createElement('div');
     d.className='slot'+(item?'':' empty')+(player.selectedItem===id?' selected':'');
     d.appendChild(iconCanvas(66,56,(g)=>{
@@ -775,7 +779,8 @@ function drawBubble(text,x,y,speaker,placed){
   const lines=wrapLines(text,maxChars);
   const w=Math.max(80, Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2);
   const h=lines.length*lh+8;
-  const headLift = speaker==='trump' ? (IS_TOUCH ? 82 : 48) : 0;
+  const mobileLift = speaker==='trump' ? 124 : speaker==='lars' ? 96 : speaker==='bear' ? 72 : 64;
+  const headLift = IS_TOUCH ? mobileLift : (speaker==='trump' ? 48 : 0);
   const headY = y-52-headLift;        // Trump bubbles sit high enough to clear foreground props on mobile
   let bx = x - w/2;                   // centered over speaker …
   bx = clamp(bx, CAM.x+6, CAM.x+CAM.viewW-w-6); // … but inside the view
@@ -3719,7 +3724,7 @@ const GOLF = {
   view:{scale:1,ox:0,oy:0}, images:new Map(),
   viewLock:null,
   playerStand:{x:0,y:0}, playerDraw:{x:0,y:0,facing:1,walking:false,walkCycle:0},
-  biden:{x:0,y:0,strokes:0,lineIdx:0},
+  biden:{x:0,y:0,strokes:0,sleeping:false,sleepPose:0,sleepStart:0},
   trophy:null, trophyReady:false, _btnLeave:null, _btnDrop:null
 };
 function golfHole(){ return GOLF.course.holes[GOLF.holeIndex]; }
@@ -3833,7 +3838,9 @@ function golfResetHole(index){
     x:clamp(cup.x+72,b.x+36,b.x+b.w-36),
     y:clamp(cup.y+78,b.y+70,b.y+b.h-24),
     strokes:h.bidenStrokes||4,
-    lineIdx:0
+    sleeping:false,
+    sleepPose:index%3,
+    sleepStart:0
   };
   GOLF.joeTotal=golfJoeThrough(index);
 }
@@ -3881,8 +3888,8 @@ function golfStrike(angle,power){
   GOLF.state='rolling';
   GOLF.aim.active=false; GOLF.aim.power=0; GOLF.charge.active=false;
   if (GOLF.biden){
-    const line=DATA.GOLF.BIDEN_LINES[(GOLF.biden.lineIdx++)%DATA.GOLF.BIDEN_LINES.length];
-    GOLF.biden.speech={text:line,until:now()+2200};
+    GOLF.biden.sleeping=true;
+    if (!GOLF.biden.sleepStart) GOLF.biden.sleepStart=now();
   }
   SFX.buttonPress();
 }
@@ -4021,18 +4028,67 @@ function drawTrumpGolf(x,y,opts){
   drawTrump(x,y,player.facing);
   Object.assign(player,prev);
 }
-function drawBidenGolf(x,y){
+function drawBidenHead(cx,cy,sleeping){
+  ctx.fillStyle='#f1d2b3'; ctx.fillRect(cx-10,cy-10,20,14);
+  ctx.fillStyle='#c0c6cf'; ctx.fillRect(cx-12,cy-15,24,6);
+  if (sleeping){
+    ctx.strokeStyle='#111'; ctx.lineWidth=2; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-8,cy-3); ctx.lineTo(cx-2,cy-2);
+    ctx.moveTo(cx+2,cy-2); ctx.lineTo(cx+8,cy-3); ctx.stroke();
+  } else {
+    ctx.fillStyle='#111'; ctx.fillRect(cx-8,cy-5,7,4); ctx.fillRect(cx+2,cy-5,7,4); ctx.fillRect(cx-1,cy-4,3,2);
+  }
+  ctx.fillStyle='#c25a5a'; ctx.fillRect(cx-5,cy+3,10,2);
+}
+function drawBidenGolfStanding(x,y,sleeping){
   ctx.save(); ctx.translate(x,y-46);
+  if (sleeping){ ctx.rotate(-0.08); ctx.translate(-1,2); }
   ctx.fillStyle='#1f1f1f'; ctx.fillRect(-10,36,8,10); ctx.fillRect(2,36,8,10);
   ctx.fillStyle='#1f3b7a'; ctx.fillRect(-10,22,8,16); ctx.fillRect(2,22,8,16);
   ctx.fillStyle='#2051a6'; ctx.fillRect(-14,2,28,26);
   ctx.fillStyle='#e3ecff'; ctx.fillRect(-9,6,18,16);
   ctx.fillStyle='#64b5f6'; ctx.fillRect(-2,7,4,20);
-  ctx.fillStyle='#f1d2b3'; ctx.fillRect(-10,-10,20,14);
-  ctx.fillStyle='#c0c6cf'; ctx.fillRect(-12,-15,24,6);
-  ctx.fillStyle='#111'; ctx.fillRect(-8,-5,7,4); ctx.fillRect(2,-5,7,4); ctx.fillRect(-1,-4,3,2);
-  ctx.fillStyle='#c25a5a'; ctx.fillRect(-5,3,10,2);
+  const nod=sleeping ? 2+Math.sin(now()/420)*1.2 : 0;
+  drawBidenHead(0,nod,sleeping);
+  if (sleeping){
+    ctx.strokeStyle='#111'; ctx.lineWidth=2.4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(13,18); ctx.lineTo(29,44); ctx.stroke();
+    ctx.fillStyle='#111'; ctx.fillRect(24,42,13,4);
+  }
   ctx.restore();
+}
+function drawBidenGolfSeated(x,y){
+  ctx.save(); ctx.translate(x,y-4);
+  ctx.fillStyle='#1f1f1f'; ctx.fillRect(-23,-8,10,5); ctx.fillRect(16,-8,10,5);
+  ctx.fillStyle='#1f3b7a'; ctx.fillRect(-18,-14,22,7); ctx.fillRect(0,-14,22,7);
+  ctx.fillStyle='#2051a6'; ctx.fillRect(-13,-38,26,24);
+  ctx.fillStyle='#e3ecff'; ctx.fillRect(-8,-34,16,16);
+  ctx.fillStyle='#64b5f6'; ctx.fillRect(-2,-33,4,18);
+  ctx.strokeStyle='#111'; ctx.lineWidth=2.4; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(16,-32); ctx.lineTo(35,-4); ctx.stroke();
+  ctx.fillStyle='#111'; ctx.fillRect(31,-5,12,4);
+  drawBidenHead(0,-48,true);
+  ctx.restore();
+}
+function drawBidenGolfLying(x,y){
+  ctx.save(); ctx.translate(x,y-21); ctx.rotate(-0.06);
+  ctx.fillStyle='#1f1f1f'; ctx.fillRect(-35,12,10,5); ctx.fillRect(-35,20,10,5);
+  ctx.fillStyle='#1f3b7a'; ctx.fillRect(-27,10,28,7); ctx.fillRect(-27,18,28,7);
+  ctx.fillStyle='#2051a6'; ctx.fillRect(-2,0,33,24);
+  ctx.fillStyle='#e3ecff'; ctx.fillRect(4,5,20,14);
+  ctx.fillStyle='#64b5f6'; ctx.fillRect(10,7,18,4);
+  ctx.strokeStyle='#111'; ctx.lineWidth=2.2; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-2,2); ctx.lineTo(-18,-9); ctx.stroke();
+  ctx.fillStyle='#111'; ctx.fillRect(-24,-12,13,4);
+  drawBidenHead(42,8,true);
+  ctx.restore();
+}
+function drawBidenGolf(x,y){
+  const b=GOLF.biden || {};
+  const sleeping=!!b.sleeping, pose=b.sleepPose||0;
+  if (sleeping && pose===1) return drawBidenGolfSeated(x,y);
+  if (sleeping && pose===2) return drawBidenGolfLying(x,y);
+  return drawBidenGolfStanding(x,y,sleeping);
 }
 function drawGolfClub(x,y,dir){
   ctx.save(); ctx.translate(x+(dir>=0?9:-9),y-18); ctx.rotate((dir>=0?-0.55:0.55));
@@ -4106,7 +4162,7 @@ function drawGolfActorsScreen(cup){
   const bp=golfToScreen(GOLF.biden.x,GOLF.biden.y);
   const cp=cup?golfToScreen(cup.x,cup.y):{x:bp.x+1,y:bp.y};
   drawGolfAtCoursePoint(GOLF.biden.x,GOLF.biden.y,()=>drawBidenGolf(0,0));
-  drawGolfAtCoursePoint(GOLF.biden.x,GOLF.biden.y,()=>drawGolfClub(0,0,bp.x<cp.x?1:-1));
+  if (!GOLF.biden.sleeping) drawGolfAtCoursePoint(GOLF.biden.x,GOLF.biden.y,()=>drawGolfClub(0,0,bp.x<cp.x?1:-1));
 
   const tp=golfToScreen(GOLF.playerDraw.x,GOLF.playerDraw.y);
   const facing=cp.x>=tp.x?1:-1;
@@ -4127,28 +4183,28 @@ function drawGolfBidenScoreScreen(){
   ctx.restore();
   ctx.textAlign='left'; ctx.textBaseline='alphabetic';
 }
-function drawGolfBidenSpeechScreen(){
-  if (!(GOLF.biden.speech && now()<GOLF.biden.speech.until)) return;
-  const p=golfToScreen(GOLF.biden.x,GOLF.biden.y);
-  const fs=IS_TOUCH?13:12, lh=IS_TOUCH?17:16, pad=IS_TOUCH?8:8;
+function drawGolfBidenSleepScreen(){
+  if (!(GOLF.biden && GOLF.biden.sleeping)) return;
+  const p=golfToScreen(GOLF.biden.x,GOLF.biden.y), v=GOLF.view || golfComputeView();
+  const pose=GOLF.biden.sleepPose||0, scale=v.scale||1;
+  const age=Math.max(0,(now()-(GOLF.biden.sleepStart||now()))/1000);
+  const anchorX=p.x+(pose===2?38:pose===1?18:-10)*scale;
+  const anchorY=p.y-(pose===2?50:pose===1?70:92)*scale;
   ctx.save();
-  ctx.font=`${fs}px system-ui`;
-  const lines=wrapLines(GOLF.biden.speech.text,IS_TOUCH?24:24);
-  const w=Math.min(IS_TOUCH?230:VW-24,Math.max(IS_TOUCH?138:110,Math.max(...lines.map(l=>ctx.measureText(l).width))+pad*2));
-  const bh=lines.length*lh+pad*1.4;
-  const bx=clamp(p.x-w/2,12,VW-w-12);
-  let by=p.y-(IS_TOUCH?58:122)-bh;
-  if (by<70) by=p.y+28;
-  by=clamp(by,70,VH-bh-76);
-  ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.strokeStyle='#333'; ctx.lineWidth=1.6;
-  roundRectPath(ctx,bx,by,w,bh,8); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#222';
-  lines.forEach((l,i)=>ctx.fillText(l,bx+pad,by+pad+fs*0.82+i*lh));
-  const tx=clamp(p.x,bx+14,bx+w-14);
-  const tailY=by+bh<p.y ? Math.min(p.y-28*(GOLF.view?.scale||1),by+bh+(IS_TOUCH?32:48)) : by-14;
-  ctx.fillStyle='rgba(255,255,255,0.97)';
-  ctx.beginPath(); ctx.moveTo(tx-6,by+bh-1); ctx.lineTo(tx+6,by+bh-1); ctx.lineTo(p.x,tailY); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle='#333'; ctx.stroke();
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for (let i=0;i<3;i++){
+    const phase=(age*0.55+i*0.28)%1;
+    const x=clamp(anchorX+(i-1)*13*scale+Math.sin(age*2+i)*4,14,VW-14);
+    const y=clamp(anchorY-phase*34*scale-i*4,58,VH-84);
+    const fs=Math.max(11,(IS_TOUCH?18:15)*scale*(1+phase*0.2));
+    ctx.globalAlpha=0.95-phase*0.62;
+    ctx.font=`900 ${fs}px system-ui`;
+    ctx.lineWidth=Math.max(2,3*scale);
+    ctx.strokeStyle='rgba(255,255,255,0.95)';
+    ctx.fillStyle='#1565c0';
+    ctx.strokeText('Z',x,y);
+    ctx.fillText('Z',x,y);
+  }
   ctx.restore();
   ctx.textAlign='left'; ctx.textBaseline='alphabetic';
 }
@@ -4189,8 +4245,8 @@ function drawGolf(){
   drawGolfCupScreen(cup,golfDisplayId(h));
   drawGolfBallScreen();
   drawGolfActorsScreen(cup);
-  if (!(GOLF.biden.speech && now()<GOLF.biden.speech.until)) drawGolfBidenScoreScreen();
-  drawGolfBidenSpeechScreen();
+  if (!GOLF.biden.sleeping) drawGolfBidenScoreScreen();
+  drawGolfBidenSleepScreen();
   if (GOLF.state==='victory' && GOLF.trophy){
     const ty=GOLF.trophy.active?GOLF.trophy.y:GOLF.playerStand.y-60;
     drawGolfAtCoursePoint(GOLF.playerStand.x,ty,()=>drawGolfTrophy(0,0,
@@ -5066,7 +5122,8 @@ window.__tv2 = {
             strokes:GOLF.strokesThisHole, total:GOLF.total+GOLF.strokesThisHole,
             joe:GOLF.joeTotal, ball:{x:Math.round(GOLF.ball.x),y:Math.round(GOLF.ball.y),
             speed:Math.round(Math.hypot(GOLF.ball.vx,GOLF.ball.vy))}, banner:!!GOLF.banner,
-            trophyReady:GOLF.trophyReady },
+            trophyReady:GOLF.trophyReady,
+            biden:{sleeping:!!GOLF.biden.sleeping,pose:GOLF.biden.sleepPose||0} },
     music: { muted: Music.muted, current: Music.current?Music.current.name:null,
              pendingScene: Music.pendingScene },
     tweets: { total: tweetCount, byScene: { ...tweetCounts },

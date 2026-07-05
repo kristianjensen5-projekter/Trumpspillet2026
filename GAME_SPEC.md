@@ -339,7 +339,8 @@ dismiss-delay mod key-leak).
   drop på tee +1 slag ("Drop (+1)"); R = drop +1; bold stopper < 6 px/s → aim.
 - **Biden er færdig på forhånd**: står ved cuppen med solbriller og kølle,
   boblen "N slag". Scores per hul: **4, 7, 4** (hul 2 par 5, øvrige par 3).
-  Biden-citater (rullende): "Trump is a threat to our democracy." m.fl.
+  Efter Trumps første slag falder Biden i søvn med lukkede øjne, `Zzz` og en
+  ny soveposition per hul; de gamle Biden-citatbobler bruges ikke i gameplayet.
 - Efter hvert hul: banner "Par!" / "X under par!" / "X over par".
 - **Slut:** Trump total < Biden total → "Best golfer ever!" → trofæ daler ned
   på Trump, konfetti, medalje, Enter → Trump går til helikopteren → heli-menu.
