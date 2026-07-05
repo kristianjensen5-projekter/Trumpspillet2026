@@ -58,10 +58,10 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
 
 - ✅ Trump går til Resolute Desk efter heli-entry, som før
 - ✅ To reelle skrivebordsknapper: sort POLICY-knap og stor rød DO NOT PRESS
-  under glaskuppel
+  med hazard-base
 - ✅ Sort knap vælger tilfældig Trump-sk policy på skærmen bag bordet
 - ✅ Yes-men er genkendelige arketyper: QAnon-mand, Fox-host og Vance-type,
-  som jubler ved hvert policy-tryk
+  som popper ind og jubler ved hvert policy-tryk
 - ✅ Skærmen kan vise de to nye Oval Office-billeder fra `assets/oval office/`
   som censureret/social-post content
 - ✅ Pulitzer-medaljen gives efter 5 policy-tryk; spilleren kan fortsætte
@@ -69,6 +69,26 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
 - ✅ Rød knap launcher stadig missil → game over/voting machine/respawn-flow
 - ✅ Gammel quiz, gæster, YES/NO-kort og selvbruner-aide er ikke længere
   del af Oval Office-runtime
+
+### Oval Office layout-polish — opdateret 2026-07-05
+
+- ✅ Heli-entry bruger nu en Oval-specifik landingsposition, så Trump lander
+  ved scenens venstre side og går ind til Resolute Desk
+- ✅ Mobil-layoutet har kompakt skrivebord/skærm/kamera-fokus, så knapper og
+  policy-skærm ikke fylder hele beskæringen
+- ✅ Sort og rød knap er tegnet om som fladere trykknapper med tydelig base,
+  highlight og press-state
+- ✅ Yes-men står ikke længere permanent ude i siden; QAnon/Fox/Vance popper
+  ind som korte reaktioner, hver gang Trump laver policy
+
+### Oval Office artefakt-/joke-pass — opdateret 2026-07-05
+
+- ✅ Pokal-/artefaktvæggen er flyttet ind under executive screen, så den er
+  synlig i mobilbeskæringen
+- ✅ Stjålne Kremlin-statuer placeres nu på samme synlige artefaktvæg
+- ✅ Basishylden viser Pulitzer-medalje, FIFA PEACE-pokal, Sharpie-kort og
+  Diet Coke-knap som små Trump-artefakter
+- ✅ Policy-listen er skrevet om med kortere, mere punchy Trump-satire
 
 ## iPhone-test 2026-07-03 (Kristian) — GODKENDT ✅
 

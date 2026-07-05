@@ -218,19 +218,21 @@ strong handshake incoming." · Golf: "Time for some golf!").
 
 ## 4. Bane 2: White House / Oval Office
 
-**Miljø:** Tapetvæg med damask-mønster, kamin-hylder med guldstatuer (+ evt.
-stjålne fra Kremlin!), vægskærm-TV med **EXECUTIVE SCREEN**, Resolute Desk
-med to reelle knapper: sort **POLICY/RANDOM**-knap og stor rød **DO NOT
-PRESS** under glaskuppel med hazard-striber. Yes-men-gruppe med tre
-arketyper: QAnon-mand, Fox-host og Vance-type. Dør + helikopter. 7
-guldbarrer.
+**Miljø:** Tapetvæg med damask-mønster, vægskærm-TV med **EXECUTIVE SCREEN**,
+synlig artefaktvæg under skærmen (Pulitzer, FIFA PEACE-pokal, Sharpie-kort,
+Diet Coke-knap + evt. stjålne Kremlin-statuer), Resolute Desk med to reelle,
+flade trykknapper: sort **POLICY/RANDOM**-knap og stor rød **DO NOT
+PRESS**-knap med hazard-base. Yes-men bruges som reaction cut-ins:
+QAnon-mand, Fox-host og Vance-type popper ind ved policy-tryk i stedet for
+at stå permanent i mobilbeskæringen. Dør + helikopter. 7 guldbarrer.
 
-**Presidential Decisions v3:** Trump går til skrivebordet efter heli-entry.
+**Presidential Decisions v3:** Trump lander med helikopter på scenens venstre
+side og går derefter til skrivebordet.
 Spilleren kan frit styre ham som i Greenland og interagere via action-cirkel,
 tap på knap eller `E`.
 
-- **Sort POLICY-knap:** vælger et tilfældigt policy-forslag fra
-  `DATA.OVAL.POLICIES`, flasher skærmen og får yes-men til at juble.
+- **Sort POLICY-knap:** vælger et tilfældigt, kort Trump-sk policy-forslag fra
+  `DATA.OVAL.POLICIES`, flasher skærmen og får yes-men cut-ins til at juble.
 - Skærmen viser titel + kort policytekst. Nogle policies bruger billeder fra
   `assets/oval office/` (`trumpjesus.jpeg`, `obamaabes.jpeg`), hvor racistisk
   AI-content vises censureret/flagget i stedet for råt.

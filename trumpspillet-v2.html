@@ -178,20 +178,20 @@
   "OVAL": {
     "INTRO_CARD": "THE OVAL OFFICE\n\nTwo buttons. One president.\n\nBLACK BUTTON:\nInstant policy. No process, no warning.\n\nRED BUTTON:\nIt says DO NOT PRESS.\nThat has never stopped anyone.\n\nPush five policies to earn the Pulitzer.\nTap or press any key to begin",
     "POLICIES": [
-      { "title": "TARIFF WHEEL", "body": "Spin the tariff wheel: 10% for friends, 47% for enemies, 200% if a country looked at him funny." },
-      { "title": "GREENLAND OFFER", "body": "Reopen the Greenland purchase. Counteroffer: one casino chip, two hats and the best ice." },
-      { "title": "AI MESSIAH POST", "body": "Holy AI art declares him chosen. Eagles, miracles and no follow-up questions.", "media": "trumpJesus", "mediaMode": "image", "kicker": "SOCIAL POST" },
-      { "title": "RACIST AI REPOST", "body": "Racist AI post flagged. The cruelty becomes the policy instead of a joke.", "media": "obamaMonkeys", "mediaMode": "censored", "kicker": "FLAGGED REPOST" },
-      { "title": "NATO BILL", "body": "Send NATO allies an invoice with late fees, a tip line and a checkbox marked 'say thank you'." },
-      { "title": "SHARPIE WEATHER", "body": "Correct the hurricane map with a marker. Meteorologists can appeal at Mar-a-Lago, hole 9." },
-      { "title": "LOYALTY TEST", "body": "Every agency must answer: 'Was everything perfect?' Wrong answers are classified as deep state weather." },
-      { "title": "FOX CONFIRMATION", "body": "No policy is official until three TV hosts nod at the same time and call it presidential genius." },
-      { "title": "PARDON FRIDAY", "body": "Patriots, donors and guys from the group chat may apply for pardons before lunch." },
-      { "title": "TRUTH DANCE", "body": "TikTok is banned, unbanned, bought, renamed TRUTH DANCE and sold as a campaign hat." },
-      { "title": "ENERGY DOMINANCE", "body": "Windmills must apologize on camera. Oil rigs receive medals and a personalized thank-you post." },
-      { "title": "PRESS ACCESS", "body": "Friendly questions get front-row seats. Unfriendly questions are fake, rude and possibly Canadian." },
-      { "title": "MARKET ORDER", "body": "The stock market must go up on camera days. Red numbers are declared election interference." },
-      { "title": "GOLF DIPLOMACY", "body": "A peace summit is scheduled between two putts. Attendance requires membership and compliments." }
+      { "title": "LIBERATION TARIFFS", "body": "Spin the wheel: 10% baseline, 47% for disrespect, 200% if a country sounded French on TV." },
+      { "title": "GREENLAND DEAL 2", "body": "Offer Denmark a hotel voucher, two red hats and naming rights to the ice. Call it art of the deal." },
+      { "title": "AI MESSIAH POST", "body": "Repost holy AI art: eagles, golden light, zero fact-checkers and a caption in all caps.", "media": "trumpJesus", "mediaMode": "image", "kicker": "SOCIAL POST" },
+      { "title": "RACIST AI REPOST", "body": "Racist AI post flagged. The screen censors it; the policy staff calls it 'research'.", "media": "obamaMonkeys", "mediaMode": "censored", "kicker": "FLAGGED REPOST" },
+      { "title": "NATO VENMO", "body": "Send allies a payment request with late fees, a tip jar and a box marked THANK ME PUBLICLY." },
+      { "title": "SHARPIE SCIENCE", "body": "Fix the forecast with one black marker. Reality may file an appeal at Mar-a-Lago." },
+      { "title": "LOYALTY APP", "body": "Every agency installs a one-button form: PERFECT CALL? Wrong answers become weather balloons." },
+      { "title": "FOX VETO", "body": "Policy is pending until three hosts nod, one chyron screams and someone says sir with tears." },
+      { "title": "PARDON HAPPY HOUR", "body": "Donors, cousins and group-chat patriots can apply before lunch. Loyalty points accepted." },
+      { "title": "TIKTOK U-TURN", "body": "Ban it, save it, buy it, rename it TRUTH DANCE, then sell the executive order as a hat." },
+      { "title": "WINDMILL APOLOGY", "body": "Windmills must apologize on camera. Oil rigs receive medals and a handwritten love note." },
+      { "title": "PRESS CASTING", "body": "Friendly questions get front row. Unfriendly questions are fake, rude and probably Danish." },
+      { "title": "MARKET CAPS LOCK", "body": "Markets must go up during camera hours. Red numbers are reclassified as election interference." },
+      { "title": "GOLF PEACE SUMMIT", "body": "World peace starts between putts. Attendance requires membership, silence and compliments." }
     ],
     "COINS": [[300,-40],[500,-45],[700,-35],[900,-43],[400,-38],[800,-42],[600,-65]],
     "LINES": {
@@ -1928,13 +1928,13 @@ function resetGreenland(){
   if (!introPlayed) playEntryHeli(L.arrive);
 }
 
-function playEntryHeli(line){
+function playEntryHeli(line,opts={}){
   entryHeli.active=true; entryHeli.line=line||'';
-  entryHeli.x=160;
-  entryHeli.targetY=GROUND_Y-18;
+  entryHeli.x=opts.x||160;
+  entryHeli.targetY=typeof opts.targetY==='number'?opts.targetY:GROUND_Y-18;
   entryHeli.startY=-240;
   entryHeli.y=entryHeli.startY;
-  entryHeli.start=now(); entryHeli.dur=1600;
+  entryHeli.start=now(); entryHeli.dur=opts.dur||1600;
   SFX.helicopter();
 }
 
@@ -2281,27 +2281,51 @@ loadOvalPolicyImage('trumpJesus','assets/oval%20office/trumpjesus.jpeg');
 loadOvalPolicyImage('obamaMonkeys','assets/oval%20office/obamaabes.jpeg');
 const OV = {
   deskX: 438, deskW: 400, trumpDeskX: 506,
+  landingX:160, cameraFocus:600, compact:false,
+  tv:{w:282,h:178,cx:610,cy:150},
   door:{x:140,y:GROUND_Y,type:'door'},
   heli:{x:160,y:GROUND_Y-18,type:'heli'},
   policy:{x:0,y:0,r:22,type:'policy',pressed:false},
   surprise:{x:0,y:0,r:36,type:'surprise',pressed:false},
-  yes:{x:815,y:GROUND_Y,type:'yes',say:'',speakingUntil:0,mood:'happy',members:[]},
+  yes:{x:815,y:GROUND_Y,type:'yes',say:'',speakingUntil:0,mood:'happy',members:[],reactions:[]},
   coins:[],
   d:{} // simple policy state
 };
+function ovalApplyLayout(){
+  const compact=IS_TOUCH && CAM.viewW<520;
+  OV.compact=compact;
+  OV.deskX=compact?438:438;
+  OV.deskW=compact?330:400;
+  OV.trumpDeskX=compact?524:506;
+  OV.landingX=compact?360:160;
+  OV.cameraFocus=OV.deskX+OV.deskW/2;
+  OV.door.x=compact?300:140;
+  OV.heli.x=OV.landingX; OV.heli.y=GROUND_Y-18;
+  OV.policy.x=OV.deskX+(compact?72:138);
+  OV.policy.y=GROUND_Y-(compact?26:28);
+  OV.surprise.x=OV.deskX+(compact?224:306);
+  OV.surprise.y=GROUND_Y-(compact?14:14);
+  OV.yes.x=OV.deskX+OV.deskW+90;
+  OV.tv={
+    w:compact?218:282,
+    h:compact?138:178,
+    cx:OV.deskX+OV.deskW/2-(compact?10:28),
+    cy:compact?142:150
+  };
+}
 function resetOval(){
+  ovalApplyLayout();
   player.x=190; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
-  OV.policy.x=OV.deskX+138; OV.policy.y=GROUND_Y-28;
-  OV.surprise.x=OV.deskX+306; OV.surprise.y=GROUND_Y-14;
+  player.x=OV.landingX;
   OV.yes.members=[
     {kind:'qanon',label:'QANON',x:0,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28},
     {kind:'fox',label:'FOX HOST',x:60,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28},
     {kind:'vance',label:'VANCE',x:120,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28}
   ];
-  OV.yes.say=''; OV.yes.speakingUntil=0; OV.yes.mood='happy';
+  OV.yes.say=''; OV.yes.speakingUntil=0; OV.yes.mood='happy'; OV.yes.reactions=[];
   OV.coins = DATA.OVAL.COINS.map(([x,dy])=>({x,y:GROUND_Y+dy,collected:false,type:'coin'}));
   resetOvalDecisions();
-  playEntryHeli(OL.arrive);
+  playEntryHeli(OL.arrive,{x:OV.landingX});
 }
 function resetOvalDecisions(){
   OV.d = {
@@ -2358,12 +2382,28 @@ function ovalChoir(happy){
   OV.yes.say = happy ? 'YES! YES! YES!' : 'BOO!';
   OV.yes.mood = happy ? 'happy' : 'angry';
   OV.yes.speakingUntil = now()+1500;
+  const phrases={
+    qanon: happy?['TRUST THE PLAN!','YES!']:['BOO!'],
+    fox: happy?['BREAKING: GENIUS!','TV LOVES IT!']:['BAD OPTICS!'],
+    vance: happy?['YES, SIR!','BRILLIANT!']:['UH OH!']
+  };
+  const t=now();
+  OV.yes.reactions=(OV.yes.members||[]).map((m,i)=>({
+    ...m,
+    x:0,
+    start:t+i*90,
+    dur:1500,
+    slot:i,
+    phrase:pick(phrases[m.kind]||['YES!'])
+  }));
 }
 function updateOval(dt){
+  ovalApplyLayout();
   const t=now();
   OV.yes.members.forEach(m=>{
     if (!m.nextBlink||t>m.nextBlink){ m.blinkUntil=t+120; m.nextBlink=t+2000+Math.random()*2500; }
   });
+  OV.yes.reactions=(OV.yes.reactions||[]).filter(r=>t<r.start+r.dur);
 }
 function interactOval(){
   const obj=nearestOV(); if (!obj){ say(player, OL.buttonHint, 900); return; }
@@ -2385,17 +2425,15 @@ function interactOval(){
   }
   else if (obj.type==='policy'){ ovalPressPolicy(); }
   else if (obj.type==='surprise'){ ovalPressSurprise(); }
-  else if (obj.type==='yes'){ ovalChoir(true); }
 }
 function nearestOV(){
-  const arr=[OV.door,OV.heli,OV.policy,OV.surprise,OV.yes];
+  const arr=[OV.door,OV.heli,OV.policy,OV.surprise];
   let best=null,bd=1e9;
   for (const o of arr){
     const d = o.type==='heli' ? distToRect(player.x,player.y,o.x+20,o.y-6,220,120)
             : Math.abs(player.x-o.x);
     const limit = o.type==='policy' ? 92
       : o.type==='surprise' ? 100
-      : o.type==='yes' ? 120
       : CFG.INTERACT_DIST*1.4;
     if (d<bd && d<limit){ bd=d; best=o; }
   }
@@ -2547,9 +2585,59 @@ function drawYesArchetype(member,cheering,i){
   ctx.fillStyle='#fff'; ctx.fillText(member.label,member.x,-104);
   ctx.textAlign='left'; ctx.restore();
 }
+function drawOvalReactionText(text,x,y){
+  ctx.save();
+  ctx.font='900 15px system-ui';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const w=ctx.measureText(text).width+18, h=24;
+  ctx.fillStyle='rgba(255,255,255,0.96)';
+  ctx.strokeStyle='#111'; ctx.lineWidth=2;
+  roundRectPath(ctx,x-w/2,y-h/2,w,h,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#111'; ctx.fillText(text,x,y+1);
+  ctx.restore();
+}
+function drawOvalYesPopups(){
+  const reactions=OV.yes.reactions||[];
+  if (!reactions.length) return;
+  beginScreen();
+  const t=now();
+  reactions.forEach((r,i)=>{
+    const age=t-r.start;
+    if (age<0 || age>r.dur) return;
+    const enter=1-Math.pow(1-clamp(age/260,0,1),3);
+    const fade=1-clamp((age-(r.dur-280))/280,0,1);
+    const alpha=Math.min(1,age/140)*fade;
+    const compact=IS_TOUCH && VW<720;
+    const slots=compact
+      ? [
+          {edge:'left',x:64,y:clamp(VH*.58,190,VH-190),scale:.82},
+          {edge:'right',x:VW-64,y:clamp(VH*.50,170,VH-230),scale:.78},
+          {edge:'bottom',x:VW*.52,y:VH-150,scale:.72}
+        ]
+      : [
+          {edge:'left',x:128,y:VH-150,scale:1},
+          {edge:'right',x:VW-130,y:VH-150,scale:1},
+          {edge:'bottom',x:VW*.52,y:VH-118,scale:.92}
+        ];
+    const slot=slots[r.slot%slots.length];
+    let x=slot.x, y=slot.y;
+    if (slot.edge==='left') x=-85+(slot.x+85)*enter;
+    if (slot.edge==='right') x=VW+85-(VW+85-slot.x)*enter;
+    if (slot.edge==='bottom') y=VH+92-(VH+92-slot.y)*enter;
+    y+=Math.sin(age/85+i)*3;
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    ctx.translate(x,y);
+    ctx.scale(slot.scale,slot.scale);
+    drawYesArchetype({...r,x:0},true,i);
+    drawOvalReactionText(r.phrase||'YES!',0,-158);
+    ctx.restore();
+  });
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.globalAlpha=1;
+}
 function drawOvalTV(){
   const d=OV.d;
-  const tvW=282, tvH=178, cx=OV.deskX+OV.deskW/2-28, cy=150;
+  const {w:tvW,h:tvH,cx,cy}=OV.tv;
   ctx.fillStyle='#111'; roundRectPath(ctx,cx-tvW/2-8,cy-tvH/2-8,tvW+16,tvH+16,8); ctx.fill();
   ctx.fillStyle='#1a1a1a'; roundRectPath(ctx,cx-tvW/2,cy-tvH/2,tvW,tvH,4); ctx.fill();
   const x=cx-tvW/2+12, y=cy-tvH/2+12, w=tvW-24, h=tvH-24;
@@ -2561,22 +2649,22 @@ function drawOvalTV(){
   }
   const policy=d.policy;
   ctx.textAlign='center';
-  ctx.fillStyle='#fff'; ctx.font='900 16px Georgia,serif';
+  ctx.fillStyle='#fff'; ctx.font=`900 ${OV.compact?12:16}px Georgia,serif`;
   ctx.fillText('EXECUTIVE SCREEN',x+w/2,y+22);
-  ctx.fillStyle='#86d6ff'; ctx.font='bold 13px system-ui';
-  ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+50);
+  ctx.fillStyle='#86d6ff'; ctx.font=`bold ${OV.compact?11:13}px system-ui`;
+  ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+(OV.compact?45:50));
   if (policy && policy.media){
-    const mediaX=x+14, mediaY=y+60, mediaW=82, mediaH=h-74;
+    const mediaX=x+(OV.compact?10:14), mediaY=y+(OV.compact?52:60), mediaW=OV.compact?62:82, mediaH=h-(OV.compact?64:74);
     drawOvalPolicyMedia(policy,mediaX,mediaY,mediaW,mediaH);
     ctx.textAlign='left';
     ctx.fillStyle=policy.mediaMode==='censored'?'#ff6b6b':'#ffd54f';
-    ctx.font='900 9px system-ui';
+    ctx.font=`900 ${OV.compact?8:9}px system-ui`;
     ctx.fillText(policy.kicker||'MEDIA',mediaX+mediaW+12,mediaY+10);
-    ctx.fillStyle='#eef7ff'; ctx.font='12px system-ui';
-    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+27,w-mediaW-40,14,4,'left');
+    ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?9:12}px system-ui`;
+    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+24,w-mediaW-(OV.compact?30:40),OV.compact?11:14,OV.compact?4:4,'left');
   } else {
-    ctx.fillStyle='#eef7ff'; ctx.font='12px system-ui';
-    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+76,w-36,15,4,'center');
+    ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?10:12}px system-ui`;
+    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+(OV.compact?66:76),w-36,OV.compact?12:15,OV.compact?4:4,'center');
   }
   ctx.restore();
   const progress=Math.min(5,d.policyCount||0);
@@ -2647,15 +2735,16 @@ function ovalWrap(text,x,y,w,lineH,maxLines,align='left'){
 }
 function drawOvalDesk(){
   const y=GROUND_Y+30, deskX=OV.deskX, deskW=OV.deskW;
-  ctx.fillStyle='#7a4a22'; ctx.fillRect(deskX,y-40,deskW,60);
+  const deskH=OV.compact?52:60;
+  ctx.fillStyle='#7a4a22'; ctx.fillRect(deskX,y-40,deskW,deskH);
   ctx.fillStyle='#8a5a2a'; ctx.fillRect(deskX-8,y-44,deskW+16,8);
   ctx.fillStyle='#6b3e18';
-  ctx.fillRect(deskX+12,y+20,16,14); ctx.fillRect(deskX+deskW-28,y+20,16,14);
+  ctx.fillRect(deskX+12,y+12,16,14); ctx.fillRect(deskX+deskW-28,y+12,16,14);
   ctx.strokeStyle='#5e3415'; ctx.lineWidth=2; ctx.beginPath();
-  ctx.moveTo(deskX+deskW*0.33,y-8); ctx.lineTo(deskX+deskW*0.33,y+16);
-  ctx.moveTo(deskX+deskW*0.66,y-8); ctx.lineTo(deskX+deskW*0.66,y+16);
+  ctx.moveTo(deskX+deskW*0.33,y-8); ctx.lineTo(deskX+deskW*0.33,y+10);
+  ctx.moveTo(deskX+deskW*0.66,y-8); ctx.lineTo(deskX+deskW*0.66,y+10);
   ctx.stroke();
-  ctx.fillStyle='#d4af37'; ctx.fillRect(deskX+deskW*0.33-4,y+2,8,4); ctx.fillRect(deskX+deskW*0.66-4,y+2,8,4);
+  ctx.fillStyle='#d4af37'; ctx.fillRect(deskX+deskW*0.33-4,y+1,8,4); ctx.fillRect(deskX+deskW*0.66-4,y+1,8,4);
   const topY=y-44;
   drawOvalPolicyButton(OV.policy.x,OV.policy.y,OV.policy.pressed);
   drawOvalRedButton(OV.surprise.x,topY,OV.surprise.pressed);
@@ -2663,29 +2752,117 @@ function drawOvalDesk(){
 function drawOvalPolicyButton(x,y,pressed){
   ctx.save();
   ctx.translate(x,y+(pressed?3:0));
-  ctx.fillStyle='#30271f'; ctx.fillRect(-34,-5,68,10);
-  ctx.fillStyle='#0b0b0b'; ctx.beginPath(); ctx.ellipse(0,0,27,18,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#333'; ctx.beginPath(); ctx.ellipse(-5,-5,13,6,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='900 10px system-ui'; ctx.textAlign='center';
-  ctx.fillText('POLICY',0,39);
+  const scale=OV.compact ? .86 : 1;
+  ctx.scale(scale,scale);
+  ctx.fillStyle='#151515';
+  roundRectPath(ctx,-31,-8,62,16,8); ctx.fill();
+  ctx.fillStyle='#4a4038';
+  roundRectPath(ctx,-26,-4,52,12,6); ctx.fill();
+  ctx.fillStyle='#050505';
+  ctx.beginPath(); ctx.ellipse(0,-7,23,14,0,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#2f2f2f'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.ellipse(0,-7,23,14,0,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.18)';
+  ctx.beginPath(); ctx.ellipse(-7,-13,11,4,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='900 9px system-ui'; ctx.textAlign='center';
+  ctx.fillText('POLICY',0,33);
   ctx.fillStyle='#111'; ctx.font='bold 7px system-ui';
-  ctx.fillText('RANDOM',0,50);
+  ctx.fillText('RANDOM',0,44);
   ctx.textAlign='left';
   ctx.restore();
 }
 function drawOvalRedButton(sx,sy,pressed){
-  ctx.fillStyle='#1a1a1a'; ctx.fillRect(sx-38,sy-6,76,12);
+  ctx.save();
+  const scale=OV.compact ? .86 : 1;
+  ctx.translate(sx,sy); ctx.scale(scale,scale);
+  ctx.fillStyle='#202020';
+  roundRectPath(ctx,-42,-8,84,18,8); ctx.fill();
   ctx.fillStyle='#f4d03f';
-  for (let s=0;s<6;s++) ctx.fillRect(sx-34+s*12,sy-4,6,8);
-  ctx.fillStyle='#888'; ctx.beginPath(); ctx.arc(sx,sy-6,32,Math.PI,0); ctx.fill();
-  ctx.fillStyle='rgba(200,220,255,0.25)'; ctx.beginPath(); ctx.arc(sx,sy-6,30,Math.PI,0); ctx.fill();
-  const pulse=pressed?1:(0.85+0.15*Math.sin(now()/200));
-  ctx.fillStyle='#8b0000'; ctx.beginPath(); ctx.arc(sx,sy-10+(pressed?4:0),22,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle=pressed?'#a00':`rgb(${Math.floor(200*pulse)},${Math.floor(30*pulse)},${Math.floor(30*pulse)})`;
-  ctx.beginPath(); ctx.arc(sx,sy-14+(pressed?4:0),19,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(255,150,150,0.4)'; ctx.beginPath(); ctx.arc(sx-5,sy-20+(pressed?4:0),8,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#ff0'; ctx.font='bold 7px system-ui'; ctx.textAlign='center';
-  ctx.fillText('DO NOT PRESS',sx,sy+4+8); ctx.textAlign='left';
+  for (let s=0;s<7;s++) ctx.fillRect(-37+s*12,-6,6,12);
+  ctx.fillStyle='#555';
+  ctx.beginPath(); ctx.ellipse(0,-9,36,18,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#9ca3af';
+  ctx.beginPath(); ctx.ellipse(0,-12,31,15,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#6b7280';
+  ctx.beginPath(); ctx.ellipse(0,-6,31,12,0,0,Math.PI*2); ctx.fill();
+  const pulse=pressed?1:(0.86+0.14*Math.sin(now()/200));
+  ctx.fillStyle='#7f0000';
+  ctx.beginPath(); ctx.arc(0,-15+(pressed?4:0),24,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=pressed?'#b00000':`rgb(${Math.floor(218*pulse)},${Math.floor(24*pulse)},${Math.floor(30*pulse)})`;
+  ctx.beginPath(); ctx.arc(0,-19+(pressed?4:0),20,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(255,175,175,0.45)';
+  ctx.beginPath(); ctx.arc(-7,-27+(pressed?4:0),8,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ffeb3b'; ctx.font='bold 8px system-ui'; ctx.textAlign='center';
+  ctx.fillText('DO NOT PRESS',0,18);
+  ctx.restore();
+  ctx.textAlign='left';
+}
+function drawOvalMiniStatue(x,y,variant,scale=1){
+  ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
+  ctx.fillStyle='#8a6b2f'; ctx.fillRect(-9,12,18,6);
+  ctx.fillStyle='#d4af37';
+  if (variant===1){ ctx.fillRect(-3,-4,6,16); ctx.fillRect(-9,3,18,6); ctx.fillRect(-2,-10,4,6); }
+  else if (variant===2){ ctx.fillRect(-2,-6,4,18); ctx.fillRect(-10,2,20,5); ctx.fillRect(-2,-12,4,6); }
+  else { ctx.fillRect(-5,-3,10,15); ctx.fillRect(-2,-9,4,6); }
+  ctx.fillStyle='rgba(255,255,255,.28)'; ctx.fillRect(-4,-5,2,13);
+  ctx.restore();
+}
+function drawOvalArtifact(x,y,item,scale=1){
+  ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
+  if (item.kind==='pulitzer'){
+    ctx.fillStyle='#B22234'; ctx.fillRect(-7,-26,5,18);
+    ctx.fillStyle='#fff'; ctx.fillRect(-2,-26,4,18);
+    ctx.fillStyle='#3C3B6E'; ctx.fillRect(2,-26,5,18);
+    ctx.fillStyle='#d4af37'; ctx.beginPath(); ctx.arc(0,-5,11,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#8a6b2f'; ctx.fillRect(-11,8,22,7);
+  } else if (item.kind==='fifa'){
+    ctx.fillStyle='#8a6b2f'; ctx.fillRect(-13,10,26,7);
+    ctx.fillStyle='#d4af37'; ctx.fillRect(-4,-8,8,18);
+    ctx.beginPath(); ctx.arc(0,-15,12,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(0,-15,8,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#111'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(-6,-15); ctx.lineTo(6,-15); ctx.moveTo(0,-22); ctx.lineTo(0,-8); ctx.stroke();
+  } else if (item.kind==='sharpie'){
+    ctx.fillStyle='#6b4a2b'; ctx.fillRect(-14,-20,28,25);
+    ctx.fillStyle='#e7f0d8'; ctx.fillRect(-11,-17,22,19);
+    ctx.strokeStyle='#111'; ctx.lineWidth=2; ctx.beginPath();
+    ctx.moveTo(-8,-7); ctx.quadraticCurveTo(-2,-14,5,-7); ctx.lineTo(9,-12); ctx.stroke();
+    ctx.fillStyle='#111'; ctx.fillRect(-4,8,8,7);
+  } else if (item.kind==='coke'){
+    ctx.fillStyle='#202020'; ctx.fillRect(-14,8,28,7);
+    ctx.fillStyle='#b00000'; ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(255,170,170,.55)'; ctx.beginPath(); ctx.arc(-4,-5,5,0,Math.PI*2); ctx.fill();
+  } else if (item.kind==='statue'){
+    drawOvalMiniStatue(0,0,item.variant,1);
+  }
+  ctx.restore();
+}
+function drawOvalArtifactWall(){
+  const compact=OV.compact;
+  const loot=(OV.shelfLoot||[]).map(v=>({kind:'statue',variant:v,label:'KREMLIN'}));
+  const base=[
+    {kind:'pulitzer',label:'PULITZER'},
+    {kind:'fifa',label:'FIFA PEACE'},
+    {kind:'sharpie',label:'SHARPIE'},
+    {kind:'coke',label:'DIET COKE'}
+  ];
+  const items=(compact ? base.slice(0,3) : base).concat(loot).slice(0,compact?6:8);
+  const shelfW=compact?232:354;
+  const shelfX=OV.tv.cx-shelfW/2;
+  const shelfY=OV.tv.cy+OV.tv.h/2+(compact?26:32);
+  ctx.save();
+  ctx.fillStyle='rgba(150,118,70,.15)';
+  roundRectPath(ctx,shelfX-8,shelfY-48,shelfW+16,58,8); ctx.fill();
+  ctx.fillStyle='#d9d2c4'; ctx.fillRect(shelfX,shelfY,shelfW,8);
+  ctx.fillStyle='#c2a26a'; ctx.fillRect(shelfX,shelfY+8,shelfW,4);
+  ctx.fillStyle='#8a6b2f'; ctx.font=`900 ${compact?7:8}px system-ui`; ctx.textAlign='center';
+  items.forEach((item,i)=>{
+    const x=shelfX+shelfW/(items.length+1)*(i+1);
+    drawOvalArtifact(x,shelfY-12,item,compact ? .82 : .92);
+    ctx.fillText(item.label,x,shelfY+22);
+  });
+  ctx.textAlign='left';
+  ctx.restore();
 }
 function drawOvalBackdrop(){
   // wall
@@ -2694,26 +2871,9 @@ function drawOvalBackdrop(){
   for (let y=40;y<GROUND_Y-80;y+=30)
     for (let x=Math.floor(CAM.x/50)*50;x<CAM.x+CAM.viewW+50;x+=50){
       ctx.beginPath(); ctx.ellipse(x,y,18,8,0,0,Math.PI*2); ctx.fill();
-    }
+  }
   ctx.restore();
-  // floating shelves with gold statues (+ anything stolen from the Kremlin)
-  const shelfY=GROUND_Y-160;
-  const loot=OV.shelfLoot||[];
-  [[40,240],[860,300]].forEach(([sx,sw],shelfIdx)=>{
-    ctx.fillStyle='#d9d2c4'; ctx.fillRect(sx,shelfY,sw,8);
-    ctx.fillStyle='#cfc7b6'; ctx.fillRect(sx,shelfY+8,sw,3);
-    const extra=loot.filter((_,i)=>i%2===shelfIdx);
-    const slots=3+extra.length;
-    for (let i=1;i<=slots;i++){
-      const stx=Math.round(sx+sw/(slots+1)*i);
-      const variant = i<=3 ? i : extra[i-4];
-      ctx.fillStyle='#8a6b2f'; ctx.fillRect(stx-10,shelfY-16,20,16);
-      ctx.fillStyle='#d4af37';
-      if (variant===1){ ctx.fillRect(stx-3,shelfY-40,6,24); ctx.fillRect(stx-12,shelfY-28,24,8); }
-      else if (variant===2){ ctx.fillRect(stx-2,shelfY-42,4,26); ctx.fillRect(stx-10,shelfY-34,20,6); }
-      else { ctx.fillRect(stx-4,shelfY-36,8,20); ctx.fillRect(stx-2,shelfY-44,4,8); }
-    }
-  });
+  drawOvalArtifactWall();
   // carpet with seal
   ctx.fillStyle='#d4c6a6'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
   ctx.save();
@@ -2731,10 +2891,10 @@ function drawDoor(x,y){
   ctx.restore();
 }
 function drawOval(){
+  ovalApplyLayout();
   beginWorld();
   drawOvalBackdrop();
   drawDoor(OV.door.x,OV.door.y);
-  drawYesGroup(OV.yes.x,OV.yes.y);
   OV.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
   if (!entryHeli.active) drawHeli(OV.heli.x,OV.heli.y,0.35);
   drawTrump(player.x,player.y,player.facing);
@@ -2744,8 +2904,8 @@ function drawOval(){
   drawOvalMedalDrop();
   const placed=[];
   renderActorBubble(player,placed,'trump');
-  renderActorBubble(OV.yes,placed,'default');
   endWorld();
+  drawOvalYesPopups();
 }
 /* ================================================================
    10C. KREMLIN SCENE — handshake battle, statue heists, Wagner
@@ -4665,7 +4825,7 @@ function intentTap(wx,wy){
     }
   } else if (scene===SCENE.OVAL){
     nearFn=nearestOV;
-    const targets=[OV.door,OV.heli,OV.policy,OV.surprise,OV.yes];
+    const targets=[OV.door,OV.heli,OV.policy,OV.surprise];
     for (const o of targets){
       const d = dist2(wx,wy,o.x,o.y-20);
       if (d<bd){ bd=d; best=o; }
@@ -4989,10 +5149,13 @@ function step(t){
         });
       }
     }
-    // camera: in Oval, keep Trump, desk buttons and yes-men in the same mobile frame
+    // camera: in Oval, keep the compact desk/buttons/screen composition readable
     let camFocus=player.x;
     if (scene===SCENE.OVAL){
-      camFocus=(player.x+OV.surprise.x+OV.yes.x)/3;
+      const deskFocus=OV.cameraFocus || (OV.deskX+OV.deskW/2);
+      if (entryHeli.active || OV.d.phase==='arriving' || walkTween) camFocus=(player.x+deskFocus)/2;
+      else if (player.x < OV.deskX-70) camFocus=player.x+65;
+      else camFocus=deskFocus;
     }
     updateCamera(camFocus);
 
