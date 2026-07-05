@@ -90,6 +90,19 @@ Scenen er derfor ført tilbage til den simple satiriske kerne:
   Diet Coke-knap som små Trump-artefakter
 - ✅ Policy-listen er skrevet om med kortere, mere punchy Trump-satire
 
+### Oval Office reaction/UI-polish — opdateret 2026-07-05
+
+- ✅ Yes-men cut-ins har nu podie/skygge og lavere screen-ankre, så de føles
+  som indkig fra skærmkanten i stedet for figurer der svæver frit
+- ✅ Talebobler på touch respekterer nu top-HUD/browser safe area,
+  så de ikke klemmes op under UI'en på smalle skærme
+
+### Global mobil-UI simplification — opdateret 2026-07-05
+
+- ✅ Den faste grønne/røde top-levelbar er fjernet for at frigive plads
+- ✅ Helikopterens levelselecter viser nu gennemført status pr. destination:
+  `✓` + medaljeikon ved gennemført, `○` ved ikke-gennemført
+
 ## iPhone-test 2026-07-03 (Kristian) — GODKENDT ✅
 
 - ✅ Styring: gå + to-finger-hop virker

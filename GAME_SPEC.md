@@ -96,8 +96,10 @@ Isbjerge er store: plant-check bruger kant-afstand ≤ 30 px (ikke center).
 | Kremlin | Nobel | 🏅 | Vind håndtryks-kampen mod Putin |
 | Epstein | Art Diploma | 🎨 | Redact alle dokumenter + tegningen |
 | Golf | FIFA Trophy | 🏆 | Slå Biden |
-- Top-center: fremskridts-pills (Greenland/White House/Kremlin/Epstein files/
-  Mar-a-Lago) — grøn+🏅 ved medalje, aktiv bane fremhævet. Top-right: medalje-ikoner.
+- Top-levelbar er fjernet for at give mere skærmplads på mobil. Completion
+  vises i helikopterens levelselecter med `✓` + medaljeikon for gennemførte
+  baner og `○` for ikke-gennemførte baner. Top-right viser stadig medalje-
+  ikoner som kompakt samlet status.
 - Medalje-tildeling: fanfare + "🏅 MEDALJE: <navn>!"-boble.
 - Prestige-drops (fælles fysik: fald + dæmpet pendulsving + konfetti):
   Grønlandsflag på hovedet, guldmedalje på brystet (Oval), Nobel (Kremlin),
@@ -222,9 +224,10 @@ strong handshake incoming." · Golf: "Time for some golf!").
 synlig artefaktvæg under skærmen (Pulitzer, FIFA PEACE-pokal, Sharpie-kort,
 Diet Coke-knap + evt. stjålne Kremlin-statuer), Resolute Desk med to reelle,
 flade trykknapper: sort **POLICY/RANDOM**-knap og stor rød **DO NOT
-PRESS**-knap med hazard-base. Yes-men bruges som reaction cut-ins:
-QAnon-mand, Fox-host og Vance-type popper ind ved policy-tryk i stedet for
-at stå permanent i mobilbeskæringen. Dør + helikopter. 7 guldbarrer.
+PRESS**-knap med hazard-base. Yes-men bruges som screen-edge reaction cut-ins
+med podie/skygge: QAnon-mand, Fox-host og Vance-type popper ind ved
+policy-tryk i stedet for at stå permanent i mobilbeskæringen. Dør +
+helikopter. 7 guldbarrer.
 
 **Presidential Decisions v3:** Trump lander med helikopter på scenens venstre
 side og går derefter til skrivebordet.

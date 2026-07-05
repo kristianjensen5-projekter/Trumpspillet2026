@@ -24,9 +24,9 @@
     background:rgba(0,0,0,.55);border-radius:10px;padding:4px 8px}
   .chip canvas{display:block}
 
-  /* --- Progress pills (top-center) --- */
+  /* --- Progress pills removed: completion now lives in the helicopter level select. --- */
   .areas{position:fixed;left:50%;top:max(8px,env(safe-area-inset-top));transform:translateX(-50%);
-    z-index:10;display:flex;gap:5px;flex-wrap:nowrap;max-width:96vw;overflow-x:auto;
+    z-index:10;display:none;gap:5px;flex-wrap:nowrap;max-width:96vw;overflow-x:auto;
     pointer-events:none;scrollbar-width:none}
   .areas::-webkit-scrollbar{display:none}
   .pill{background:rgba(0,0,0,.7);color:#fff;border-radius:10px;padding:4px 9px;
@@ -608,11 +608,30 @@ document.getElementById('help-toggle').addEventListener('click', ()=>{
 
 function renderAreas(){
   areasEl.innerHTML='';
-  DATA.AREAS.forEach(([k,label])=>{
-    const d=document.createElement('span');
-    d.className = 'pill' + (GS.medals[k]?' done':'') + (scene===k?' active':'');
-    d.textContent = label + ' ' + (GS.medals[k]?'🏅':'◯');
-    areasEl.appendChild(d);
+  areasEl.hidden=true;
+}
+
+const HELI_DESTINATIONS = [
+  { key:'greenland', scene:SCENE.GREENLAND, label:'Greenland' },
+  { key:'oval', scene:SCENE.OVAL, label:'White House' },
+  { key:'kremlin', scene:SCENE.KREMLIN, label:'Kremlin' },
+  { key:'epstein', scene:SCENE.EPSTEIN, label:'Epstein files' },
+  { key:'golf', scene:SCENE.GOLF, label:'Mar-a-Lago' }
+];
+function heliLevelLabel(dest){
+  const done=!!GS.medals[dest.key];
+  const icon=(DATA.MEDALS[dest.key] && DATA.MEDALS[dest.key].icon) || '🏅';
+  return `${done?'✓':'○'} ${dest.label}${done?' '+icon:''}`;
+}
+function openHeliLevelSelect(currentScene){
+  ensureAudio(); SFX.helicopter();
+  const destinations=HELI_DESTINATIONS.filter(d=>d.scene!==currentScene);
+  openChoice(DATA.GREENLAND.HELI_MENU_HEADER, ['Stay here', ...destinations.map(heliLevelLabel)], k=>{
+    closeChoice();
+    const idx=parseInt(k,10)-2;
+    if (idx<0) return;
+    const dest=destinations[idx];
+    if (dest){ SFX.whoosh(); switchScene(dest.scene); }
   });
 }
 
@@ -766,6 +785,11 @@ function roundRectPath(g,x,y,w,h,r){
   g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
   g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
 }
+function bubbleSafeTopWorld(){
+  if (!IS_TOUCH) return 6;
+  const topPx=(areasEl && areasEl.getBoundingClientRect) ? areasEl.getBoundingClientRect().bottom : 0;
+  return Math.max(6,(topPx+8)/CAM.scale);
+}
 /* Bubble layout rules (learned from mobile test 2026-07-03):
    1. Bubbles grow UPWARD from the speaker — the whole box sits above the
       head, never over the sprite (multi-line used to grow down over it).
@@ -785,10 +809,11 @@ function drawBubble(text,x,y,speaker,placed){
   let bx = x - w/2;                   // centered over speaker …
   bx = clamp(bx, CAM.x+6, CAM.x+CAM.viewW-w-6); // … but inside the view
   let by = headY - h - 10;            // whole box above the head
+  const safeTop=bubbleSafeTopWorld();
   const overlaps=(r1,r2)=>!(r1.x+r1.w<r2.x||r2.x+r2.w<r1.x||r1.y+r1.h<r2.y||r2.y+r2.h<r1.y);
   let tries=0;
-  while (placed.some(r=>overlaps({x:bx,y:by,w,h},r)) && tries<8){ by-=(h+10); tries++; }
-  by = Math.max(by, 6);               // never off the top of the world
+  while (placed.some(r=>overlaps({x:bx,y:by,w,h},r)) && tries<8 && by-(h+10)>safeTop){ by-=(h+10); tries++; }
+  by = Math.max(by, safeTop);         // never behind the fixed top UI
   placed.push({x:bx,y:by,w,h});
   const pal = BUBBLE_PAL[speaker]||BUBBLE_PAL.default;
   ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke; ctx.lineWidth=1.5;
@@ -2085,15 +2110,7 @@ function startGreenlandFight(){
 }
 
 function openHeliMenu(){
-  ensureAudio(); SFX.helicopter();
-  openChoice(DATA.GREENLAND.HELI_MENU_HEADER, DATA.GREENLAND.HELI_MENU, k=>{
-    closeChoice();
-    if (k==='1') return;
-    if (k==='2'){ SFX.whoosh(); switchScene(SCENE.OVAL); return; }
-    if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); return; }
-    if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); return; }
-    if (k==='5'){ SFX.whoosh(); switchScene(SCENE.GOLF); return; }
-  });
+  openHeliLevelSelect(SCENE.GREENLAND);
 }
 
 function openShop(){
@@ -2413,15 +2430,7 @@ function interactOval(){
     });
   }
   else if (obj.type==='heli'){
-    ensureAudio(); SFX.helicopter();
-    openChoice(DATA.GREENLAND.HELI_MENU_HEADER,
-      ['Stay here','Fly to Greenland','Fly to Moscow (meeting)','Epstein files','Fly to Mar-a-Lago (mini-putt)'], k=>{
-      closeChoice();
-      if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
-      else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.KREMLIN); }
-      else if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); }
-      else if (k==='5'){ SFX.whoosh(); switchScene(SCENE.GOLF); }
-    });
+    openHeliLevelSelect(SCENE.OVAL);
   }
   else if (obj.type==='policy'){ ovalPressPolicy(); }
   else if (obj.type==='surprise'){ ovalPressSurprise(); }
@@ -2596,6 +2605,20 @@ function drawOvalReactionText(text,x,y){
   ctx.fillStyle='#111'; ctx.fillText(text,x,y+1);
   ctx.restore();
 }
+function drawOvalReactionBase(edge){
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.28)';
+  ctx.beginPath(); ctx.ellipse(0,12,48,10,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#5f371b';
+  roundRectPath(ctx,-48,-16,96,34,7); ctx.fill();
+  ctx.fillStyle='#8a5a2a'; ctx.fillRect(-48,-19,96,8);
+  ctx.fillStyle='#3b2414'; ctx.fillRect(-38,8,76,6);
+  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.5;
+  roundRectPath(ctx,-48,-16,96,34,7); ctx.stroke();
+  ctx.fillStyle='#ffd54f'; ctx.font='900 7px system-ui'; ctx.textAlign='center';
+  ctx.fillText(edge==='bottom'?'MAGA FEED':'LIVE REACTION',0,2);
+  ctx.restore();
+}
 function drawOvalYesPopups(){
   const reactions=OV.yes.reactions||[];
   if (!reactions.length) return;
@@ -2608,16 +2631,17 @@ function drawOvalYesPopups(){
     const fade=1-clamp((age-(r.dur-280))/280,0,1);
     const alpha=Math.min(1,age/140)*fade;
     const compact=IS_TOUCH && VW<720;
+    const groundY=compact?Math.max(260,VH-118):Math.max(260,VH-112);
     const slots=compact
       ? [
-          {edge:'left',x:64,y:clamp(VH*.58,190,VH-190),scale:.82},
-          {edge:'right',x:VW-64,y:clamp(VH*.50,170,VH-230),scale:.78},
-          {edge:'bottom',x:VW*.52,y:VH-150,scale:.72}
+          {edge:'left',x:62,y:groundY,scale:.78},
+          {edge:'right',x:VW-62,y:groundY,scale:.76},
+          {edge:'bottom',x:VW*.52,y:groundY+22,scale:.68}
         ]
       : [
-          {edge:'left',x:128,y:VH-150,scale:1},
-          {edge:'right',x:VW-130,y:VH-150,scale:1},
-          {edge:'bottom',x:VW*.52,y:VH-118,scale:.92}
+          {edge:'left',x:128,y:groundY,scale:.95},
+          {edge:'right',x:VW-130,y:groundY,scale:.95},
+          {edge:'bottom',x:VW*.52,y:groundY+20,scale:.86}
         ];
     const slot=slots[r.slot%slots.length];
     let x=slot.x, y=slot.y;
@@ -2630,6 +2654,7 @@ function drawOvalYesPopups(){
     ctx.translate(x,y);
     ctx.scale(slot.scale,slot.scale);
     drawYesArchetype({...r,x:0},true,i);
+    drawOvalReactionBase(slot.edge);
     drawOvalReactionText(r.phrase||'YES!',0,-158);
     ctx.restore();
   });
@@ -2976,15 +3001,7 @@ function interactKremlin(){
       say(player,"They're blocking the helicopter!",1200);
       return;
     }
-    ensureAudio(); SFX.helicopter();
-    openChoice(DATA.GREENLAND.HELI_MENU_HEADER,
-      ['Stay here','Fly to Greenland','Fly to The White House','Epstein files','Fly to Mar-a-Lago (mini-putt)'], k=>{
-      closeChoice();
-      if (k==='2'){ SFX.whoosh(); switchScene(SCENE.GREENLAND); }
-      else if (k==='3'){ SFX.whoosh(); switchScene(SCENE.OVAL); }
-      else if (k==='4'){ SFX.whoosh(); switchScene(SCENE.EPSTEIN); }
-      else if (k==='5'){ SFX.whoosh(); switchScene(SCENE.GOLF); }
-    });
+    openHeliLevelSelect(SCENE.KREMLIN);
   }
 }
 function kremlinPlant(obj){
