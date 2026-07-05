@@ -219,39 +219,28 @@ strong handshake incoming." · Golf: "Time for some golf!").
 ## 4. Bane 2: White House / Oval Office
 
 **Miljø:** Tapetvæg med damask-mønster, kamin-hylder med guldstatuer (+ evt.
-stjålne fra Kremlin!), vægskærm-TV (Breaking News øverst + MAGA Dashboard med
-approval-bar og ✓/✗-ikoner nederst), Resolute Desk med 3 knapper: grøn **JA**,
-blå **NEJ**, stor rød **SURPRISE** under glaskuppel med hazard-striber og
-"DO NOT PRESS". Yes-men-gruppe (3 MAGA-fans, blinker/nikker, hepper "YES!"
-eller buher "BOO!" med skilte). Dør + helikopter. 7 guldbarrer.
+stjålne fra Kremlin!), vægskærm-TV med **EXECUTIVE SCREEN**, Resolute Desk
+med to reelle knapper: sort **POLICY/RANDOM**-knap og stor rød **DO NOT
+PRESS** under glaskuppel med hazard-striber. Yes-men-gruppe med tre
+arketyper: QAnon-mand, Fox-host og Vance-type. Dør + helikopter. 7
+guldbarrer.
 
-**Presidential Decisions:** Trump auto-går til skrivebordet (x 560) →
-3 gæster (af 6 mulige) kommer ind fra højre én ad gangen. Rækkefølge:
-**2 tilfældige ikke-Shaman + QAnon Shaman altid sidst**.
+**Presidential Decisions v3:** Trump går til skrivebordet efter heli-entry.
+Spilleren kan frit styre ham som i Greenland og interagere via action-cirkel,
+tap på knap eller `E`.
 
-| Gæst | Spørgsmål | Korrekt svar |
-|---|---|---|
-| CNN Reporter | "Mr. President, will you condemn violence at the Capitol?" | NEJ |
-| VP JD Vance (stort hoved, skæg) | "Sir, should we CUT taxes for billionaires?" | JA |
-| QAnon Shaman (kræver tan ≥ 2) | "Sir, was the moon landing FAKE?" | NEJ |
-| Elon Musk | "Mr. President, skal Twitter FORBLIVE X?" | JA |
-| Marjorie T. Greene | "Mr. President, are Democrats ACTUALLY people?" | NEJ |
-| Fox News Host | "Mr. President, did you LOSE the 2020 election?" | NEJ |
-
-(Hver gæst har yes/no-svar-replik + newsCorrect/newsWrong-overskrifter til
-Breaking News — kopiér ordret fra `#game-text-data`-JSON-blokken i original.)
-
-- Korrekt: +33 % approval, "MAGA godkender! ✓", grøn breaking news, jubel.
-- Forkert: −15 %, "MAGA afviser! ✗", rød breaking news, buh.
-- **Shaman uden tan ≥ 2** (købt OG anvendt): "You are too pale to be our
-  leader! Real Trump has a BEAUTIFUL tan!" → session pauses, fri bevægelse,
-  "Get a tan from the Greenland shop, then come back!" — ved retur med tan
-  genoptages samme gæst.
-- Shaman korrekt → bonus-hint: "Oh, and by the way... Try pressing the big
-  red button!" (4 s).
-- 100 % approval (3 korrekte) → medalje-drop + "I am the greatest president!".
-- **SURPRISE-knappen: ALTID atommissil** (stiger 3,2 s med nuklear-symbol,
-  rystelse) → game over 'nuke'.
+- **Sort POLICY-knap:** vælger et tilfældigt policy-forslag fra
+  `DATA.OVAL.POLICIES`, flasher skærmen og får yes-men til at juble.
+- Skærmen viser titel + kort policytekst. Nogle policies bruger billeder fra
+  `assets/oval office/` (`trumpjesus.jpeg`, `obamaabes.jpeg`), hvor racistisk
+  AI-content vises censureret/flagget i stedet for råt.
+- Policies gentages ikke direkte, hvis der findes alternativer.
+- **Pulitzer-medalje:** gives efter 5 policy-tryk; herefter kan spilleren
+  fortsætte med at trykke for flere jokes uden retry/fail-state.
+- **Rød DO NOT PRESS-knap:** launcher altid atommissil (3,2 s, rystelse) →
+  game over `nuke` → voting machine/continue-flow → respawn.
+- Gammel gæstequiz, YES/NO-kort, approval-score og selvbruner-aide er
+  fjernet fra runtime.
 
 ---
 

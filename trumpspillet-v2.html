@@ -127,7 +127,7 @@
   },
   "MEDALS": {
     "greenland": { "name": "Greenland flag", "icon": "🇬🇱", "desc": "Annex Greenland" },
-    "oval":      { "name": "Pulitzer",       "icon": "📰", "desc": "Reach 100% MAGA approval" },
+    "oval":      { "name": "Pulitzer",       "icon": "📰", "desc": "Govern by surprise from the Oval Office" },
     "kremlin":   { "name": "Nobel",          "icon": "🏅", "desc": "Win arm-wrestling with Putin" },
     "epstein":   { "name": "Art Diploma",    "icon": "🎨", "desc": "Redact all documents" },
     "golf":      { "name": "FIFA Trophy",    "icon": "🏆", "desc": "Beat Sleepy Joe at golf" }
@@ -175,88 +175,33 @@
     }
   },
   "OVAL": {
-    "INTRO_CARD": "PRESIDENTIAL DECISIONS\n\n3 guests will ask you questions.\nAnswer whatever keeps MAGA happy —\ntruth is optional.\n\n3 correct answers = the Pulitzer.\n\nAnd whatever you do:\nDO NOT press the big red button.\n\nTap or press any key to begin",
-    "GUESTS": [
-      {
-        "id": "journalist", "name": "CNN Reporter",
-        "question": "Mr. President, will you condemn violence at the Capitol?",
-        "yesText": "Of course I condemn all violence!",
-        "noText": "No! It was a peaceful protest!",
-        "correctAnswer": "no",
-        "newsCorrect": "TRUMP REFUSES TO CONDEMN! MAGA base cheers",
-        "newsWrong": "TRUMP CONDEMNS JAN. 6! \"He betrayed us,\" voters say",
-        "appearance": { "hair": "#3a2a1a", "suit": "#1a1a2e", "tie": "#8b0000", "isF": true, "hasGlasses": true, "hasNotepad": true }
-      },
-      {
-        "id": "vance", "name": "VP JD Vance",
-        "question": "Sir, should we CUT taxes for billionaires?",
-        "yesText": "YES! Trickle down works perfectly!",
-        "noText": "No, they pay plenty already...",
-        "correctAnswer": "yes",
-        "newsCorrect": "TAX CUTS FOR THE RICH! \"Genius,\" says Wall Street",
-        "newsWrong": "TRUMP BETRAYS DONORS! Billionaires threaten to switch parties",
-        "appearance": { "hair": "#3a3a3a", "suit": "#1a1a2e", "tie": "#8b0000", "hasBeard": true, "bigHead": true }
-      },
-      {
-        "id": "shaman", "name": "QAnon Shaman",
-        "question": "Sir, was the moon landing FAKE?",
-        "yesText": "Yes! NASA lies about everything!",
-        "noText": "No, America really landed there!",
-        "correctAnswer": "no",
-        "requiresTan": true,
-        "noTanText": "You are too pale to be our leader! Real Trump has a BEAUTIFUL tan!",
-        "tanPraise": "THAT is a beautiful presidential tan. Respect.",
-        "newsCorrect": "TRUMP PRAISES MOON LANDING! \"America's greatest triumph\"",
-        "newsWrong": "TRUMP CALLS NASA FRAUDS! Astronauts furious",
-        "triggersBonus": true,
-        "appearance": { "isShaman": true }
-      },
-      {
-        "id": "elon", "name": "Elon Musk",
-        "question": "Mr. President, should Twitter STAY X?",
-        "yesText": "Yes! X is a genius name!",
-        "noText": "No, bring the Twitter name back!",
-        "correctAnswer": "yes",
-        "newsCorrect": "TRUMP LOVES X! \"Musk is a genius,\" says the president",
-        "newsWrong": "TRUMP SLAMS MUSK! Tech alliance crumbling",
-        "appearance": { "hair": "#2a2a2a", "suit": "#1a1a1a", "tie": null, "isElon": true }
-      },
-      {
-        "id": "mtg", "name": "Marjorie T. Greene",
-        "question": "Mr. President, are Democrats ACTUALLY people?",
-        "yesText": "No! They are reptiles from space!",
-        "noText": "Yes, they are just stupid people...",
-        "correctAnswer": "no",
-        "newsCorrect": "TRUMP: \"Democrats are people — just mistakes\"",
-        "newsWrong": "TRUMP CALLS DEMOCRATS ALIENS! UN demands explanation",
-        "appearance": { "hair": "#e6c866", "suit": "#c41e3a", "tie": null, "isF": true, "hasFlag": true }
-      },
-      {
-        "id": "foxnews", "name": "Fox News Host",
-        "question": "Mr. President, did you LOSE the 2020 election?",
-        "yesText": "Yes, Biden won fair and square...",
-        "noText": "NO! It was STOLEN from me!",
-        "correctAnswer": "no",
-        "newsCorrect": "TRUMP: \"THE ELECTION WAS STOLEN!\" MAGA base mobilizes",
-        "newsWrong": "SHOCK! TRUMP ADMITS DEFEAT! \"Biden won,\" he says",
-        "appearance": { "hair": "#8b6914", "suit": "#1a1a2e", "tie": "#002868", "isF": true, "hasMic": true }
-      }
+    "INTRO_CARD": "THE OVAL OFFICE\n\nTwo buttons. One president.\n\nBLACK BUTTON:\nInstant policy. No process, no warning.\n\nRED BUTTON:\nIt says DO NOT PRESS.\nThat has never stopped anyone.\n\nPush five policies to earn the Pulitzer.\nTap or press any key to begin",
+    "POLICIES": [
+      { "title": "TARIFF WHEEL", "body": "Spin the tariff wheel: 10% for friends, 47% for enemies, 200% if a country looked at him funny." },
+      { "title": "GREENLAND OFFER", "body": "Reopen the Greenland purchase. Counteroffer: one casino chip, two hats and the best ice." },
+      { "title": "AI MESSIAH POST", "body": "Holy AI art declares him chosen. Eagles, miracles and no follow-up questions.", "media": "trumpJesus", "mediaMode": "image", "kicker": "SOCIAL POST" },
+      { "title": "RACIST AI REPOST", "body": "Racist AI post flagged. The cruelty becomes the policy instead of a joke.", "media": "obamaMonkeys", "mediaMode": "censored", "kicker": "FLAGGED REPOST" },
+      { "title": "NATO BILL", "body": "Send NATO allies an invoice with late fees, a tip line and a checkbox marked 'say thank you'." },
+      { "title": "SHARPIE WEATHER", "body": "Correct the hurricane map with a marker. Meteorologists can appeal at Mar-a-Lago, hole 9." },
+      { "title": "LOYALTY TEST", "body": "Every agency must answer: 'Was everything perfect?' Wrong answers are classified as deep state weather." },
+      { "title": "FOX CONFIRMATION", "body": "No policy is official until three TV hosts nod at the same time and call it presidential genius." },
+      { "title": "PARDON FRIDAY", "body": "Patriots, donors and guys from the group chat may apply for pardons before lunch." },
+      { "title": "TRUTH DANCE", "body": "TikTok is banned, unbanned, bought, renamed TRUTH DANCE and sold as a campaign hat." },
+      { "title": "ENERGY DOMINANCE", "body": "Windmills must apologize on camera. Oil rigs receive medals and a personalized thank-you post." },
+      { "title": "PRESS ACCESS", "body": "Friendly questions get front-row seats. Unfriendly questions are fake, rude and possibly Canadian." },
+      { "title": "MARKET ORDER", "body": "The stock market must go up on camera days. Red numbers are declared election interference." },
+      { "title": "GOLF DIPLOMACY", "body": "A peace summit is scheduled between two putts. Attendance requires membership and compliments." }
     ],
     "COINS": [[300,-40],[500,-45],[700,-35],[900,-43],[400,-38],[800,-42],[600,-65]],
     "LINES": {
       "arrive": "Back at the Resolute Desk — the best!",
-      "aideTan": "Sir! Your emergency tan!",
-      "aideDone": "Beautiful. Very presidential.",
-      "tanApplied": "Now THAT is a healthy glow!",
-      "bonusHint": "Oh, and by the way... try pressing the big red button!",
-      "complete": "Three tremendous decisions! The best president!",
-      "failCard": "MAGA IS DISAPPOINTED\n\nFake president! Low energy!\n\nTap or press any key to try again",
-      "waitGuest": "Wait for a guest to arrive...",
-      "approveText": "MAGA approves! ✓",
-      "rejectText": "MAGA rejects! ✗"
+      "policyDefault": "Press the black button to govern by surprise.",
+      "complete": "Five executive surprises! The Pulitzer people are crying.",
+      "policyTap": "Perfect policy.",
+      "buttonHint": "Stand by a button first.",
+      "nukeLine": "Who wrote this label?"
     },
-    "PRAISE": ["Genius move, sir!", "Historic leadership!", "Best decision ever!", "Total victory!", "Markets love it!"],
-    "BOO": ["Boooo!", "Not cool!", "Sad!", "Wrong answer!", "Fake decision!"]
+    "PRAISE": ["Genius move, sir!", "Historic leadership!", "Best decision ever!", "Very legal. Very cool.", "So much governing."]
   },
   "KREMLIN": {
     "INTRO_CARD": "MOSCOW. THE KREMLIN.\n\nPutin wants to settle Ukraine\nthe old way: ARM WRESTLING.\n\nWin the handshake, win the map.\n\nAnd those gold statues?\nNobody is watching... probably.\n\nTap or press any key",
@@ -2287,7 +2232,7 @@ function doTweet(){
     else lines.push('Great day in Greenland. Beautiful ice!');
     GL.state.hasTweeted=true;
   } else if (scene===SCENE.OVAL){
-    const score = OV.d && typeof OV.d.correct==='number' ? ` Approval numbers: ${OV.d.correct}/3 perfect decisions.` : '';
+    const score = OV.d && OV.d.policyCount ? ` Policies today: ${OV.d.policyCount}. Very productive.` : '';
     lines.push('Working hard in the Oval Office.'+score);
   } else if (scene===SCENE.KREMLIN){
     RELATIONSHIPS.putin.trust=clamp(RELATIONSHIPS.putin.trust-18,0,100);
@@ -2315,186 +2260,108 @@ function doTweet(){
 }
 
 /* ================================================================
-   10B. OVAL OFFICE SCENE — "Presidential Decisions"
-   Package B simplification (Kristian 2026-07-03): tappable answer
-   cards instead of desk-button walking, self-tanner joke resolved
-   in-scene by an aide, honest 3/3 scoring with instant retry.
+   10B. OVAL OFFICE SCENE — simple two-button policy satire.
+   Black button: random policy. Red button: nuke.
    ================================================================ */
 const OL = DATA.OVAL.LINES;
+const OVAL_POLICY_IMAGES = {};
+function loadOvalPolicyImage(key,src){
+  const img=new Image();
+  img.decoding='async';
+  img.src=src;
+  img.onerror=()=>{ img.__broken=true; };
+  OVAL_POLICY_IMAGES[key]=img;
+}
+loadOvalPolicyImage('trumpJesus','assets/oval%20office/trumpjesus.jpeg');
+loadOvalPolicyImage('obamaMonkeys','assets/oval%20office/obamaabes.jpeg');
 const OV = {
-  deskX: 420, deskW: 340, trumpDeskX: 560, guestTargetX: 775, // guest stops at the desk edge so portrait phones see both parties
+  deskX: 438, deskW: 400, trumpDeskX: 506,
   door:{x:140,y:GROUND_Y,type:'door'},
   heli:{x:160,y:GROUND_Y-18,type:'heli'},
-  yes:{x:980,y:GROUND_Y,type:'yes',say:'',speakingUntil:0,mood:'happy',members:[]},
-  surprise:{x:0,y:0,type:'surprise',pressed:false}, // x set in resetOval
-  aide:{active:false,x:-60,y:GROUND_Y,phase:null,say:'',speakingUntil:0},
-  guest:{x:0,y:GROUND_Y,visible:false,say:'',speakingUntil:0},
+  policy:{x:0,y:0,r:22,type:'policy',pressed:false},
+  surprise:{x:0,y:0,r:36,type:'surprise',pressed:false},
+  yes:{x:815,y:GROUND_Y,type:'yes',say:'',speakingUntil:0,mood:'happy',members:[]},
   coins:[],
-  d:{} // decisions state
+  d:{} // simple policy state
 };
 function resetOval(){
   player.x=190; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
-  OV.surprise.x = OV.deskX+OV.deskW-50; OV.surprise.y = GROUND_Y-44;
-  OV.yes.members=[0,1,2].map(i=>({nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28,isF:i!==1}));
-  OV.yes.say=''; OV.yes.speakingUntil=0;
-  OV.aide={active:false,x:-60,y:GROUND_Y,phase:null,say:'',speakingUntil:0};
-  OV.guest={x:CAM.worldW+60,y:GROUND_Y,visible:false,say:'',speakingUntil:0};
+  OV.policy.x=OV.deskX+138; OV.policy.y=GROUND_Y-28;
+  OV.surprise.x=OV.deskX+306; OV.surprise.y=GROUND_Y-14;
+  OV.yes.members=[
+    {kind:'qanon',label:'QANON',x:0,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28},
+    {kind:'fox',label:'FOX HOST',x:60,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28},
+    {kind:'vance',label:'VANCE',x:120,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28}
+  ];
+  OV.yes.say=''; OV.yes.speakingUntil=0; OV.yes.mood='happy';
   OV.coins = DATA.OVAL.COINS.map(([x,dy])=>({x,y:GROUND_Y+dy,collected:false,type:'coin'}));
   resetOvalDecisions();
   playEntryHeli(OL.arrive);
 }
 function resetOvalDecisions(){
-  // 2 random non-Shaman guests + Shaman always last
-  const shamanIdx = DATA.OVAL.GUESTS.findIndex(g=>g.id==='shaman');
-  const others = DATA.OVAL.GUESTS.map((_,i)=>i).filter(i=>i!==shamanIdx);
-  for (let i=others.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [others[i],others[j]]=[others[j],others[i]]; }
   OV.d = {
-    phase:'arriving',        // arriving → intro → waiting → guest_entering → guest_asking
-                             // → answered → (bonus) → guest_leaving → … → complete/failed
-                             // tan detour: tan_reject → aide_in → tan_wait → aide_out → re-ask
-    order:[...others.slice(0,2), shamanIdx],
-    idx:-1, correct:0, results:[],
-    breakingNews:null, feedback:null, timer:0,
-    _btnYes:null,_btnNo:null
+    phase:'arriving',
+    policy:null, policyCount:0, completed:false,
+    policyFlashUntil:0, cheerUntil:0, lastPressAt:0,
+    _lastPolicyTitle:null
   };
 }
 function ovalCurrentGuest(){
-  const d=OV.d;
-  return (d.idx>=0 && d.idx<d.order.length) ? DATA.OVAL.GUESTS[d.order[d.idx]] : null;
+  return null;
 }
 function ovalStartIntroCard(){
   OV.d.phase='intro';
   openInfoCard(DATA.OVAL.INTRO_CARD, ()=>{
     closeInfoCard();
-    OV.d.phase='waiting'; OV.d.timer=now()+700;
+    OV.d.phase='play';
+    say(player,'Back at the desk. Tremendous.',1600);
   });
 }
-function ovalNextGuest(){
-  const d=OV.d;
-  d.idx++;
-  if (d.idx>=d.order.length){
-    if (d.correct>=3){
-      d.phase='complete';
-      say(player, OL.complete, 2500);
-      awardMedal('oval');
-      startOvalMedalDrop();
-    } else {
-      d.phase='failed';
-      openInfoCard(OL.failCard, ()=>{ closeInfoCard(); resetOvalDecisions(); OV.d.phase='waiting'; OV.d.timer=now()+700; });
-    }
-    return;
-  }
-  OV.guest.x=CAM.worldW+60; OV.guest.visible=true;
-  OV.guest.say=''; OV.guest.speakingUntil=0;
-  d.phase='guest_entering';
+function ovalPickPolicy(){
+  const policies=DATA.OVAL.POLICIES||[];
+  if (!policies.length) return null;
+  let next=pick(policies);
+  for (let i=0;i<5 && next && next.title===OV.d._lastPolicyTitle;i++) next=pick(policies);
+  OV.d._lastPolicyTitle=next.title;
+  return next;
 }
-function ovalAskQuestion(){
-  const d=OV.d, g=ovalCurrentGuest();
-  if (g.requiresTan && (player.tanLevel||0)<2 && !d.tanSolved){
-    OV.guest.say=g.noTanText; OV.guest.speakingUntil=now()+5000;
-    d.phase='tan_reject'; d.timer=now()+2600;
-    return;
+function ovalPressPolicy(){
+  const d=OV.d, t=now();
+  if (NUKE.active || GS.over || !['play','complete'].includes(d.phase) || t-d.lastPressAt<300) return;
+  d.lastPressAt=t;
+  d.policy=ovalPickPolicy();
+  d.policyCount++;
+  d.policyFlashUntil=t+430;
+  d.cheerUntil=t+1550;
+  OV.policy.pressed=true;
+  setTimeout(()=>{ OV.policy.pressed=false; },160);
+  ovalChoir(true);
+  say(player, pick(DATA.OVAL.PRAISE)||OL.policyTap, 1500);
+  spawnSparks(OV.policy.x, OV.policy.y-8, 14);
+  ensureAudio(); SFX.buttonPress(); setTimeout(()=>SFX.success(),90);
+  if (!d.completed && d.policyCount>=5){
+    d.completed=true;
+    d.phase='complete';
+    say(player, OL.complete, 2600);
+    awardMedal('oval');
+    startOvalMedalDrop();
+    setTimeout(()=>{ if (scene===SCENE.OVAL && OV.d.phase==='complete') OV.d.phase='play'; },1700);
   }
-  if (g.requiresTan && (player.tanLevel||0)>=2 && !d.tanPraised){
-    d.tanPraised=true;
-    OV.guest.say=g.tanPraise; OV.guest.speakingUntil=now()+2200;
-    setTimeout(()=>{ if (OV.d.phase==='guest_asking'){ OV.guest.say=g.question; OV.guest.speakingUntil=now()+60000; } },2300);
-  } else {
-    OV.guest.say=g.question; OV.guest.speakingUntil=now()+60000;
-  }
-  d.phase='guest_asking';
 }
-function ovalAnswer(answer){
-  const d=OV.d, g=ovalCurrentGuest();
-  if (d.phase!=='guest_asking'||!g) return;
-  const isCorrect = answer===g.correctAnswer;
-  say(player, answer==='yes'?g.yesText:g.noText, 2200);
-  OV.guest.speakingUntil=0;
-  if (isCorrect){
-    d.correct++;
-    d.results.push({correct:true});
-    d.feedback={text:OL.approveText, good:true, until:now()+2000};
-    d.breakingNews={text:g.newsCorrect, good:true, until:now()+4200};
-    ovalChoir(true); SFX.success();
-  } else {
-    d.results.push({correct:false});
-    d.feedback={text:OL.rejectText, good:false, until:now()+2000};
-    d.breakingNews={text:g.newsWrong, good:false, until:now()+4200};
-    ovalChoir(false); SFX.error();
-  }
-  d.pendingBonus = isCorrect && !!g.triggersBonus;
-  d.phase='answered'; d.timer=now()+2100;
-}
+function ovalAnswer(){ /* legacy no-op kept for stale saved/debug calls */ }
 function ovalChoir(happy){
-  OV.yes.say = happy ? pick(DATA.OVAL.PRAISE) : pick(DATA.OVAL.BOO);
+  OV.yes.say = happy ? 'YES! YES! YES!' : 'BOO!';
   OV.yes.mood = happy ? 'happy' : 'angry';
-  OV.yes.speakingUntil = now()+1600;
+  OV.yes.speakingUntil = now()+1500;
 }
 function updateOval(dt){
-  const d=OV.d, t=now(), walk=180;
-  // aide walking animation states
-  if (OV.aide.active){
-    if (OV.aide.phase==='in'){
-      const target=player.x-55;
-      OV.aide.x+=walk*dt;
-      if (OV.aide.x>=target){
-        OV.aide.x=target; OV.aide.phase='wait';
-        say(OV.aide, OL.aideTan, 60000);
-      }
-    } else if (OV.aide.phase==='out'){
-      OV.aide.x-=walk*dt;
-      if (OV.aide.x<=-60){ OV.aide.active=false; OV.aide.phase=null; ovalAskQuestion(); }
-    }
-  }
-  switch (d.phase){
-    case 'waiting':
-      if (t>=d.timer) ovalNextGuest();
-      break;
-    case 'guest_entering':
-      OV.guest.x-=walk*dt;
-      if (OV.guest.x<=OV.guestTargetX){ OV.guest.x=OV.guestTargetX; ovalAskQuestion(); }
-      break;
-    case 'tan_reject':
-      if (t>=d.timer){
-        d.phase='aide_in';
-        OV.aide.active=true; OV.aide.x=-60; OV.aide.phase='in';
-        say(player,'Too pale?! Somebody fix this!',1800);
-      }
-      break;
-    case 'answered':
-      if (t>=d.timer){
-        if (d.pendingBonus){
-          d.pendingBonus=false;
-          OV.guest.say=OL.bonusHint; OV.guest.speakingUntil=now()+3800;
-          d.phase='bonus'; d.timer=now()+3900;
-        } else { d.phase='guest_leaving'; }
-      }
-      break;
-    case 'bonus':
-      if (t>=d.timer) d.phase='guest_leaving';
-      break;
-    case 'guest_leaving':
-      OV.guest.x+=walk*dt;
-      if (OV.guest.x>=CAM.worldW+60){ OV.guest.visible=false; d.phase='waiting'; d.timer=now()+800; }
-      break;
-  }
-  // yes-men blink
-  OV.yes.members.forEach(m=>{ if (!m.nextBlink||t>m.nextBlink){ m.blinkUntil=t+120; m.nextBlink=t+2000+Math.random()*2500; } });
-}
-function ovalApplyTan(){
-  if (OV.d.phase!=='aide_in' && OV.d.phase!=='tan_wait') return;
-  if (OV.aide.phase!=='wait'){ OV.d.phase='tan_wait'; return; } // wait until aide arrives
-  player.tanLevel=Math.max(2, player.tanLevel||0);
-  OV.d.tanSolved=true;
-  spawnSparks(player.x, player.y-44, 16);
-  SFX.success();
-  say(player, OL.tanApplied, 1800);
-  say(OV.aide, OL.aideDone, 1600);
-  renderInv();
-  setTimeout(()=>{ OV.aide.phase='out'; OV.aide.say=''; OV.aide.speakingUntil=0; }, 1400);
+  const t=now();
+  OV.yes.members.forEach(m=>{
+    if (!m.nextBlink||t>m.nextBlink){ m.blinkUntil=t+120; m.nextBlink=t+2000+Math.random()*2500; }
+  });
 }
 function interactOval(){
-  const obj=nearestOV(); if (!obj) return;
+  const obj=nearestOV(); if (!obj){ say(player, OL.buttonHint, 900); return; }
   if (obj.type==='door'){
     openChoice('Leave The Oval Office?', ['Stay here','Back to Greenland'], k=>{
       closeChoice(); if (k==='2') switchScene(SCENE.GREENLAND);
@@ -2511,20 +2378,23 @@ function interactOval(){
       else if (k==='5'){ SFX.whoosh(); switchScene(SCENE.GOLF); }
     });
   }
+  else if (obj.type==='policy'){ ovalPressPolicy(); }
   else if (obj.type==='surprise'){ ovalPressSurprise(); }
   else if (obj.type==='yes'){ ovalChoir(true); }
-  else if (obj.type==='aide'){ ovalApplyTan(); }
 }
 function nearestOV(){
-  const arr=[OV.door,OV.heli,OV.yes,OV.surprise,
-    ...(OV.aide.active&&OV.aide.phase==='wait'?[{...OV.aide,type:'aide'}]:[])];
+  const arr=[OV.door,OV.heli,OV.policy,OV.surprise,OV.yes];
   let best=null,bd=1e9;
   for (const o of arr){
     const d = o.type==='heli' ? distToRect(player.x,player.y,o.x+20,o.y-6,220,120)
-            : dist2(player.x,player.y,o.x,o.y);
-    if (d<bd){ bd=d; best=o; }
+            : Math.abs(player.x-o.x);
+    const limit = o.type==='policy' ? 92
+      : o.type==='surprise' ? 100
+      : o.type==='yes' ? 120
+      : CFG.INTERACT_DIST*1.4;
+    if (d<bd && d<limit){ bd=d; best=o; }
   }
-  return bd<CFG.INTERACT_DIST*1.4 ? best : null;
+  return best;
 }
 /* ---- SURPRISE button → missile → game over ---- */
 const NUKE={active:false,start:0,dur:3200};
@@ -2532,12 +2402,12 @@ function ovalPressSurprise(){
   if (NUKE.active) return;
   OV.surprise.pressed=true;
   setTimeout(()=>OV.surprise.pressed=false,300);
+  say(player, OL.nukeLine, 1700);
   ensureAudio(); SFX.error();
   setTimeout(()=>SFX.explosion(),500);
   NUKE.active=true; NUKE.start=now();
   triggerShake(8,700);
   OV.d.phase='nuked';
-  OV.guest.speakingUntil=0;
 }
 function updateNuke(){
   if (!NUKE.active) return;
@@ -2596,187 +2466,179 @@ function drawOvalMedalDrop(){
 }
 
 /* ---- Oval drawing ---- */
-function drawOvalGuest(x,y){
-  const g=ovalCurrentGuest(); if (!g||!OV.guest.visible) return;
-  const app=g.appearance||{};
-  const d=OV.d;
-  const isWalking = d.phase==='guest_entering'||d.phase==='guest_leaving';
-  const nod=Math.sin(now()/1100)*0.6;
-  ctx.save(); ctx.translate(x,y-44+nod);
-  const legColor=app.isShaman?'#2a2a2a':'#1a1a1a';
-  const wc=Math.floor(now()/200);
-  ctx.fillStyle=legColor;
-  if (isWalking&&wc%2===0){ ctx.fillRect(-10,34,9,10); ctx.fillRect(2,36,9,8); }
-  else if (isWalking){ ctx.fillRect(-10,36,9,8); ctx.fillRect(2,34,9,10); }
-  else { ctx.fillRect(-10,34,9,10); ctx.fillRect(2,34,9,10); }
-  if (app.isShaman){
-    ctx.fillStyle='#e8c4a0'; ctx.fillRect(-12,6,24,26);       // bare chest
-    ctx.fillStyle='#8b7355'; ctx.fillRect(-12,6,6,26); ctx.fillRect(6,6,6,26); // fur vest
-    ctx.fillStyle='#a08060'; for (let i=0;i<5;i++){ ctx.fillRect(-11,8+i*5,4,2); ctx.fillRect(7,10+i*5,4,2); }
-    ctx.fillStyle='#334455'; ctx.fillRect(-4,12,8,1); ctx.fillRect(-2,16,4,1); // tattoos
-    ctx.fillStyle='#e8c4a0'; ctx.fillRect(-9,-2,18,12);        // head
-    ctx.fillStyle='#cc0000'; ctx.fillRect(-9,-2,6,12);         // face paint
-    ctx.fillStyle='#002868'; ctx.fillRect(3,-2,6,12);
+function drawYesGroup(x,y){
+  const cheering = OV.yes.speakingUntil>now();
+  ctx.save(); ctx.translate(x,y);
+  (OV.yes.members||[]).forEach((member,i)=>drawYesArchetype(member,cheering,i));
+  if (cheering){
+    ctx.fillStyle='#111'; ctx.font='900 18px system-ui'; ctx.textAlign='center';
+    ctx.fillText('YES! YES! YES!',66,-152);
+    ctx.textAlign='left';
+  }
+  ctx.restore();
+}
+function drawYesArchetype(member,cheering,i){
+  const s=1.52, bounce=cheering?Math.sin(now()/110+i)*1.5:Math.sin(now()/950+i)*0.5;
+  const armLift=cheering?8+Math.sin(now()/90+i)*4:0;
+  ctx.save();
+  ctx.translate(member.x,0); ctx.scale(s,s); ctx.translate(0,-44+bounce);
+  ctx.lineCap='round';
+  const suit = member.kind==='qanon' ? '#8b7355' : '#1a1a2e';
+  const armColor = member.kind==='qanon' ? '#e8c4a0' : suit;
+  ctx.strokeStyle=armColor; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.moveTo(-11,13); ctx.lineTo(-22,cheering?-4-armLift:26); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(11,13); ctx.lineTo(22,cheering?-4+armLift*.35:26); ctx.stroke();
+  ctx.fillStyle='#2b2b2b'; ctx.fillRect(-10,34,9,10); ctx.fillRect(2,34,9,10);
+  if (member.kind==='qanon'){
+    ctx.fillStyle='#e8c4a0'; ctx.fillRect(-12,6,24,26);
+    ctx.fillStyle='#8b7355'; ctx.fillRect(-12,6,6,26); ctx.fillRect(6,6,6,26);
+    ctx.fillStyle='#a08060';
+    for (let j=0;j<5;j++){ ctx.fillRect(-11,8+j*5,4,2); ctx.fillRect(7,10+j*5,4,2); }
+    ctx.fillStyle='#334455'; ctx.fillRect(-4,12,8,1); ctx.fillRect(-2,16,4,1);
+    ctx.fillStyle='#e8c4a0'; ctx.fillRect(-9,-2,18,12);
+    ctx.fillStyle='#cc0000'; ctx.fillRect(-9,-2,6,12);
     ctx.fillStyle='#fff'; ctx.fillRect(-3,-2,6,12);
-    ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2);
-    ctx.fillStyle='#222'; ctx.fillRect(-3,6,6,3);              // yelling mouth
-    ctx.fillStyle='#ff6666'; ctx.fillRect(-2,7,4,2);
-    ctx.fillStyle='#3a2a1a'; ctx.fillRect(-7,8,14,4); ctx.fillRect(-6,10,12,3); // beard
-    ctx.fillStyle='#8b7355'; ctx.fillRect(-12,-8,24,8);        // fur cap
-    ctx.fillStyle='#2a2a2a';                                    // horns
+    ctx.fillStyle='#002868'; ctx.fillRect(3,-2,6,12);
+    if (!(member.blinkUntil && now()<member.blinkUntil)){ ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2); }
+    ctx.fillStyle='#222'; ctx.fillRect(-3,6,6,3);
+    ctx.fillStyle='#3a2a1a'; ctx.fillRect(-7,8,14,4); ctx.fillRect(-6,10,12,3);
+    ctx.fillStyle='#8b7355'; ctx.fillRect(-12,-8,24,8);
+    ctx.fillStyle='#2a2a2a';
     ctx.fillRect(-16,-14,4,8); ctx.fillRect(-18,-18,4,6); ctx.fillRect(-19,-22,3,5);
     ctx.fillRect(12,-14,4,8); ctx.fillRect(14,-18,4,6); ctx.fillRect(16,-22,3,5);
-    ctx.fillStyle='#8b4513'; ctx.fillRect(16,-10,2,50);        // spear + flag
-    ctx.fillStyle='#cc0000'; ctx.fillRect(18,-8,12,8);
-    ctx.fillStyle='#fff'; ctx.fillRect(18,-6,12,2); ctx.fillRect(18,-2,12,2);
-    ctx.fillStyle='#002868'; ctx.fillRect(18,-8,5,4);
+    ctx.fillStyle='#8b4513'; ctx.fillRect(18,-10,2,50);
+    ctx.fillStyle='#cc0000'; ctx.fillRect(20,-8,12,8);
+    ctx.fillStyle='#fff'; ctx.fillRect(20,-6,12,2); ctx.fillRect(20,-2,12,2);
+    ctx.fillStyle='#002868'; ctx.fillRect(20,-8,5,4);
   } else {
-    ctx.fillStyle=app.suit||'#1a1a2e'; ctx.fillRect(-12,6,24,26);
+    const isFox=member.kind==='fox', isVance=member.kind==='vance';
+    ctx.fillStyle=suit; ctx.fillRect(-12,6,24,26);
     ctx.fillStyle='#d8e6ff'; ctx.fillRect(-8,10,16,18);
-    if (app.tie){ ctx.fillStyle=app.tie; ctx.fillRect(-2,14,4,14); }
+    ctx.fillStyle=isFox?'#002868':'#8b0000'; ctx.fillRect(-2,14,4,14);
     ctx.save();
-    if (app.bigHead) ctx.scale(1.15,1.15);
+    if (isVance) ctx.scale(1.12,1.12);
     ctx.fillStyle='#f5d0a9'; ctx.fillRect(-9,-2,18,12);
-    ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2);
-    ctx.fillStyle=app.hair||'#3a2a1a';
-    if (app.isF){ ctx.fillRect(-10,-6,20,6); ctx.fillRect(-12,-2,4,10); ctx.fillRect(8,-2,4,10); }
-    else if (app.isElon){ ctx.fillRect(-6,-5,12,4); ctx.fillRect(-8,-3,2,2); ctx.fillRect(6,-3,2,2); }
+    if (!(member.blinkUntil && now()<member.blinkUntil)){ ctx.fillStyle='#111'; ctx.fillRect(-6,2,2,2); ctx.fillRect(4,2,2,2); }
+    ctx.fillStyle=isFox?'#c59a2a':'#3a3a3a';
+    if (isFox){ ctx.fillRect(-10,-6,20,6); ctx.fillRect(-12,-2,4,10); ctx.fillRect(8,-2,4,10); }
     else ctx.fillRect(-10,-6,20,6);
     ctx.restore();
-    if (app.hasGlasses){
-      ctx.fillStyle='#222'; ctx.fillRect(-7,0,6,4); ctx.fillRect(1,0,6,4); ctx.fillRect(-1,1,2,2);
+    if (isFox){
+      ctx.fillStyle='#333'; ctx.fillRect(14,15,3,12);
+      ctx.fillStyle='#666'; ctx.fillRect(13,12,5,4);
+      ctx.fillStyle='#c01818'; ctx.fillRect(-11,30,22,7);
+      ctx.fillStyle='#fff'; ctx.font='900 5px system-ui'; ctx.textAlign='center';
+      ctx.fillText('LIVE',0,36); ctx.textAlign='left';
     }
-    if (app.hasNotepad){
-      ctx.fillStyle='#f5f5dc'; ctx.fillRect(-18,20,8,10);
-      ctx.fillStyle='#333'; ctx.fillRect(-17,22,6,1); ctx.fillRect(-17,24,5,1); ctx.fillRect(-17,26,6,1);
-    }
-    if (app.hasMic){ ctx.fillStyle='#333'; ctx.fillRect(14,15,3,12); ctx.fillStyle='#666'; ctx.fillRect(13,12,5,4); }
-    if (app.hasFlag){
-      ctx.fillStyle='#cc0000'; ctx.fillRect(-10,12,6,4);
-      ctx.fillStyle='#fff'; ctx.fillRect(-10,14,6,1);
-      ctx.fillStyle='#002868'; ctx.fillRect(-10,12,3,2);
-    }
-    if (app.hasBeard){
+    if (isVance){
       ctx.fillStyle='#2a2a2a'; ctx.fillRect(-7,6,14,4); ctx.fillRect(-8,4,3,4); ctx.fillRect(5,4,3,4);
     }
   }
   ctx.restore();
-  // nametag
   ctx.save();
-  ctx.font='bold 11px system-ui'; ctx.textAlign='center';
-  const nw=ctx.measureText(g.name).width+12;
-  const ny=y-(app.isShaman?105:85);
-  ctx.fillStyle='rgba(0,0,0,0.85)'; ctx.fillRect(x-nw/2,ny-9,nw,16);
-  ctx.fillStyle='#fff'; ctx.fillText(g.name,x,ny+3);
+  ctx.font='900 10px system-ui'; ctx.textAlign='center';
+  const w=ctx.measureText(member.label).width+12;
+  ctx.fillStyle='rgba(0,0,0,0.84)'; ctx.fillRect(member.x-w/2,-116,w,16);
+  ctx.fillStyle='#fff'; ctx.fillText(member.label,member.x,-104);
   ctx.textAlign='left'; ctx.restore();
-}
-function drawAide(x,y){
-  ctx.save(); ctx.translate(x,y-44);
-  ctx.fillStyle='#223'; ctx.fillRect(-10,8,20,26);
-  ctx.fillStyle='#e8d7c2'; ctx.fillRect(-8,-2,16,12);
-  ctx.fillStyle='#444'; ctx.fillRect(-9,-5,18,5);
-  // legs
-  ctx.fillStyle='#223'; ctx.fillRect(-8,34,7,10); ctx.fillRect(1,34,7,10);
-  // tan bottle in hand
-  ctx.fillStyle='#8b5e3c'; ctx.fillRect(10,14,8,12);
-  ctx.fillStyle='#ddd'; ctx.fillRect(12,10,4,4);
-  ctx.restore();
-}
-function drawYesGroup(x,y){
-  const praising = OV.yes.speakingUntil>now();
-  const suits=['#cc0000','#ffffff','#0044cc'];
-  for (let i=0;i<3;i++){
-    const m=OV.yes.members[i]||{nodPhase:i};
-    const dx=x+(-34+i*34);
-    const nod=Math.sin(now()/900+(m.nodPhase||0))*1.0;
-    ctx.save(); ctx.translate(dx,y-44+nod);
-    ctx.fillStyle='#2b2b2b'; ctx.fillRect(-10,34,9,10); ctx.fillRect(2,34,9,10);
-    if (m.isF){
-      if (i===0){ ctx.fillStyle='#e91e63'; ctx.fillRect(-10,8,20,26); }
-      else { ctx.fillStyle='#c01818'; ctx.fillRect(-10,8,20,26);
-        ctx.fillStyle='#fff'; ctx.fillRect(-2,8,4,26); ctx.fillRect(-10,20,20,4); }
-    } else { ctx.fillStyle=suits[i%3]; ctx.fillRect(-10,8,20,26); }
-    ctx.fillStyle='#e8d7c2'; ctx.fillRect(-8,-2,16,12);
-    if (!(m.blinkUntil && now()<m.blinkUntil)){ ctx.fillStyle='#111'; ctx.fillRect(-5,2,2,2); ctx.fillRect(3,2,2,2); }
-    if (m.isF){ ctx.fillStyle='#6b4328'; ctx.fillRect(-9,-5,18,5); ctx.fillRect(-10,-2,4,16); ctx.fillRect(6,-2,4,16); }
-    else { ctx.fillStyle='#444'; ctx.fillRect(-9,-5,18,5); }
-    const hs=[1.0,0.85,1.15][i%3];
-    ctx.fillStyle='#cc0000'; ctx.fillRect(-9*hs,-8,18*hs,5); ctx.fillRect(-11*hs,-4,6*hs,2);
-    ctx.fillStyle='#fff'; ctx.font=`bold ${3*hs}px sans-serif`; ctx.textAlign='center';
-    ctx.fillText('MAGA',0,-5); ctx.textAlign='left';
-    ctx.globalAlpha=0.9; ctx.fillStyle=suits[i%3];
-    if (praising){
-      ctx.fillRect(-14,0,4,14); ctx.fillRect(10,0,4,14); // arms up
-      const happy=OV.yes.mood==='happy';
-      ctx.fillStyle=happy?'#00aa00':'#cc0000'; ctx.fillRect(-12,-28,24,14);
-      ctx.fillStyle='#fff'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(happy?'YES!':'BOO!',0,-18); ctx.textAlign='left';
-    } else {
-      ctx.globalAlpha=0.5; ctx.fillRect(-14,15,4,10); ctx.fillRect(10,15,4,10);
-    }
-    ctx.globalAlpha=1;
-    ctx.restore();
-  }
 }
 function drawOvalTV(){
   const d=OV.d;
-  const tvW=200, tvH=250;
-  const cx=OV.deskX+OV.deskW/2, cy=110+tvH/2-40;
-  ctx.fillStyle='#111'; ctx.fillRect(cx-tvW/2-6,cy-tvH/2-6,tvW+12,tvH+12);
-  ctx.fillStyle='#1a1a1a'; ctx.fillRect(cx-tvW/2,cy-tvH/2,tvW,tvH);
-  const pad=8, innerW=tvW-2*pad, innerH=tvH-2*pad;
-  const topH=innerH*0.55, newsY=cy-tvH/2+pad;
-  // BREAKING NEWS
-  ctx.fillStyle='#0a1628'; ctx.fillRect(cx-innerW/2,newsY,innerW,topH);
-  ctx.fillStyle='#cc0000'; ctx.fillRect(cx-innerW/2,newsY,innerW,20);
-  ctx.fillStyle='#fff'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
-  ctx.fillText('BREAKING NEWS',cx,newsY+15);
-  const contentY=newsY+24;
-  if (d.breakingNews && now()<d.breakingNews.until){
-    ctx.fillStyle=d.breakingNews.good?'#2e7d32':'#c62828';
-    ctx.fillRect(cx-innerW/2+4,contentY,innerW-8,topH-28);
-    ctx.fillStyle='#fff'; ctx.font='bold 10px system-ui';
-    const words=d.breakingNews.text.split(' ');
-    let line='', ly=contentY+18;
-    for (const w of words){
-      const t=line+w+' ';
-      if (ctx.measureText(t).width>innerW-20 && line){ ctx.fillText(line.trim(),cx,ly); line=w+' '; ly+=14; }
-      else line=t;
-    }
-    if (line) ctx.fillText(line.trim(),cx,ly);
-  } else {
-    ctx.fillStyle='#333'; ctx.fillRect(cx-innerW/2+4,contentY,innerW-8,topH-28);
-    ctx.fillStyle='#666'; ctx.font='10px system-ui';
-    ctx.fillText('Awaiting presidential',cx,contentY+28);
-    ctx.fillText('decision...',cx,contentY+44);
+  const tvW=282, tvH=178, cx=OV.deskX+OV.deskW/2-28, cy=150;
+  ctx.fillStyle='#111'; roundRectPath(ctx,cx-tvW/2-8,cy-tvH/2-8,tvW+16,tvH+16,8); ctx.fill();
+  ctx.fillStyle='#1a1a1a'; roundRectPath(ctx,cx-tvW/2,cy-tvH/2,tvW,tvH,4); ctx.fill();
+  const x=cx-tvW/2+12, y=cy-tvH/2+12, w=tvW-24, h=tvH-24;
+  ctx.save();
+  roundRectPath(ctx,x,y,w,h,3); ctx.clip();
+  ctx.fillStyle='#16304f'; ctx.fillRect(x,y,w,h);
+  if (d.policyFlashUntil>now()){
+    ctx.fillStyle='#ffd54f'; ctx.globalAlpha=.35; ctx.fillRect(x,y,w,h); ctx.globalAlpha=1;
   }
-  // MAGA DASHBOARD
-  const dashY=newsY+topH+4;
-  ctx.fillStyle='#1a1a2e'; ctx.fillRect(cx-innerW/2,dashY,innerW,innerH-topH-4);
-  ctx.fillStyle='#fff'; ctx.font='bold 9px system-ui';
-  ctx.fillText('MAGA APPROVAL',cx,dashY+13);
-  const barX=cx-innerW/2+8, barY=dashY+18, barW=innerW-16, barH=10;
-  const approval=Math.round((d.correct||0)/3*100);
-  ctx.fillStyle='#333'; ctx.fillRect(barX,barY,barW,barH);
-  ctx.fillStyle=approval>=100?'#4caf50':approval>=34?'#ffc107':'#ff6b6b';
-  ctx.fillRect(barX,barY,barW*approval/100,barH);
-  ctx.fillStyle='#fff'; ctx.font='bold 8px system-ui';
-  ctx.fillText(approval+'%',cx,barY+8);
-  ctx.font='bold 9px system-ui'; ctx.fillText('DECISIONS',cx,dashY+45);
-  const iconY=dashY+50, sp=22, startX=cx-sp;
-  for (let i=0;i<3;i++){
-    const ix=startX+i*sp;
-    if (i<(d.results||[]).length){
-      ctx.fillStyle=d.results[i].correct?'#4caf50':'#f44336';
-      ctx.fillRect(ix-7,iconY,14,14);
-      ctx.fillStyle='#fff'; ctx.font='bold 10px system-ui';
-      ctx.fillText(d.results[i].correct?'✓':'✗',ix,iconY+11);
-    } else {
-      ctx.fillStyle='#444'; ctx.fillRect(ix-7,iconY,14,14);
-      ctx.fillStyle='#777'; ctx.font='9px system-ui'; ctx.fillText('?',ix,iconY+10);
-    }
+  const policy=d.policy;
+  ctx.textAlign='center';
+  ctx.fillStyle='#fff'; ctx.font='900 16px Georgia,serif';
+  ctx.fillText('EXECUTIVE SCREEN',x+w/2,y+22);
+  ctx.fillStyle='#86d6ff'; ctx.font='bold 13px system-ui';
+  ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+50);
+  if (policy && policy.media){
+    const mediaX=x+14, mediaY=y+60, mediaW=82, mediaH=h-74;
+    drawOvalPolicyMedia(policy,mediaX,mediaY,mediaW,mediaH);
+    ctx.textAlign='left';
+    ctx.fillStyle=policy.mediaMode==='censored'?'#ff6b6b':'#ffd54f';
+    ctx.font='900 9px system-ui';
+    ctx.fillText(policy.kicker||'MEDIA',mediaX+mediaW+12,mediaY+10);
+    ctx.fillStyle='#eef7ff'; ctx.font='12px system-ui';
+    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+27,w-mediaW-40,14,4,'left');
+  } else {
+    ctx.fillStyle='#eef7ff'; ctx.font='12px system-ui';
+    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+76,w-36,15,4,'center');
+  }
+  ctx.restore();
+  const progress=Math.min(5,d.policyCount||0);
+  ctx.fillStyle='rgba(0,0,0,0.66)';
+  roundRectPath(ctx,cx-tvW/2,cy+tvH/2+7,tvW,26,7); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='900 10px system-ui'; ctx.textAlign='left';
+  ctx.fillText('POLICIES',cx-tvW/2+10,cy+tvH/2+24);
+  for (let i=0;i<5;i++){
+    const px=cx-tvW/2+78+i*22, py=cy+tvH/2+15;
+    ctx.fillStyle=i<progress?'#ffd54f':'#3d3d3d';
+    ctx.fillRect(px,py,14,10);
   }
   ctx.textAlign='left';
+}
+function drawOvalPolicyMedia(policy,x,y,w,h){
+  ctx.save();
+  roundRectPath(ctx,x,y,w,h,4); ctx.clip();
+  ctx.fillStyle='#08111f'; ctx.fillRect(x,y,w,h);
+  const img=OVAL_POLICY_IMAGES[policy.media];
+  if (img && img.complete && img.naturalWidth && !img.__broken){
+    if (policy.mediaMode==='censored'){
+      ctx.filter='blur(8px) grayscale(1) brightness(.45)';
+      drawOvalImageCover(img,x-6,y-6,w+12,h+12);
+      ctx.filter='none';
+      ctx.fillStyle='rgba(0,0,0,.64)'; ctx.fillRect(x,y,w,h);
+      ctx.fillStyle='#b31217'; ctx.fillRect(x,y,w,14);
+      ctx.fillStyle='#fff'; ctx.font='900 8px system-ui'; ctx.textAlign='center';
+      ctx.fillText('RACIST AI POST',x+w/2,y+10);
+      ctx.fillStyle='rgba(255,255,255,.9)';
+      for (let i=0;i<4;i++) ctx.fillRect(x+10,y+25+i*13,w-20,7);
+      ctx.fillStyle='#ffdf5d'; ctx.font='900 9px system-ui';
+      ctx.fillText('FLAGGED',x+w/2,y+h-12);
+      ctx.textAlign='left';
+    } else {
+      drawOvalImageCover(img,x,y,w,h);
+    }
+  } else {
+    ctx.fillStyle='#1d3557'; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle='#86d6ff'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    ctx.fillText('LOADING IMAGE',x+w/2,y+h/2);
+    ctx.textAlign='left';
+  }
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1.5;
+  roundRectPath(ctx,x,y,w,h,4); ctx.stroke();
+  ctx.restore();
+}
+function drawOvalImageCover(img,x,y,w,h){
+  const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+  const scale=Math.max(w/iw,h/ih);
+  const sw=w/scale, sh=h/scale;
+  ctx.drawImage(img,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,w,h);
+}
+function ovalWrap(text,x,y,w,lineH,maxLines,align='left'){
+  const words=String(text||'').split(/\s+/); let line='', lines=[];
+  for (const word of words){
+    const test=line?line+' '+word:word;
+    if (ctx.measureText(test).width>w && line){ lines.push(line); line=word; }
+    else line=test;
+  }
+  if (line) lines.push(line);
+  if (lines.length>maxLines){ lines=lines.slice(0,maxLines); lines[maxLines-1]=lines[maxLines-1].replace(/\s+\S+$/,'...'); }
+  const old=ctx.textAlign; ctx.textAlign=align;
+  const tx=align==='center'?x+w/2:x;
+  lines.forEach((ln,i)=>ctx.fillText(ln,tx,y+i*lineH));
+  ctx.textAlign=old;
 }
 function drawOvalDesk(){
   const y=GROUND_Y+30, deskX=OV.deskX, deskW=OV.deskW;
@@ -2789,17 +2651,24 @@ function drawOvalDesk(){
   ctx.moveTo(deskX+deskW*0.66,y-8); ctx.lineTo(deskX+deskW*0.66,y+16);
   ctx.stroke();
   ctx.fillStyle='#d4af37'; ctx.fillRect(deskX+deskW*0.33-4,y+2,8,4); ctx.fillRect(deskX+deskW*0.66-4,y+2,8,4);
-  // decorative YES/NO buttons on the desktop
   const topY=y-44;
-  [['#2e7d32','YES',deskX+100],['#1565c0','NO',deskX+170]].forEach(([col,label,bx])=>{
-    ctx.fillStyle='#5a4632'; ctx.fillRect(bx-18,topY,36,4);
-    ctx.fillStyle=col; ctx.fillRect(bx-16,topY-14,32,12);
-    ctx.fillStyle='#fff'; ctx.font='bold 8px system-ui'; ctx.textAlign='center';
-    ctx.fillText(label,bx,topY-5); ctx.textAlign='left';
-  });
-  // THE BIG RED SURPRISE BUTTON under a glass dome
-  const sx=OV.surprise.x, sy=topY;
-  const pressed=OV.surprise.pressed;
+  drawOvalPolicyButton(OV.policy.x,OV.policy.y,OV.policy.pressed);
+  drawOvalRedButton(OV.surprise.x,topY,OV.surprise.pressed);
+}
+function drawOvalPolicyButton(x,y,pressed){
+  ctx.save();
+  ctx.translate(x,y+(pressed?3:0));
+  ctx.fillStyle='#30271f'; ctx.fillRect(-34,-5,68,10);
+  ctx.fillStyle='#0b0b0b'; ctx.beginPath(); ctx.ellipse(0,0,27,18,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#333'; ctx.beginPath(); ctx.ellipse(-5,-5,13,6,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='900 10px system-ui'; ctx.textAlign='center';
+  ctx.fillText('POLICY',0,39);
+  ctx.fillStyle='#111'; ctx.font='bold 7px system-ui';
+  ctx.fillText('RANDOM',0,50);
+  ctx.textAlign='left';
+  ctx.restore();
+}
+function drawOvalRedButton(sx,sy,pressed){
   ctx.fillStyle='#1a1a1a'; ctx.fillRect(sx-38,sy-6,76,12);
   ctx.fillStyle='#f4d03f';
   for (let s=0;s<6;s++) ctx.fillRect(sx-34+s*12,sy-4,6,8);
@@ -2812,14 +2681,6 @@ function drawOvalDesk(){
   ctx.fillStyle='rgba(255,150,150,0.4)'; ctx.beginPath(); ctx.arc(sx-5,sy-20+(pressed?4:0),8,0,Math.PI*2); ctx.fill();
   ctx.fillStyle='#ff0'; ctx.font='bold 7px system-ui'; ctx.textAlign='center';
   ctx.fillText('DO NOT PRESS',sx,sy+4+8); ctx.textAlign='left';
-  // feedback text above desk
-  const d=OV.d;
-  if (d.feedback && now()<d.feedback.until){
-    ctx.font='bold 15px system-ui'; ctx.textAlign='center';
-    ctx.fillStyle=d.feedback.good?'#2e7d32':'#c62828';
-    ctx.fillText(d.feedback.text, deskX+deskW/2, y-75);
-    ctx.textAlign='left';
-  }
 }
 function drawOvalBackdrop(){
   // wall
@@ -2870,55 +2731,17 @@ function drawOval(){
   drawDoor(OV.door.x,OV.door.y);
   drawYesGroup(OV.yes.x,OV.yes.y);
   OV.coins.forEach(c=>{ if(!c.collected) drawGoldBar(c); });
-  if (OV.guest.visible) drawOvalGuest(OV.guest.x,OV.guest.y);
-  if (OV.aide.active) drawAide(OV.aide.x,OV.aide.y);
   if (!entryHeli.active) drawHeli(OV.heli.x,OV.heli.y,0.35);
   drawTrump(player.x,player.y,player.facing);
   drawOvalDesk();   // desk in front of Trump (he stands behind it)
   drawFx();
   if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
   drawOvalMedalDrop();
-  // bubbles — guest nametag registered first so bubbles stack above it
   const placed=[];
-  if (OV.guest.visible){
-    const g=ovalCurrentGuest();
-    const ny=OV.guest.y-((g&&g.appearance&&g.appearance.isShaman)?105:85);
-    placed.push({x:OV.guest.x-70,y:ny-12,w:140,h:22});
-  }
   renderActorBubble(player,placed,'trump');
-  if (OV.guest.visible) renderActorBubble(OV.guest,placed,'default');
   renderActorBubble(OV.yes,placed,'default');
-  if (OV.aide.active) renderActorBubble(OV.aide,placed,'default');
   endWorld();
-  drawOvalAnswerCards();
 }
-/* Big tappable YES/NO answer cards (screen space) — the core of package B */
-function drawOvalAnswerCards(){
-  const d=OV.d;
-  if (d.phase!=='guest_asking' || anyOverlayActive() || GS.over){ d._btnYes=null; d._btnNo=null; return; }
-  beginScreen();
-  const cw=Math.min((VW-48)/2,220), ch=64;
-  const cy=VH-ch-Math.max(16,VH*0.03)-6;
-  const gap=16;
-  const yesX=VW/2-cw-gap/2, noX=VW/2+gap/2;
-  d._btnYes={x:yesX,y:cy,w:cw,h:ch};
-  d._btnNo={x:noX,y:cy,w:cw,h:ch};
-  [[d._btnYes,'#2e7d32','YES','1'],[d._btnNo,'#1565c0','NO','2']].forEach(([b,col,label,key])=>{
-    ctx.fillStyle=col;
-    roundRectPath(ctx,b.x,b.y,b.w,b.h,12); ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=3;
-    roundRectPath(ctx,b.x+1.5,b.y+1.5,b.w-3,b.h-3,10); ctx.stroke();
-    ctx.fillStyle='#fff'; ctx.font='800 26px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(label,b.x+b.w/2,b.y+b.h/2);
-    if (!IS_TOUCH){
-      ctx.font='11px system-ui'; ctx.globalAlpha=0.8;
-      ctx.fillText('['+key+']',b.x+b.w/2,b.y+b.h-11);
-      ctx.globalAlpha=1;
-    }
-    ctx.textBaseline='alphabetic'; ctx.textAlign='left';
-  });
-}
-
 /* ================================================================
    10C. KREMLIN SCENE — handshake battle, statue heists, Wagner
    Package B: tap-mash on mobile (A+D on desktop), no F+K switch —
@@ -4647,11 +4470,10 @@ addEventListener('keydown', e=>{
     if (golfKeyDown(e,k)) e.preventDefault();
     return;
   }
-  // Oval answer cards get first claim on 1/2 while a question is live
-  if (scene===SCENE.OVAL && OV.d.phase==='guest_asking' && (k==='1'||k==='2')){
-    ovalAnswer(k==='1'?'yes':'no');
-    e.preventDefault();
-    return;
+  if (scene===SCENE.OVAL && (k==='1'||k==='2')){
+    const near=nearestOV();
+    if (k==='1' && near && near.type==='policy'){ ovalPressPolicy(); e.preventDefault(); return; }
+    if (k==='2' && near && near.type==='surprise'){ ovalPressSurprise(); e.preventDefault(); return; }
   }
   // normal gameplay
   keys.add(k);
@@ -4729,12 +4551,6 @@ cvs.addEventListener('pointerdown', e=>{
     golfPointerDown(e);
     return;
   }
-  // Oval answer cards (screen space) — before world taps
-  if (scene===SCENE.OVAL && OV.d && OV.d.phase==='guest_asking'){
-    const hb=b=>b&&sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h;
-    if (hb(OV.d._btnYes)){ ovalAnswer('yes'); return; }
-    if (hb(OV.d._btnNo)){ ovalAnswer('no'); return; }
-  }
   if (FightEngine.active){
     // fight touch controls: left/right half = move, tap in middle third = punch
     pointers.set(e.pointerId,{x:sx,y:sy,startX:sx,startY:sy,startT:now(),zone:sx<VW/2?-1:1,moved:false,fight:true});
@@ -4793,8 +4609,7 @@ function intentTap(wx,wy){
     }
   } else if (scene===SCENE.OVAL){
     nearFn=nearestOV;
-    const targets=[OV.door,OV.heli,OV.surprise,OV.yes,
-      ...(OV.aide.active&&OV.aide.phase==='wait'?[{...OV.aide,type:'aide'}]:[])];
+    const targets=[OV.door,OV.heli,OV.policy,OV.surprise,OV.yes];
     for (const o of targets){
       const d = dist2(wx,wy,o.x,o.y-20);
       if (d<bd){ bd=d; best=o; }
@@ -5080,7 +4895,7 @@ function step(t){
             startWalkTo(OV.trumpDeskX, ()=>{
               if (entryHeli.line) say(player,entryHeli.line,1800);
               if (!OV.introShown){ OV.introShown=true; ovalStartIntroCard(); }
-              else { OV.d.phase='waiting'; OV.d.timer=now()+700; }
+              else { OV.d.phase='play'; }
             });
           } else if (scene===SCENE.KREMLIN){
             startWalkTo(player.x+40, ()=>{
@@ -5118,11 +4933,10 @@ function step(t){
         });
       }
     }
-    // camera: during an Oval audience, frame Trump AND the guest together
+    // camera: in Oval, keep Trump, desk buttons and yes-men in the same mobile frame
     let camFocus=player.x;
-    if (scene===SCENE.OVAL && OV.guest.visible &&
-        ['guest_entering','guest_asking','answered','bonus','tan_reject'].includes(OV.d.phase)){
-      camFocus=(player.x+OV.guest.x)/2;
+    if (scene===SCENE.OVAL){
+      camFocus=(player.x+OV.surprise.x+OV.yes.x)/3;
     }
     updateCamera(camFocus);
 
@@ -5176,7 +4990,7 @@ function updateActionChip(){
       const nearObj=nearestOV();
       if (nearObj){ show=true;
         label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
-                nearObj.type==='surprise'?'☢️' : nearObj.type==='aide'?'🧴' : 'E';
+                nearObj.type==='policy'?'⚫' : nearObj.type==='surprise'?'☢️' : 'E';
       }
     } else if (scene===SCENE.EPSTEIN){
       show=false;
@@ -5231,10 +5045,12 @@ window.__tv2 = {
     lars: { x: Math.round(GL.lars.x), rounds: GL.state.larsDialogRounds,
             fight: GL.state.larsFightRequested, blownUp: GL.lars.blownUp },
     fight: { active: FightEngine.active, trumpHP: FightEngine.trumpHP, larsHP: FightEngine.larsHP },
-    oval: { phase: OV.d.phase, idx: OV.d.idx, correct: OV.d.correct,
-            guest: (ovalCurrentGuest()||{}).id||null,
-            correctAnswer: (ovalCurrentGuest()||{}).correctAnswer||null,
-            tan: player.tanLevel, aide: OV.aide.phase, nuke: NUKE.active },
+    oval: { phase: OV.d.phase, policies: OV.d.policyCount,
+            policyTitle: OV.d.policy?OV.d.policy.title:null,
+            policyMedia: OV.d.policy&&OV.d.policy.media?OV.d.policy.media:null,
+            completed: OV.d.completed, nuke: NUKE.active,
+            buttons: { policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} },
+            mediaLoaded:Object.fromEntries(Object.entries(OVAL_POLICY_IMAGES).map(([key,img])=>[key,!!(img.complete&&img.naturalWidth&&!img.__broken)])) },
     epstein: { active: EP.active, found: EP.found, total: EP.totalTargets,
                missed: EP.missed, protectedClicks: EP.protectedClicks,
                atArt: EP.atArt, artDone: EP.finalArt.redacted,

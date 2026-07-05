@@ -51,25 +51,24 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 1. Kristian tester hele `trumpspillet-v2.html` på fysisk iPhone
 2. Hvis iPhone-testen er godkendt: kør Trin 9 (`v2 → index.html`)
 
-## Oval Office v2 — bygget 2026-07-03 (redesign "pakke B")
+## Oval Office v3 — udskiftet 2026-07-05 (simpel knapbane)
 
-Kristians dom over v1-scenen: for kompleks til engangs-læsere. Fable-analyse
-→ tre pakker → Kristian valgte B (forsimpling med jokes intakte):
-- ✅ Infokort forklarer præmissen ("Answer whatever keeps MAGA happy —
-  truth is optional")
-- ✅ Store tappelige YES/NO-svar-kort (tastatur 1/2) i stedet for at gå til
-  skrivebordsknapper — knapperne på bordet er nu dekoration
-- ✅ Selvbruner-joken løses I SCENEN: Shaman afviser bleg Trump → aide løber
-  ind med "Sir! Your emergency tan!" → ét tryk → quiz fortsætter (ingen
-  rejse tilbage til Greenland-butikken). Har man allerede tan ≥2, roser
-  Shamanen den i stedet
-- ✅ Ærlig scoring: 3/3 = Pulitzer-medalje; ellers fail-kort med øjeblikkelig
-  prøv-igen (nye tilfældige gæster)
-- ✅ SURPRISE-knappen: missil → game over → voting machine → respawn i Oval
-- ✅ Alle gæstesvar konsekvent engelsk (v1 var dansk/engelsk-mix)
-- ✅ Kamera indrammer Trump + gæst samtidig på portrait-mobil
-- ✅ Playwright-verificeret: fuld quiz m. tan-detour + medalje, fail/retry,
-  surprise-nuke-respawn, mobil tap-svar, Greenland-regression — 0 fejl
+Kristian vurderede quiz/YES-NO-versionen som for kompleks til engangs-læsere.
+Scenen er derfor ført tilbage til den simple satiriske kerne:
+
+- ✅ Trump går til Resolute Desk efter heli-entry, som før
+- ✅ To reelle skrivebordsknapper: sort POLICY-knap og stor rød DO NOT PRESS
+  under glaskuppel
+- ✅ Sort knap vælger tilfældig Trump-sk policy på skærmen bag bordet
+- ✅ Yes-men er genkendelige arketyper: QAnon-mand, Fox-host og Vance-type,
+  som jubler ved hvert policy-tryk
+- ✅ Skærmen kan vise de to nye Oval Office-billeder fra `assets/oval office/`
+  som censureret/social-post content
+- ✅ Pulitzer-medaljen gives efter 5 policy-tryk; spilleren kan fortsætte
+  med at trykke for flere jokes bagefter
+- ✅ Rød knap launcher stadig missil → game over/voting machine/respawn-flow
+- ✅ Gammel quiz, gæster, YES/NO-kort og selvbruner-aide er ikke længere
+  del af Oval Office-runtime
 
 ## iPhone-test 2026-07-03 (Kristian) — GODKENDT ✅
 
