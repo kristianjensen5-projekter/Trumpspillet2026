@@ -46,6 +46,21 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 
 ---
 
+## Fable-review af Codex' arbejde — 2026-07-05 ✅
+
+Fuld automatiseret regression (Playwright, desktop 1280×720 + iPhone 390×844):
+
+- ✅ Alle 5 baner spilbare ende-til-ende, **0 console/page errors**
+- ✅ Verificeret: Lars-fight→medalje · ny Oval (5 policies→Pulitzer, rød knap→
+  nuke→voting machine→respawn i Oval) · Kremlin håndtryk→Nobel · Epstein
+  redact · Golf tutorial→putt (også mobil-portrait med roteret bane)
+- ✅ Musik: 4 MP3'er committet OG live (HTTP 200), scene-mapping virker
+  (Greenland_1/2.2/3/4), GainNode-styring = korrekt iOS-mønster
+- ✅ Live-deploy er byte-identisk med lokal fil
+- ⚠️ `oval-office-simple-prototype.html` ligger utracket — slet eller arkivér
+- ⚠️ REDAKTIONELT: `assets/oval office/obamaabes.jpeg` censureres I SPILLET,
+  men rå-filen er offentligt tilgængelig på pages.dev-URL'en. Bevidst valg?
+
 ## Næste skridt
 
 1. Kristian tester hele `trumpspillet-v2.html` på fysisk iPhone
