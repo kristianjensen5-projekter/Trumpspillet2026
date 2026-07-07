@@ -116,38 +116,173 @@
 <script id="game-data" type="application/json">
 {
   "CONFIG": {
-    "SPEED": 210, "INTERACT_DIST": 48, "BUBBLE_TIME": 2000,
-    "JUMP_MS": 520, "JUMP_H": 26, "JUMP_H_CAP": 50,
-    "WORLD_H": 540, "FLOOR_H": 120, "GREENLAND_W": 1200
+    "SPEED": 210,
+    "INTERACT_DIST": 48,
+    "BUBBLE_TIME": 2000,
+    "JUMP_MS": 520,
+    "JUMP_H": 26,
+    "JUMP_H_CAP": 50,
+    "WORLD_H": 540,
+    "FLOOR_H": 120,
+    "GREENLAND_W": 1200
   },
   "ITEMS": {
-    "tan":      { "name": "Self-tanner",   "price": 3, "dup": true,  "buyLine": "Self-tanner +1" },
-    "shoes":    { "name": "Gold sneakers", "price": 8, "dup": false, "buyLine": "Gold shoes on! Speed x2." },
-    "maga":     { "name": "MAGA-cap",      "price": 5, "dup": false, "buyLine": "New MAGA cap - total patriot effect!" },
-    "dynamite": { "name": "Dynamite",      "price": 6, "dup": true,  "buyLine": "Boom! Five sticks of dynamite. Press D to select, then E to plant." }
+    "tan": {
+      "name": "Self-tanner",
+      "price": 3,
+      "dup": true,
+      "buyLine": "Self-tanner +1"
+    },
+    "shoes": {
+      "name": "Gold sneakers",
+      "price": 8,
+      "dup": false,
+      "buyLine": "Gold shoes on! Speed x2."
+    },
+    "maga": {
+      "name": "MAGA-cap",
+      "price": 5,
+      "dup": false,
+      "buyLine": "New MAGA cap - total patriot effect!"
+    },
+    "dynamite": {
+      "name": "Dynamite",
+      "price": 6,
+      "dup": true,
+      "buyLine": "Boom! Five sticks of dynamite. Press D to select, then E to plant."
+    }
   },
   "MEDALS": {
-    "greenland": { "name": "Greenland flag", "icon": "🇬🇱", "desc": "Annex Greenland" },
-    "oval":      { "name": "Pulitzer",       "icon": "📰", "desc": "Govern by surprise from the Oval Office" },
-    "kremlin":   { "name": "Nobel",          "icon": "🏅", "desc": "Win arm-wrestling with Putin" },
-    "epstein":   { "name": "Art Diploma",    "icon": "🎨", "desc": "Redact all documents" },
-    "golf":      { "name": "FIFA Trophy",    "icon": "🏆", "desc": "Beat Sleepy Joe at golf" }
+    "greenland": {
+      "name": "Greenland flag",
+      "icon": "🇬🇱",
+      "desc": "Annex Greenland"
+    },
+    "oval": {
+      "name": "Pulitzer",
+      "icon": "📰",
+      "desc": "Govern by surprise from the Oval Office"
+    },
+    "kremlin": {
+      "name": "Nobel",
+      "icon": "🏅",
+      "desc": "Win arm-wrestling with Putin"
+    },
+    "epstein": {
+      "name": "Art Diploma",
+      "icon": "🎨",
+      "desc": "Redact all documents"
+    },
+    "golf": {
+      "name": "FIFA Trophy",
+      "icon": "🏆",
+      "desc": "Beat Sleepy Joe at golf"
+    }
   },
   "AREAS": [
-    ["greenland", "Greenland"], ["oval", "White House"], ["kremlin", "Kremlin"],
-    ["epstein", "Epstein files"], ["golf", "Mar-a-Lago"]
+    [
+      "greenland",
+      "Greenland"
+    ],
+    [
+      "oval",
+      "White House"
+    ],
+    [
+      "kremlin",
+      "Kremlin"
+    ],
+    [
+      "epstein",
+      "Epstein files"
+    ],
+    [
+      "golf",
+      "Mar-a-Lago"
+    ]
   ],
   "DIALOG": {
-    "TRUMP_ABSURD": ["Mine!", "Rules are stupid.", "Pathetic danes.", "Boom. Everywhere.", "Enough talk. Now fight."],
-    "METTE_DIPLO": ["Greenland is not for sale — let's put it in a work group.", "Det skader USA's ry — work group.", "NATO er i fare — work group.", "... work group?"]
+    "TRUMP_ABSURD": [
+      "Mine!",
+      "Rules are stupid.",
+      "Pathetic danes.",
+      "Boom. Everywhere.",
+      "Enough talk. Now fight."
+    ],
+    "METTE_DIPLO": [
+      "Greenland is not for sale — let's put it in a work group.",
+      "Det skader USA's ry — work group.",
+      "NATO er i fare — work group.",
+      "... work group?"
+    ]
   },
   "TWEETS": {
-    "PRESETS": ["So much winning!", "The Fake News won't report this!", "MAKE GREENLAND GREAT AGAIN!", "Covfefe."]
+    "PRESETS": [
+      "So much winning!",
+      "The Fake News won't report this!",
+      "MAKE GREENLAND GREAT AGAIN!",
+      "Covfefe."
+    ]
   },
   "GREENLAND": {
-    "COINS": [[250,-35],[450,-45],[650,-40],[850,-42],[200,-30],[750,-38],[550,-43],[350,-37],[950,-33],[150,-41],[400,-60],[800,-65]],
+    "COINS": [
+      [
+        250,
+        -35
+      ],
+      [
+        450,
+        -45
+      ],
+      [
+        650,
+        -40
+      ],
+      [
+        850,
+        -42
+      ],
+      [
+        200,
+        -30
+      ],
+      [
+        750,
+        -38
+      ],
+      [
+        550,
+        -43
+      ],
+      [
+        350,
+        -37
+      ],
+      [
+        950,
+        -33
+      ],
+      [
+        150,
+        -41
+      ],
+      [
+        400,
+        -60
+      ],
+      [
+        800,
+        -65
+      ]
+    ],
     "HELI_MENU_HEADER": "Board helicopter?",
-    "HELI_MENU": ["Stay in Greenland", "Fly to The White House", "Fly to Moscow (meeting)", "Epstein files", "Fly to Mar-a-Lago (mini-putt)"],
+    "HELI_MENU": [
+      "Stay in Greenland",
+      "Fly to The White House",
+      "Fly to Moscow (meeting)",
+      "Epstein files",
+      "Fly to Mar-a-Lago (mini-putt)"
+    ],
     "LINES": {
       "arrive": "Perfect landing! Welcome to Greenland!",
       "arriveAgain": "Touchdown in Greenland — tremendous ice! Helicopter goes anywhere.",
@@ -178,37 +313,169 @@
   "OVAL": {
     "INTRO_CARD": "THE OVAL OFFICE\n\nTwo buttons. One president.\n\nBLACK BUTTON:\nInstant policy. No process, no warning.\n\nRED BUTTON:\nIt says DO NOT PRESS.\nThat has never stopped anyone.\n\nPush five policies to earn the Pulitzer.\nTap or press any key to begin",
     "POLICIES": [
-      { "title": "LIBERATION TARIFFS", "body": "Spin the wheel: 10% baseline, 47% for disrespect, 200% if a country sounded French on TV." },
-      { "title": "GREENLAND DEAL 2", "body": "Offer Denmark a hotel voucher, two red hats and naming rights to the ice. Call it art of the deal." },
-      { "title": "AI MESSIAH POST", "body": "Repost holy AI art: eagles, golden light, zero fact-checkers and a caption in all caps.", "media": "trumpJesus", "mediaMode": "image", "kicker": "SOCIAL POST" },
-      { "title": "RACIST AI REPOST", "body": "Racist AI post flagged. The screen censors it; the policy staff calls it 'research'.", "media": "obamaMonkeys", "mediaMode": "censored", "kicker": "FLAGGED REPOST" },
-      { "title": "NATO VENMO", "body": "Send allies a payment request with late fees, a tip jar and a box marked THANK ME PUBLICLY." },
-      { "title": "SHARPIE SCIENCE", "body": "Fix the forecast with one black marker. Reality may file an appeal at Mar-a-Lago." },
-      { "title": "LOYALTY APP", "body": "Every agency installs a one-button form: PERFECT CALL? Wrong answers become weather balloons." },
-      { "title": "FOX VETO", "body": "Policy is pending until three hosts nod, one chyron screams and someone says sir with tears." },
-      { "title": "PARDON HAPPY HOUR", "body": "Donors, cousins and group-chat patriots can apply before lunch. Loyalty points accepted." },
-      { "title": "TIKTOK U-TURN", "body": "Ban it, save it, buy it, rename it TRUTH DANCE, then sell the executive order as a hat." },
-      { "title": "WINDMILL APOLOGY", "body": "Windmills must apologize on camera. Oil rigs receive medals and a handwritten love note." },
-      { "title": "PRESS CASTING", "body": "Friendly questions get front row. Unfriendly questions are fake, rude and probably Danish." },
-      { "title": "MARKET CAPS LOCK", "body": "Markets must go up during camera hours. Red numbers are reclassified as election interference." },
-      { "title": "GOLF PEACE SUMMIT", "body": "World peace starts between putts. Attendance requires membership, silence and compliments." }
+      {
+        "kicker": "TRADE WAR",
+        "title": "LIBERATION TARIFFS",
+        "body": "Spin the wheel: 10% baseline, 47% for disrespect, 200% for sounding French on TV.",
+        "quip": "Beautiful numbers. Random, but beautiful."
+      },
+      {
+        "kicker": "REAL ESTATE",
+        "title": "GREENLAND DEAL 2",
+        "body": "Offer Denmark a hotel voucher, two red hats and naming rights to the ice. Art of the deal.",
+        "quip": "Denmark says no. I hear yes."
+      },
+      {
+        "kicker": "SOCIAL POST",
+        "title": "AI MESSIAH POST",
+        "body": "Repost holy AI art. Eagles, golden light, zero fact-checkers.",
+        "media": "trumpJesus",
+        "mediaMode": "post",
+        "postText": "THE MOST BEAUTIFUL PICTURE EVER MADE. MANY PEOPLE ARE SAYING HE ENDORSES. THANK YOU!",
+        "chyron": "THEOLOGIANS 'HAVE QUESTIONS' — RATINGS UP",
+        "quip": "Very accurate likeness."
+      },
+      {
+        "kicker": "FLAGGED REPOST",
+        "title": "THE OBAMA REPOST",
+        "body": "Repost a racist AI image. Deny posting it. Keep it up.",
+        "media": "obamaMonkeys",
+        "mediaMode": "post",
+        "postText": "Interesting picture. I know nothing about it. RETRUTH!",
+        "communityNote": "Community Note: This image is AI-generated and racist. It was reposted anyway.",
+        "chyron": "WHITE HOUSE: 'THE PRESIDENT DOESN'T SEE RACE, ONLY RATINGS'",
+        "quip": "I know nothing about it. Great picture though."
+      },
+      {
+        "kicker": "DIPLOMACY",
+        "title": "NATO VENMO",
+        "body": "Send allies a payment request: late fees, a tip jar and a box marked THANK ME PUBLICLY.",
+        "quip": "They'll pay. With interest and a smile."
+      },
+      {
+        "kicker": "SCIENCE",
+        "title": "SHARPIE SCIENCE",
+        "body": "Fix the forecast with one black marker. Reality may file an appeal at Mar-a-Lago.",
+        "quip": "The marker never lies."
+      },
+      {
+        "kicker": "PERSONNEL",
+        "title": "LOYALTY APP",
+        "body": "One button on every desk: PERFECT CALL? Wrong answers become weather balloons.",
+        "quip": "Everyone pressed yes. Everyone."
+      },
+      {
+        "kicker": "STATE MEDIA",
+        "title": "FOX VETO",
+        "body": "Nothing becomes law until three hosts nod and one chyron screams.",
+        "quip": "If TV agrees, it's true."
+      },
+      {
+        "kicker": "JUSTICE",
+        "title": "PARDON HAPPY HOUR",
+        "body": "Donors, cousins and group-chat patriots: apply before lunch. Loyalty points accepted.",
+        "quip": "Justice is best served with a receipt."
+      },
+      {
+        "kicker": "TECH",
+        "title": "TIKTOK U-TURN",
+        "body": "Ban it, save it, buy it, rename it TRUTH DANCE. Sell the executive order as a hat.",
+        "quip": "The kids love me now. Officially."
+      },
+      {
+        "kicker": "ENERGY",
+        "title": "WINDMILL APOLOGY",
+        "body": "Windmills must apologize on camera. Oil rigs get medals and a handwritten love note.",
+        "quip": "The windmill cried. Sad and beautiful."
+      },
+      {
+        "kicker": "PRESS ROOM",
+        "title": "PRESS CASTING",
+        "body": "Friendly questions get front row. Unfriendly questions are fake, rude and probably Danish.",
+        "quip": "Best press corps I ever cast."
+      },
+      {
+        "kicker": "ECONOMY",
+        "title": "MARKET CAPS LOCK",
+        "body": "Markets must go up during camera hours. Red numbers count as election interference.",
+        "quip": "Green is the only legal color."
+      },
+      {
+        "kicker": "SPORTS DIPLOMACY",
+        "title": "GOLF PEACE SUMMIT",
+        "body": "World peace begins between putts. Bring membership, silence and compliments.",
+        "quip": "Peace through putting."
+      }
     ],
-    "COINS": [[300,-40],[500,-45],[700,-35],[900,-43],[400,-38],[800,-42],[600,-65]],
+    "COINS": [
+      [
+        300,
+        -40
+      ],
+      [
+        500,
+        -45
+      ],
+      [
+        700,
+        -35
+      ],
+      [
+        900,
+        -43
+      ],
+      [
+        400,
+        -38
+      ],
+      [
+        800,
+        -42
+      ],
+      [
+        600,
+        -65
+      ]
+    ],
     "LINES": {
       "arrive": "Back at the Resolute Desk — the best!",
       "policyDefault": "Press the black button to govern by surprise.",
       "complete": "Five executive surprises! The Pulitzer people are crying.",
       "policyTap": "Perfect policy.",
       "buttonHint": "Stand by a button first.",
-      "nukeLine": "Who wrote this label?"
+      "nukeLine": "Who wrote this label?",
+      "libraryLabel": "THE TRUMP PRESIDENTIAL LIBRARY"
     },
-    "PRAISE": ["Genius move, sir!", "Historic leadership!", "Best decision ever!", "Very legal. Very cool.", "So much governing."]
+    "PRAISE": [
+      "Genius move, sir!",
+      "Historic leadership!",
+      "Best decision ever!",
+      "Very legal. Very cool.",
+      "So much governing."
+    ]
   },
   "KREMLIN": {
     "INTRO_CARD": "MOSCOW. THE KREMLIN.\n\nPutin wants to settle Ukraine\nthe old way: ARM WRESTLING.\n\nWin the handshake, win the map.\n\nAnd those gold statues?\nNobody is watching... probably.\n\nTap or press any key",
     "HANDSHAKE_CARD_DESKTOP": "HANDSHAKE BATTLE WITH PUTIN\n\nWho has the strongest handshake?\nThe strongest gets Ukraine!\n\nMash A and D as fast as you can!\n\nTap or press any key to start\n(there are no regrets)",
     "HANDSHAKE_CARD_TOUCH": "HANDSHAKE BATTLE WITH PUTIN\n\nWho has the strongest handshake?\nThe strongest gets Ukraine!\n\nTAP THE SCREEN as fast as you can!\n\nTap to start\n(there are no regrets)",
-    "COINS": [[400,-40],[700,-35],[240,-38],[520,-65]],
+    "COINS": [
+      [
+        400,
+        -40
+      ],
+      [
+        700,
+        -35
+      ],
+      [
+        240,
+        -38
+      ],
+      [
+        520,
+        -65
+      ]
+    ],
     "LINES": {
       "arrive": "Very strong handshake incoming.",
       "putinSetup": "Do not touch my statues, Donald.",
@@ -223,17 +490,89 @@
       "wagnerCaught": "Take him to the gulag!",
       "caughtTrump": "This is very unfair treatment!"
     },
-    "PUTIN_WIN": ["Impressive strength, my friend.", "Strong. I respect that.", "Strong."],
-    "PUTIN_LOSE": ["Weakness. Disappointing.", "Too soft.", "Again, little hands?"],
-    "TRUMP_WIN": ["Dominated the handshake!", "Power move successful!"],
-    "TRUMP_LOSE": ["Strategic retreat...", "Next time…", "The table was slippery!"],
-    "BOASTS": ["Only I could get this deal.", "They love me here. Tremendous!", "Beautiful piece. I deserve it.", "Everyone says it belongs with me."],
-    "THOUGHTS": ["These would look great in my office...", "Very classy gold. The best gold.", "Putin won't miss just one...", "I could fit three of these in Mar-a-Lago!"]
+    "PUTIN_WIN": [
+      "Impressive strength, my friend.",
+      "Strong. I respect that.",
+      "Strong."
+    ],
+    "PUTIN_LOSE": [
+      "Weakness. Disappointing.",
+      "Too soft.",
+      "Again, little hands?"
+    ],
+    "TRUMP_WIN": [
+      "Dominated the handshake!",
+      "Power move successful!"
+    ],
+    "TRUMP_LOSE": [
+      "Strategic retreat...",
+      "Next time…",
+      "The table was slippery!"
+    ],
+    "BOASTS": [
+      "Only I could get this deal.",
+      "They love me here. Tremendous!",
+      "Beautiful piece. I deserve it.",
+      "Everyone says it belongs with me."
+    ],
+    "THOUGHTS": [
+      "These would look great in my office...",
+      "Very classy gold. The best gold.",
+      "Putin won't miss just one...",
+      "I could fit three of these in Mar-a-Lago!"
+    ]
   },
   "EPSTEIN": {
     "INTRO_CARD": "THE EPSTEIN FILES\n\nTrump is OBVIOUSLY not mentioned\nin these documents.\n\nCross out the 10 'mistakes' before\nDemocrats spread conspiracy theories!\n\n🖊 Redact RED names in the golden zone\n🛑 NEVER touch the BLUE names\n❌❌❌ three misses and it's over\n\nTap or press any key to begin",
-    "DUMMY_NAMES": ["John Anderson","Sarah Mitchell","Robert Johnson","Emily Davis","Michael Brown","Jessica Wilson","David Martinez","Ashley Taylor","Christopher Lee","Amanda White","James Thompson","Nicole Garcia","Daniel Rodriguez","Melissa Clark","Matthew Lopez","Stephanie Hill","Kevin Green","Lauren Adams","Brian Baker","Christina Nelson","Ryan Carter","Megan Phillips","Justin Turner","Rachel Collins","Tyler Evans","Samantha Stewart","Brandon Morris","Victoria Reed","Jonathan Cook","Heather Bell","Nicholas Wright","Courtney Murphy","Aaron Rivera","Danielle Cooper","Jeremy King"],
-    "TRUMP_VARIATIONS": ["Donald Trump","Donald J. Trump","Donald John Trump","D. Trump","Mr. Trump","President Trump","POTUS Trump","DJ Trump","The Donald","Donald"],
+    "DUMMY_NAMES": [
+      "John Anderson",
+      "Sarah Mitchell",
+      "Robert Johnson",
+      "Emily Davis",
+      "Michael Brown",
+      "Jessica Wilson",
+      "David Martinez",
+      "Ashley Taylor",
+      "Christopher Lee",
+      "Amanda White",
+      "James Thompson",
+      "Nicole Garcia",
+      "Daniel Rodriguez",
+      "Melissa Clark",
+      "Matthew Lopez",
+      "Stephanie Hill",
+      "Kevin Green",
+      "Lauren Adams",
+      "Brian Baker",
+      "Christina Nelson",
+      "Ryan Carter",
+      "Megan Phillips",
+      "Justin Turner",
+      "Rachel Collins",
+      "Tyler Evans",
+      "Samantha Stewart",
+      "Brandon Morris",
+      "Victoria Reed",
+      "Jonathan Cook",
+      "Heather Bell",
+      "Nicholas Wright",
+      "Courtney Murphy",
+      "Aaron Rivera",
+      "Danielle Cooper",
+      "Jeremy King"
+    ],
+    "TRUMP_VARIATIONS": [
+      "Donald Trump",
+      "Donald J. Trump",
+      "Donald John Trump",
+      "D. Trump",
+      "Mr. Trump",
+      "President Trump",
+      "POTUS Trump",
+      "DJ Trump",
+      "The Donald",
+      "Donald"
+    ],
     "DOC_TEMPLATES": [
       "{name} — meeting scheduled Tuesday 3:00 PM re: Atlantic City project.",
       "{name} called to discuss the Manhattan real estate acquisition.",
@@ -246,7 +585,10 @@
       "{name} security clearance approved — Executive Floor only.",
       "{name} — expenses reimbursed: $15,000, Caribbean business trip."
     ],
-    "PROTECTED": ["Bill Clinton","Bill Gates"],
+    "PROTECTED": [
+      "Bill Clinton",
+      "Bill Gates"
+    ],
     "LINES": {
       "successTitle": "Of course I am not mentioned",
       "successSub": "— never met the guy",
@@ -259,22 +601,1104 @@
       "tapContinue": "Tap or press Enter to continue"
     }
   },
-  "GOLF": {"COURSE": {"name": "Mar-a-Lago Mini-Putt", "par": [3, 5, 3], "holes": [{"id": 1, "displayId": 1, "bidenStrokes": 4, "overlay": "assets/golf1 ny.png", "bounds": {"x": 0, "y": 0, "w": 960, "h": 540}, "spawn": {"x": 236, "y": 368}, "teeRect": {"x": 161, "y": 312, "w": 76, "h": 85}, "cup": {"x": 713, "y": 131, "r": 24}, "walls": [{"x1": 785, "y1": 49, "x2": 628, "y2": 49}, {"x1": 628, "y1": 49, "x2": 629, "y2": 281}, {"x1": 629, "y1": 281, "x2": 166, "y2": 280}, {"x1": 166, "y1": 280, "x2": 163, "y2": 460}, {"x1": 163, "y1": 460, "x2": 785, "y2": 460}, {"x1": 785, "y1": 460, "x2": 785, "y2": 49}], "surfaces": []}, {"id": 2, "displayId": 2, "bidenStrokes": 7, "overlay": "assets/bane.png", "bounds": {"x": 0, "y": 0, "w": 960, "h": 540}, "spawn": {"x": 163.4, "y": 290.8}, "teeRect": {"x": 127, "y": 268, "w": 72.9, "h": 45.5}, "cup": {"x": 376, "y": 420, "r": 18.4}, "walls": [{"x1": 489, "y1": 83.9, "x2": 641, "y2": 83.9}, {"x1": 641, "y1": 83.9, "x2": 641, "y2": 120.3}, {"x1": 641, "y1": 120.3, "x2": 489, "y2": 120.3}, {"x1": 489, "y1": 120.3, "x2": 489, "y2": 83.9}, {"x1": 489, "y1": 148.5, "x2": 641, "y2": 148.5}, {"x1": 641, "y1": 148.5, "x2": 641, "y2": 184.9}, {"x1": 641, "y1": 184.9, "x2": 489, "y2": 184.9}, {"x1": 489, "y1": 184.9, "x2": 489, "y2": 148.5}, {"x1": 888, "y1": 83, "x2": 102, "y2": 83}, {"x1": 102, "y1": 83, "x2": 102, "y2": 347}, {"x1": 102, "y1": 347, "x2": 219, "y2": 347}, {"x1": 219, "y1": 347, "x2": 219, "y2": 187}, {"x1": 219, "y1": 187, "x2": 766, "y2": 187}, {"x1": 766, "y1": 187, "x2": 766, "y2": 361}, {"x1": 766, "y1": 361, "x2": 304, "y2": 361}, {"x1": 304, "y1": 361, "x2": 304, "y2": 477}, {"x1": 304, "y1": 477, "x2": 888, "y2": 477}, {"x1": 888, "y1": 477, "x2": 888, "y2": 83}], "surfaces": [{"type": "obstacle", "poly": [[489, 83.9], [641, 83.9], [641, 120.3], [489, 120.3]]}, {"type": "obstacle", "poly": [[489, 148.5], [641, 148.5], [641, 184.9], [489, 184.9]]}, {"type": "fairway", "poly": [[888, 83], [102, 83], [102, 347], [219, 347], [219, 187], [766, 187], [766, 361], [304, 361], [304, 477], [888, 477], [888, 83]]}]}, {"id": 3, "displayId": 19, "bidenStrokes": 4, "overlay": "assets/bane3.png", "bounds": {"x": 0, "y": 0, "w": 960, "h": 540}, "spawn": {"x": 235.4, "y": 396.8}, "teeRect": {"x": 199, "y": 374, "w": 72.9, "h": 45.5}, "cup": {"x": 748, "y": 216, "r": 18.4}, "walls": [{"x1": 211, "y1": 72, "x2": 174.3, "y2": 78}, {"x1": 174.3, "y1": 78, "x2": 146.8, "y2": 93.1}, {"x1": 146.8, "y1": 93.1, "x2": 128.2, "y2": 114.6}, {"x1": 128.2, "y1": 114.6, "x2": 118.2, "y2": 140}, {"x1": 118.2, "y1": 140, "x2": 116.7, "y2": 166.5}, {"x1": 116.7, "y1": 166.5, "x2": 123.4, "y2": 191.7}, {"x1": 123.4, "y1": 191.7, "x2": 138, "y2": 212.9}, {"x1": 138, "y1": 212.9, "x2": 160.3, "y2": 227.5}, {"x1": 160.3, "y1": 227.5, "x2": 190, "y2": 233}, {"x1": 190, "y1": 233, "x2": 171.9, "y2": 236.3}, {"x1": 171.9, "y1": 236.3, "x2": 156.9, "y2": 247.2}, {"x1": 156.9, "y1": 247.2, "x2": 145, "y2": 264.1}, {"x1": 145, "y1": 264.1, "x2": 136.5, "y2": 285.7}, {"x1": 136.5, "y1": 285.7, "x2": 131.6, "y2": 310.3}, {"x1": 131.6, "y1": 310.3, "x2": 130.5, "y2": 336.5}, {"x1": 130.5, "y1": 336.5, "x2": 133.4, "y2": 362.8}, {"x1": 133.4, "y1": 362.8, "x2": 140.5, "y2": 387.7}, {"x1": 140.5, "y1": 387.7, "x2": 152, "y2": 409.6}, {"x1": 152, "y1": 409.6, "x2": 168.1, "y2": 427.2}, {"x1": 168.1, "y1": 427.2, "x2": 189.1, "y2": 438.8}, {"x1": 189.1, "y1": 438.8, "x2": 215, "y2": 443}, {"x1": 215, "y1": 443, "x2": 249.7, "y2": 440.2}, {"x1": 249.7, "y1": 440.2, "x2": 277.1, "y2": 432.3}, {"x1": 277.1, "y1": 432.3, "x2": 297.9, "y2": 420.2}, {"x1": 297.9, "y1": 420.2, "x2": 313, "y2": 404.7}, {"x1": 313, "y1": 404.7, "x2": 323.2, "y2": 386.7}, {"x1": 323.2, "y1": 386.7, "x2": 329.4, "y2": 367}, {"x1": 329.4, "y1": 367, "x2": 332.5, "y2": 346.4}, {"x1": 332.5, "y1": 346.4, "x2": 333.2, "y2": 325.7}, {"x1": 333.2, "y1": 325.7, "x2": 332.5, "y2": 305.9}, {"x1": 332.5, "y1": 305.9, "x2": 331.1, "y2": 287.7}, {"x1": 331.1, "y1": 287.7, "x2": 330, "y2": 272}, {"x1": 330, "y1": 272, "x2": 670, "y2": 268}, {"x1": 670, "y1": 268, "x2": 671.7, "y2": 272.1}, {"x1": 671.7, "y1": 272.1, "x2": 676.9, "y2": 282.4}, {"x1": 676.9, "y1": 282.4, "x2": 685.9, "y2": 295.6}, {"x1": 685.9, "y1": 295.6, "x2": 699, "y2": 308.7}, {"x1": 699, "y1": 308.7, "x2": 716.2, "y2": 318.6}, {"x1": 716.2, "y1": 318.6, "x2": 738, "y2": 322}, {"x1": 738, "y1": 322, "x2": 763.1, "y2": 315.4}, {"x1": 763.1, "y1": 315.4, "x2": 787.3, "y2": 299.9}, {"x1": 787.3, "y1": 299.9, "x2": 808.3, "y2": 279.1}, {"x1": 808.3, "y1": 279.1, "x2": 824.1, "y2": 256.7}, {"x1": 824.1, "y1": 256.7, "x2": 832.4, "y2": 236.2}, {"x1": 832.4, "y1": 236.2, "x2": 831.1, "y2": 221.5}, {"x1": 831.1, "y1": 221.5, "x2": 818, "y2": 216}, {"x1": 818, "y1": 216, "x2": 830.3, "y2": 208}, {"x1": 830.3, "y1": 208, "x2": 834.1, "y2": 192.3}, {"x1": 834.1, "y1": 192.3, "x2": 829.7, "y2": 172.2}, {"x1": 829.7, "y1": 172.2, "x2": 817.1, "y2": 150.9}, {"x1": 817.1, "y1": 150.9, "x2": 796.8, "y2": 131.8}, {"x1": 796.8, "y1": 131.8, "x2": 769, "y2": 118}, {"x1": 769, "y1": 118, "x2": 734, "y2": 113}, {"x1": 734, "y1": 113, "x2": 706.3, "y2": 116.7}, {"x1": 706.3, "y1": 116.7, "x2": 688.7, "y2": 125.5}, {"x1": 688.7, "y1": 125.5, "x2": 678.9, "y2": 136.8}, {"x1": 678.9, "y1": 136.8, "x2": 674.7, "y2": 148}, {"x1": 674.7, "y1": 148, "x2": 673.8, "y2": 156.6}, {"x1": 673.8, "y1": 156.6, "x2": 674, "y2": 160}, {"x1": 674, "y1": 160, "x2": 330, "y2": 166}, {"x1": 330, "y1": 166, "x2": 328.3, "y2": 161.9}, {"x1": 328.3, "y1": 161.9, "x2": 323.2, "y2": 151.1}, {"x1": 323.2, "y1": 151.1, "x2": 314.5, "y2": 135.9}, {"x1": 314.5, "y1": 135.9, "x2": 302, "y2": 118.5}, {"x1": 302, "y1": 118.5, "x2": 285.6, "y2": 101.1}, {"x1": 285.6, "y1": 101.1, "x2": 265, "y2": 86.1}, {"x1": 265, "y1": 86.1, "x2": 240.2, "y2": 75.7}, {"x1": 240.2, "y1": 75.7, "x2": 211, "y2": 72}], "surfaces": [{"type": "fairway", "poly": [[211, 72], [174.3, 78], [146.8, 93.1], [128.2, 114.6], [118.2, 140], [116.7, 166.5], [123.4, 191.7], [138, 212.9], [160.3, 227.5], [190, 233], [171.9, 236.3], [156.9, 247.2], [145, 264.1], [136.5, 285.7], [131.6, 310.3], [130.5, 336.5], [133.4, 362.8], [140.5, 387.7], [152, 409.6], [168.1, 427.2], [189.1, 438.8], [215, 443], [249.7, 440.2], [277.1, 432.3], [297.9, 420.2], [313, 404.7], [323.2, 386.7], [329.4, 367], [332.5, 346.4], [333.2, 325.7], [332.5, 305.9], [331.1, 287.7], [330, 272], [670, 268], [671.7, 272.1], [676.9, 282.4], [685.9, 295.6], [699, 308.7], [716.2, 318.6], [738, 322], [763.1, 315.4], [787.3, 299.9], [808.3, 279.1], [824.1, 256.7], [832.4, 236.2], [831.1, 221.5], [818, 216], [830.3, 208], [834.1, 192.3], [829.7, 172.2], [817.1, 150.9], [796.8, 131.8], [769, 118], [734, 113], [706.3, 116.7], [688.7, 125.5], [678.9, 136.8], [674.7, 148], [673.8, 156.6], [674, 160], [330, 166], [328.3, 161.9], [323.2, 151.1], [314.5, 135.9], [302, 118.5], [285.6, 101.1], [265, 86.1], [240.2, 75.7], [211, 72]]}]}]}, "BIDEN_LINES": ["Trump is a threat to our democracy.", "I'm the only one who can beat Trump.", "This is a battle for the soul of the nation.", "We must stand up to lies and defend the truth.", "Our democracy only works when we all do our part."], "LINES": {"arrive": "Time for some golf!", "tutorial": "TRUMP vs. SLEEPY JOE\n\nYou must not lose this duel.\n\nDrag away from the ball to aim\nand choose power — release to shoot.\n(Keyboard: arrows + hold E)\n\nLowest TOTAL strokes after 3 holes wins.\n\nTap or press any key to tee off", "holeStart": "Hole {n} — Sleepy Joe: {joe} strokes. Beat that.", "leadYou": "After hole {n}: You {you} — Joe {joe}. YOU LEAD! Tremendous.", "leadJoe": "After hole {n}: You {you} — Joe {joe}. Joe leads. SAD!", "leadTie": "After hole {n}: You {you} — Joe {joe}. All square.", "winBanner": "Best golfer ever!", "loseBanner": "Sleepy Joe wins!", "victoryTap": "Tap or press Enter to continue", "leave": "Leave the course?", "drop": "Drop (+1)", "tee": "TEE"}},
+  "GOLF": {
+    "COURSE": {
+      "name": "Mar-a-Lago Mini-Putt",
+      "par": [
+        3,
+        5,
+        3
+      ],
+      "holes": [
+        {
+          "id": 1,
+          "displayId": 1,
+          "bidenStrokes": 4,
+          "overlay": "assets/golf1 ny.png",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "w": 960,
+            "h": 540
+          },
+          "spawn": {
+            "x": 236,
+            "y": 368
+          },
+          "teeRect": {
+            "x": 161,
+            "y": 312,
+            "w": 76,
+            "h": 85
+          },
+          "cup": {
+            "x": 713,
+            "y": 131,
+            "r": 24
+          },
+          "walls": [
+            {
+              "x1": 785,
+              "y1": 49,
+              "x2": 628,
+              "y2": 49
+            },
+            {
+              "x1": 628,
+              "y1": 49,
+              "x2": 629,
+              "y2": 281
+            },
+            {
+              "x1": 629,
+              "y1": 281,
+              "x2": 166,
+              "y2": 280
+            },
+            {
+              "x1": 166,
+              "y1": 280,
+              "x2": 163,
+              "y2": 460
+            },
+            {
+              "x1": 163,
+              "y1": 460,
+              "x2": 785,
+              "y2": 460
+            },
+            {
+              "x1": 785,
+              "y1": 460,
+              "x2": 785,
+              "y2": 49
+            }
+          ],
+          "surfaces": []
+        },
+        {
+          "id": 2,
+          "displayId": 2,
+          "bidenStrokes": 7,
+          "overlay": "assets/bane.png",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "w": 960,
+            "h": 540
+          },
+          "spawn": {
+            "x": 163.4,
+            "y": 290.8
+          },
+          "teeRect": {
+            "x": 127,
+            "y": 268,
+            "w": 72.9,
+            "h": 45.5
+          },
+          "cup": {
+            "x": 376,
+            "y": 420,
+            "r": 18.4
+          },
+          "walls": [
+            {
+              "x1": 489,
+              "y1": 83.9,
+              "x2": 641,
+              "y2": 83.9
+            },
+            {
+              "x1": 641,
+              "y1": 83.9,
+              "x2": 641,
+              "y2": 120.3
+            },
+            {
+              "x1": 641,
+              "y1": 120.3,
+              "x2": 489,
+              "y2": 120.3
+            },
+            {
+              "x1": 489,
+              "y1": 120.3,
+              "x2": 489,
+              "y2": 83.9
+            },
+            {
+              "x1": 489,
+              "y1": 148.5,
+              "x2": 641,
+              "y2": 148.5
+            },
+            {
+              "x1": 641,
+              "y1": 148.5,
+              "x2": 641,
+              "y2": 184.9
+            },
+            {
+              "x1": 641,
+              "y1": 184.9,
+              "x2": 489,
+              "y2": 184.9
+            },
+            {
+              "x1": 489,
+              "y1": 184.9,
+              "x2": 489,
+              "y2": 148.5
+            },
+            {
+              "x1": 888,
+              "y1": 83,
+              "x2": 102,
+              "y2": 83
+            },
+            {
+              "x1": 102,
+              "y1": 83,
+              "x2": 102,
+              "y2": 347
+            },
+            {
+              "x1": 102,
+              "y1": 347,
+              "x2": 219,
+              "y2": 347
+            },
+            {
+              "x1": 219,
+              "y1": 347,
+              "x2": 219,
+              "y2": 187
+            },
+            {
+              "x1": 219,
+              "y1": 187,
+              "x2": 766,
+              "y2": 187
+            },
+            {
+              "x1": 766,
+              "y1": 187,
+              "x2": 766,
+              "y2": 361
+            },
+            {
+              "x1": 766,
+              "y1": 361,
+              "x2": 304,
+              "y2": 361
+            },
+            {
+              "x1": 304,
+              "y1": 361,
+              "x2": 304,
+              "y2": 477
+            },
+            {
+              "x1": 304,
+              "y1": 477,
+              "x2": 888,
+              "y2": 477
+            },
+            {
+              "x1": 888,
+              "y1": 477,
+              "x2": 888,
+              "y2": 83
+            }
+          ],
+          "surfaces": [
+            {
+              "type": "obstacle",
+              "poly": [
+                [
+                  489,
+                  83.9
+                ],
+                [
+                  641,
+                  83.9
+                ],
+                [
+                  641,
+                  120.3
+                ],
+                [
+                  489,
+                  120.3
+                ]
+              ]
+            },
+            {
+              "type": "obstacle",
+              "poly": [
+                [
+                  489,
+                  148.5
+                ],
+                [
+                  641,
+                  148.5
+                ],
+                [
+                  641,
+                  184.9
+                ],
+                [
+                  489,
+                  184.9
+                ]
+              ]
+            },
+            {
+              "type": "fairway",
+              "poly": [
+                [
+                  888,
+                  83
+                ],
+                [
+                  102,
+                  83
+                ],
+                [
+                  102,
+                  347
+                ],
+                [
+                  219,
+                  347
+                ],
+                [
+                  219,
+                  187
+                ],
+                [
+                  766,
+                  187
+                ],
+                [
+                  766,
+                  361
+                ],
+                [
+                  304,
+                  361
+                ],
+                [
+                  304,
+                  477
+                ],
+                [
+                  888,
+                  477
+                ],
+                [
+                  888,
+                  83
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "displayId": 19,
+          "bidenStrokes": 4,
+          "overlay": "assets/bane3.png",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "w": 960,
+            "h": 540
+          },
+          "spawn": {
+            "x": 235.4,
+            "y": 396.8
+          },
+          "teeRect": {
+            "x": 199,
+            "y": 374,
+            "w": 72.9,
+            "h": 45.5
+          },
+          "cup": {
+            "x": 748,
+            "y": 216,
+            "r": 18.4
+          },
+          "walls": [
+            {
+              "x1": 211,
+              "y1": 72,
+              "x2": 174.3,
+              "y2": 78
+            },
+            {
+              "x1": 174.3,
+              "y1": 78,
+              "x2": 146.8,
+              "y2": 93.1
+            },
+            {
+              "x1": 146.8,
+              "y1": 93.1,
+              "x2": 128.2,
+              "y2": 114.6
+            },
+            {
+              "x1": 128.2,
+              "y1": 114.6,
+              "x2": 118.2,
+              "y2": 140
+            },
+            {
+              "x1": 118.2,
+              "y1": 140,
+              "x2": 116.7,
+              "y2": 166.5
+            },
+            {
+              "x1": 116.7,
+              "y1": 166.5,
+              "x2": 123.4,
+              "y2": 191.7
+            },
+            {
+              "x1": 123.4,
+              "y1": 191.7,
+              "x2": 138,
+              "y2": 212.9
+            },
+            {
+              "x1": 138,
+              "y1": 212.9,
+              "x2": 160.3,
+              "y2": 227.5
+            },
+            {
+              "x1": 160.3,
+              "y1": 227.5,
+              "x2": 190,
+              "y2": 233
+            },
+            {
+              "x1": 190,
+              "y1": 233,
+              "x2": 171.9,
+              "y2": 236.3
+            },
+            {
+              "x1": 171.9,
+              "y1": 236.3,
+              "x2": 156.9,
+              "y2": 247.2
+            },
+            {
+              "x1": 156.9,
+              "y1": 247.2,
+              "x2": 145,
+              "y2": 264.1
+            },
+            {
+              "x1": 145,
+              "y1": 264.1,
+              "x2": 136.5,
+              "y2": 285.7
+            },
+            {
+              "x1": 136.5,
+              "y1": 285.7,
+              "x2": 131.6,
+              "y2": 310.3
+            },
+            {
+              "x1": 131.6,
+              "y1": 310.3,
+              "x2": 130.5,
+              "y2": 336.5
+            },
+            {
+              "x1": 130.5,
+              "y1": 336.5,
+              "x2": 133.4,
+              "y2": 362.8
+            },
+            {
+              "x1": 133.4,
+              "y1": 362.8,
+              "x2": 140.5,
+              "y2": 387.7
+            },
+            {
+              "x1": 140.5,
+              "y1": 387.7,
+              "x2": 152,
+              "y2": 409.6
+            },
+            {
+              "x1": 152,
+              "y1": 409.6,
+              "x2": 168.1,
+              "y2": 427.2
+            },
+            {
+              "x1": 168.1,
+              "y1": 427.2,
+              "x2": 189.1,
+              "y2": 438.8
+            },
+            {
+              "x1": 189.1,
+              "y1": 438.8,
+              "x2": 215,
+              "y2": 443
+            },
+            {
+              "x1": 215,
+              "y1": 443,
+              "x2": 249.7,
+              "y2": 440.2
+            },
+            {
+              "x1": 249.7,
+              "y1": 440.2,
+              "x2": 277.1,
+              "y2": 432.3
+            },
+            {
+              "x1": 277.1,
+              "y1": 432.3,
+              "x2": 297.9,
+              "y2": 420.2
+            },
+            {
+              "x1": 297.9,
+              "y1": 420.2,
+              "x2": 313,
+              "y2": 404.7
+            },
+            {
+              "x1": 313,
+              "y1": 404.7,
+              "x2": 323.2,
+              "y2": 386.7
+            },
+            {
+              "x1": 323.2,
+              "y1": 386.7,
+              "x2": 329.4,
+              "y2": 367
+            },
+            {
+              "x1": 329.4,
+              "y1": 367,
+              "x2": 332.5,
+              "y2": 346.4
+            },
+            {
+              "x1": 332.5,
+              "y1": 346.4,
+              "x2": 333.2,
+              "y2": 325.7
+            },
+            {
+              "x1": 333.2,
+              "y1": 325.7,
+              "x2": 332.5,
+              "y2": 305.9
+            },
+            {
+              "x1": 332.5,
+              "y1": 305.9,
+              "x2": 331.1,
+              "y2": 287.7
+            },
+            {
+              "x1": 331.1,
+              "y1": 287.7,
+              "x2": 330,
+              "y2": 272
+            },
+            {
+              "x1": 330,
+              "y1": 272,
+              "x2": 670,
+              "y2": 268
+            },
+            {
+              "x1": 670,
+              "y1": 268,
+              "x2": 671.7,
+              "y2": 272.1
+            },
+            {
+              "x1": 671.7,
+              "y1": 272.1,
+              "x2": 676.9,
+              "y2": 282.4
+            },
+            {
+              "x1": 676.9,
+              "y1": 282.4,
+              "x2": 685.9,
+              "y2": 295.6
+            },
+            {
+              "x1": 685.9,
+              "y1": 295.6,
+              "x2": 699,
+              "y2": 308.7
+            },
+            {
+              "x1": 699,
+              "y1": 308.7,
+              "x2": 716.2,
+              "y2": 318.6
+            },
+            {
+              "x1": 716.2,
+              "y1": 318.6,
+              "x2": 738,
+              "y2": 322
+            },
+            {
+              "x1": 738,
+              "y1": 322,
+              "x2": 763.1,
+              "y2": 315.4
+            },
+            {
+              "x1": 763.1,
+              "y1": 315.4,
+              "x2": 787.3,
+              "y2": 299.9
+            },
+            {
+              "x1": 787.3,
+              "y1": 299.9,
+              "x2": 808.3,
+              "y2": 279.1
+            },
+            {
+              "x1": 808.3,
+              "y1": 279.1,
+              "x2": 824.1,
+              "y2": 256.7
+            },
+            {
+              "x1": 824.1,
+              "y1": 256.7,
+              "x2": 832.4,
+              "y2": 236.2
+            },
+            {
+              "x1": 832.4,
+              "y1": 236.2,
+              "x2": 831.1,
+              "y2": 221.5
+            },
+            {
+              "x1": 831.1,
+              "y1": 221.5,
+              "x2": 818,
+              "y2": 216
+            },
+            {
+              "x1": 818,
+              "y1": 216,
+              "x2": 830.3,
+              "y2": 208
+            },
+            {
+              "x1": 830.3,
+              "y1": 208,
+              "x2": 834.1,
+              "y2": 192.3
+            },
+            {
+              "x1": 834.1,
+              "y1": 192.3,
+              "x2": 829.7,
+              "y2": 172.2
+            },
+            {
+              "x1": 829.7,
+              "y1": 172.2,
+              "x2": 817.1,
+              "y2": 150.9
+            },
+            {
+              "x1": 817.1,
+              "y1": 150.9,
+              "x2": 796.8,
+              "y2": 131.8
+            },
+            {
+              "x1": 796.8,
+              "y1": 131.8,
+              "x2": 769,
+              "y2": 118
+            },
+            {
+              "x1": 769,
+              "y1": 118,
+              "x2": 734,
+              "y2": 113
+            },
+            {
+              "x1": 734,
+              "y1": 113,
+              "x2": 706.3,
+              "y2": 116.7
+            },
+            {
+              "x1": 706.3,
+              "y1": 116.7,
+              "x2": 688.7,
+              "y2": 125.5
+            },
+            {
+              "x1": 688.7,
+              "y1": 125.5,
+              "x2": 678.9,
+              "y2": 136.8
+            },
+            {
+              "x1": 678.9,
+              "y1": 136.8,
+              "x2": 674.7,
+              "y2": 148
+            },
+            {
+              "x1": 674.7,
+              "y1": 148,
+              "x2": 673.8,
+              "y2": 156.6
+            },
+            {
+              "x1": 673.8,
+              "y1": 156.6,
+              "x2": 674,
+              "y2": 160
+            },
+            {
+              "x1": 674,
+              "y1": 160,
+              "x2": 330,
+              "y2": 166
+            },
+            {
+              "x1": 330,
+              "y1": 166,
+              "x2": 328.3,
+              "y2": 161.9
+            },
+            {
+              "x1": 328.3,
+              "y1": 161.9,
+              "x2": 323.2,
+              "y2": 151.1
+            },
+            {
+              "x1": 323.2,
+              "y1": 151.1,
+              "x2": 314.5,
+              "y2": 135.9
+            },
+            {
+              "x1": 314.5,
+              "y1": 135.9,
+              "x2": 302,
+              "y2": 118.5
+            },
+            {
+              "x1": 302,
+              "y1": 118.5,
+              "x2": 285.6,
+              "y2": 101.1
+            },
+            {
+              "x1": 285.6,
+              "y1": 101.1,
+              "x2": 265,
+              "y2": 86.1
+            },
+            {
+              "x1": 265,
+              "y1": 86.1,
+              "x2": 240.2,
+              "y2": 75.7
+            },
+            {
+              "x1": 240.2,
+              "y1": 75.7,
+              "x2": 211,
+              "y2": 72
+            }
+          ],
+          "surfaces": [
+            {
+              "type": "fairway",
+              "poly": [
+                [
+                  211,
+                  72
+                ],
+                [
+                  174.3,
+                  78
+                ],
+                [
+                  146.8,
+                  93.1
+                ],
+                [
+                  128.2,
+                  114.6
+                ],
+                [
+                  118.2,
+                  140
+                ],
+                [
+                  116.7,
+                  166.5
+                ],
+                [
+                  123.4,
+                  191.7
+                ],
+                [
+                  138,
+                  212.9
+                ],
+                [
+                  160.3,
+                  227.5
+                ],
+                [
+                  190,
+                  233
+                ],
+                [
+                  171.9,
+                  236.3
+                ],
+                [
+                  156.9,
+                  247.2
+                ],
+                [
+                  145,
+                  264.1
+                ],
+                [
+                  136.5,
+                  285.7
+                ],
+                [
+                  131.6,
+                  310.3
+                ],
+                [
+                  130.5,
+                  336.5
+                ],
+                [
+                  133.4,
+                  362.8
+                ],
+                [
+                  140.5,
+                  387.7
+                ],
+                [
+                  152,
+                  409.6
+                ],
+                [
+                  168.1,
+                  427.2
+                ],
+                [
+                  189.1,
+                  438.8
+                ],
+                [
+                  215,
+                  443
+                ],
+                [
+                  249.7,
+                  440.2
+                ],
+                [
+                  277.1,
+                  432.3
+                ],
+                [
+                  297.9,
+                  420.2
+                ],
+                [
+                  313,
+                  404.7
+                ],
+                [
+                  323.2,
+                  386.7
+                ],
+                [
+                  329.4,
+                  367
+                ],
+                [
+                  332.5,
+                  346.4
+                ],
+                [
+                  333.2,
+                  325.7
+                ],
+                [
+                  332.5,
+                  305.9
+                ],
+                [
+                  331.1,
+                  287.7
+                ],
+                [
+                  330,
+                  272
+                ],
+                [
+                  670,
+                  268
+                ],
+                [
+                  671.7,
+                  272.1
+                ],
+                [
+                  676.9,
+                  282.4
+                ],
+                [
+                  685.9,
+                  295.6
+                ],
+                [
+                  699,
+                  308.7
+                ],
+                [
+                  716.2,
+                  318.6
+                ],
+                [
+                  738,
+                  322
+                ],
+                [
+                  763.1,
+                  315.4
+                ],
+                [
+                  787.3,
+                  299.9
+                ],
+                [
+                  808.3,
+                  279.1
+                ],
+                [
+                  824.1,
+                  256.7
+                ],
+                [
+                  832.4,
+                  236.2
+                ],
+                [
+                  831.1,
+                  221.5
+                ],
+                [
+                  818,
+                  216
+                ],
+                [
+                  830.3,
+                  208
+                ],
+                [
+                  834.1,
+                  192.3
+                ],
+                [
+                  829.7,
+                  172.2
+                ],
+                [
+                  817.1,
+                  150.9
+                ],
+                [
+                  796.8,
+                  131.8
+                ],
+                [
+                  769,
+                  118
+                ],
+                [
+                  734,
+                  113
+                ],
+                [
+                  706.3,
+                  116.7
+                ],
+                [
+                  688.7,
+                  125.5
+                ],
+                [
+                  678.9,
+                  136.8
+                ],
+                [
+                  674.7,
+                  148
+                ],
+                [
+                  673.8,
+                  156.6
+                ],
+                [
+                  674,
+                  160
+                ],
+                [
+                  330,
+                  166
+                ],
+                [
+                  328.3,
+                  161.9
+                ],
+                [
+                  323.2,
+                  151.1
+                ],
+                [
+                  314.5,
+                  135.9
+                ],
+                [
+                  302,
+                  118.5
+                ],
+                [
+                  285.6,
+                  101.1
+                ],
+                [
+                  265,
+                  86.1
+                ],
+                [
+                  240.2,
+                  75.7
+                ],
+                [
+                  211,
+                  72
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "BIDEN_LINES": [
+      "Trump is a threat to our democracy.",
+      "I'm the only one who can beat Trump.",
+      "This is a battle for the soul of the nation.",
+      "We must stand up to lies and defend the truth.",
+      "Our democracy only works when we all do our part."
+    ],
+    "LINES": {
+      "arrive": "Time for some golf!",
+      "tutorial": "TRUMP vs. SLEEPY JOE\n\nYou must not lose this duel.\n\nDrag away from the ball to aim\nand choose power — release to shoot.\n(Keyboard: arrows + hold E)\n\nLowest TOTAL strokes after 3 holes wins.\n\nTap or press any key to tee off",
+      "holeStart": "Hole {n} — Sleepy Joe: {joe} strokes. Beat that.",
+      "leadYou": "After hole {n}: You {you} — Joe {joe}. YOU LEAD! Tremendous.",
+      "leadJoe": "After hole {n}: You {you} — Joe {joe}. Joe leads. SAD!",
+      "leadTie": "After hole {n}: You {you} — Joe {joe}. All square.",
+      "winBanner": "Best golfer ever!",
+      "loseBanner": "Sleepy Joe wins!",
+      "victoryTap": "Tap or press Enter to continue",
+      "leave": "Leave the course?",
+      "drop": "Drop (+1)",
+      "tee": "TEE"
+    }
+  },
   "GAMEOVER": {
-    "lars-fight": { "title": "KO!", "subtitle": "Lars got you. Try again." },
-    "ice":        { "title": "Game Over", "subtitle": "Maybe don't melt the ice caps, Donald" },
-    "bear":       { "title": "EATEN BY A BEAR!", "subtitle": "This is very unfair treatment!" },
-    "nuke":       { "title": "Kaboom", "subtitle": "Maybe not push that button" },
-    "kremlin":    { "title": "World Peace?", "subtitle": "Historic day in geopolitics" },
-    "wagner":     { "title": "CAPTURED BY WAGNER", "subtitle": "Should have worn those gold sneakers..." },
-    "golf-loss":  { "title": "LOSER!", "subtitle": "Sleepy Joe wins. Very SAD!" },
-    "epstein_fail": { "title": "FAKE NEWS!", "subtitle": "Witch hunt. Very unfair newspaper." },
-    "generic":    { "title": "Game Over", "subtitle": "Better luck next time" }
+    "lars-fight": {
+      "title": "KO!",
+      "subtitle": "Lars got you. Try again."
+    },
+    "ice": {
+      "title": "Game Over",
+      "subtitle": "Maybe don't melt the ice caps, Donald"
+    },
+    "bear": {
+      "title": "EATEN BY A BEAR!",
+      "subtitle": "This is very unfair treatment!"
+    },
+    "nuke": {
+      "title": "Kaboom",
+      "subtitle": "Maybe not push that button"
+    },
+    "kremlin": {
+      "title": "World Peace?",
+      "subtitle": "Historic day in geopolitics"
+    },
+    "wagner": {
+      "title": "CAPTURED BY WAGNER",
+      "subtitle": "Should have worn those gold sneakers..."
+    },
+    "golf-loss": {
+      "title": "LOSER!",
+      "subtitle": "Sleepy Joe wins. Very SAD!"
+    },
+    "epstein_fail": {
+      "title": "FAKE NEWS!",
+      "subtitle": "Witch hunt. Very unfair newspaper."
+    },
+    "generic": {
+      "title": "Game Over",
+      "subtitle": "Better luck next time"
+    }
   },
   "CONTINUE": {
-    "words": ["DEMOCRAT", "INDEPENDENT", "REPUBLICAN", "TRUMP"],
+    "words": [
+      "DEMOCRAT",
+      "INDEPENDENT",
+      "REPUBLICAN",
+      "TRUMP"
+    ],
     "title": "Try to save the world again, Donald",
-    "bubbleIdle": "VOTE TRUMP!", "bubbleWin": "YOU'RE HIRED! BIGLY!", "bubbleRigged": "WITCH HUNT! RIGGED!",
+    "bubbleIdle": "VOTE TRUMP!",
+    "bubbleWin": "YOU'RE HIRED! BIGLY!",
+    "bubbleRigged": "WITCH HUNT! RIGGED!",
     "lifeLine": "+1 LIFE — TREMENDOUS!"
   }
 }
@@ -2382,7 +3806,10 @@ function ovalPressPolicy(){
   OV.policy.pressed=true;
   setTimeout(()=>{ OV.policy.pressed=false; },160);
   ovalChoir(true);
-  say(player, pick(DATA.OVAL.PRAISE)||OL.policyTap, 1500);
+  d.chyronAt = (d.policy && d.policy.chyron) ? t+1300 : 0;
+  if (d.policy && d.policy.mediaMode==='post'){ d.postShownAt=t; d.postUntil=t+6200; }
+  else d.postUntil=0;
+  say(player, (d.policy && d.policy.quip) || pick(DATA.OVAL.PRAISE) || OL.policyTap, 1900);
   spawnSparks(OV.policy.x, OV.policy.y-8, 14);
   ensureAudio(); SFX.buttonPress(); setTimeout(()=>SFX.success(),90);
   if (!d.completed && d.policyCount>=5){
@@ -2674,22 +4101,61 @@ function drawOvalTV(){
   }
   const policy=d.policy;
   ctx.textAlign='center';
+  // header: LIVE-dot + screen name
   ctx.fillStyle='#fff'; ctx.font=`900 ${OV.compact?12:16}px Georgia,serif`;
   ctx.fillText('EXECUTIVE SCREEN',x+w/2,y+22);
+  if (!OV.compact){
+    const liveP=0.55+0.45*Math.sin(now()/420);
+    ctx.fillStyle=`rgba(255,60,60,${liveP})`;
+    ctx.beginPath(); ctx.arc(x+14,y+16,3.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.75)'; ctx.font='900 7px system-ui'; ctx.textAlign='left';
+    ctx.fillText('LIVE',x+21,y+19); ctx.textAlign='center';
+  }
+  // kicker pill over the title
+  if (policy && policy.kicker){
+    ctx.font='900 8px system-ui';
+    const kw=ctx.measureText(policy.kicker).width+14;
+    const isFlag=policy.communityNote;
+    ctx.fillStyle=isFlag?'#b31217':'#b8860b';
+    roundRectPath(ctx,x+w/2-kw/2,y+(OV.compact?28:30),kw,12,6); ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.fillText(policy.kicker,x+w/2,y+(OV.compact?37:39));
+  }
   ctx.fillStyle='#86d6ff'; ctx.font=`bold ${OV.compact?11:13}px system-ui`;
-  ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+(OV.compact?45:50));
-  if (policy && policy.media){
-    const mediaX=x+(OV.compact?10:14), mediaY=y+(OV.compact?52:60), mediaW=OV.compact?62:82, mediaH=h-(OV.compact?64:74);
+  ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+(OV.compact?52:57));
+  if (policy && policy.mediaMode==='post'){
+    // the post itself pops out as a big lightbox (drawOvalPostLightbox);
+    // the TV shows the caption line + BREAKING chyron
+    ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?10:12}px system-ui`;
+    ovalWrap(policy.postText||policy.body,x+18,y+(OV.compact?72:82),w-36,OV.compact?12:15,OV.compact?3:3,'center');
+  } else if (policy && policy.media){
+    const mediaX=x+(OV.compact?10:14), mediaY=y+(OV.compact?58:66), mediaW=OV.compact?62:82, mediaH=h-(OV.compact?70:82);
     drawOvalPolicyMedia(policy,mediaX,mediaY,mediaW,mediaH);
     ctx.textAlign='left';
-    ctx.fillStyle=policy.mediaMode==='censored'?'#ff6b6b':'#ffd54f';
-    ctx.font=`900 ${OV.compact?8:9}px system-ui`;
-    ctx.fillText(policy.kicker||'MEDIA',mediaX+mediaW+12,mediaY+10);
     ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?9:12}px system-ui`;
-    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+24,w-mediaW-(OV.compact?30:40),OV.compact?11:14,OV.compact?4:4,'left');
+    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+16,w-mediaW-(OV.compact?30:40),OV.compact?11:14,OV.compact?4:4,'left');
   } else {
     ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?10:12}px system-ui`;
-    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+(OV.compact?66:76),w-36,OV.compact?12:15,OV.compact?4:4,'center');
+    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+(OV.compact?72:82),w-36,OV.compact?12:15,OV.compact?4:4,'center');
+  }
+  // BREAKING chyron slides in over the screen bottom
+  if (policy && policy.chyron && d.chyronAt && now()>=d.chyronAt){
+    const slide=Math.min(1,(now()-d.chyronAt)/350);
+    const ch=OV.compact?14:18;
+    const cyr=y+h-ch;
+    ctx.save();
+    ctx.translate((1-slide)*(-w),0);
+    ctx.fillStyle='#b31217'; ctx.fillRect(x,cyr,w,ch);
+    ctx.fillStyle='#fff'; ctx.font=`900 ${OV.compact?7:9}px system-ui`; ctx.textAlign='left';
+    ctx.fillText('BREAKING',x+6,cyr+ch*0.7);
+    ctx.fillStyle='#ffd54f';
+    const bw=ctx.measureText('BREAKING').width+12;
+    ctx.font=`bold ${OV.compact?7:9}px system-ui`;
+    let cyText=policy.chyron;
+    while (ctx.measureText(cyText).width>w-bw-12 && cyText.length>8) cyText=cyText.slice(0,-2);
+    ctx.fillText(cyText,x+bw+4,cyr+ch*0.7);
+    ctx.restore();
+    ctx.textAlign='center';
   }
   ctx.restore();
   const progress=Math.min(5,d.policyCount||0);
@@ -2738,6 +4204,101 @@ function drawOvalPolicyMedia(policy,x,y,w,h){
   roundRectPath(ctx,x,y,w,h,4); ctx.stroke();
   ctx.restore();
 }
+/* Social-media post card — the image is shown openly (it ran on every
+   major outlet; Kristians redaktionelle afklaring 2026-07-05). The satire
+   lives in the framing: handle, caption, engagement and Community Note. */
+function drawOvalPostLightbox(policy){
+  // The repost takes the stage: big, readable, openly shown (it ran on every
+  // major outlet — Kristians redaktionelle afklaring 2026-07-05). The satire
+  // is the framing: handle, caption, engagement, Community Note.
+  beginScreen();
+  const t=now();
+  const born=OV.d.postShownAt||t;
+  const inK=Math.min(1,(t-born)/220);           // pop-in scale
+  ctx.fillStyle=`rgba(10,14,22,${0.55*inK})`; ctx.fillRect(0,0,VW,VH);
+  const cw=Math.min(VW*0.86,380);
+  const noteH=policy.communityNote?40:0;
+  const capH=30, headH=40, engH=0, padd=12;
+  const imgHmax=Math.min(VH*0.42,cw*0.75);
+  const chH=policy.chyron?22:0;
+  const ch=headH+capH+imgHmax+noteH+chH+padd*2+10;
+  const cx=(VW-cw)/2, cy=Math.max(10,(VH-ch)/2 - VH*0.04);
+  ctx.save();
+  ctx.translate(VW/2,cy+ch/2); ctx.scale(0.9+0.1*inK,0.9+0.1*inK); ctx.translate(-VW/2,-(cy+ch/2));
+  // card
+  ctx.fillStyle='#101b2c';
+  roundRectPath(ctx,cx,cy,cw,ch,12); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.5;
+  roundRectPath(ctx,cx,cy,cw,ch,12); ctx.stroke();
+  // header
+  const hx=cx+padd, hy=cy+padd, avR=13;
+  ctx.fillStyle='#f3a32d'; ctx.beginPath(); ctx.arc(hx+avR,hy+avR,avR,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ffdbb2'; ctx.beginPath(); ctx.arc(hx+avR,hy+avR+1.5,avR*0.62,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f3a32d'; ctx.fillRect(hx+avR-avR*0.72,hy+3,avR*1.44,avR*0.5);
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff'; ctx.font='900 13px system-ui';
+  ctx.fillText('@REALPRESIDENT',hx+avR*2+8,hy+avR-2);
+  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='10px system-ui';
+  ctx.fillText('2m · Very Truthful',hx+avR*2+8,hy+avR+11);
+  // caption
+  ctx.fillStyle='#eef7ff'; ctx.font='bold 12px system-ui';
+  ovalWrap(policy.postText||policy.body,hx,hy+headH,cw-padd*2,14,2,'left');
+  // image
+  const imgY=hy+headH+capH-4;
+  const imgW=cw-padd*2, imgH=imgHmax;
+  const img=OVAL_POLICY_IMAGES[policy.media];
+  if (img && img.complete && img.naturalWidth && !img.__broken){
+    ctx.save();
+    roundRectPath(ctx,hx,imgY,imgW,imgH,6); ctx.clip();
+    drawOvalImageCover(img,hx,imgY,imgW,imgH);
+    const grd=ctx.createLinearGradient(0,imgY+imgH-26,0,imgY+imgH);
+    grd.addColorStop(0,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(0,0,0,.8)');
+    ctx.fillStyle=grd; ctx.fillRect(hx,imgY+imgH-26,imgW,26);
+    ctx.fillStyle='rgba(255,255,255,.95)'; ctx.font='11px system-ui';
+    ctx.fillText('❤ 1.4M    ⟳ 890K    💬 47K',hx+8,imgY+imgH-9);
+    ctx.restore();
+    ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1;
+    roundRectPath(ctx,hx,imgY,imgW,imgH,6); ctx.stroke();
+  } else {
+    ctx.fillStyle='#1d3557'; ctx.fillRect(hx,imgY,imgW,imgH);
+    ctx.fillStyle='#86d6ff'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
+    ctx.fillText('LOADING IMAGE',hx+imgW/2,imgY+imgH/2); ctx.textAlign='left';
+  }
+  // Community Note
+  let noteBottom=imgY+imgH;
+  if (policy.communityNote){
+    const nY=noteBottom+7;
+    ctx.fillStyle='rgba(120,170,255,.15)';
+    roundRectPath(ctx,hx,nY,imgW,noteH,6); ctx.fill();
+    ctx.strokeStyle='rgba(120,170,255,.65)'; ctx.lineWidth=1.2;
+    roundRectPath(ctx,hx,nY,imgW,noteH,6); ctx.stroke();
+    ctx.fillStyle='#9cc4ff'; ctx.font='bold 10px system-ui';
+    ovalWrap('ⓘ '+policy.communityNote,hx+8,nY+15,imgW-16,12,2,'left');
+    noteBottom=nY+noteH;
+  }
+  // BREAKING chyron across the card foot
+  if (policy.chyron && OV.d.chyronAt && t>=OV.d.chyronAt){
+    const slide=Math.min(1,(t-OV.d.chyronAt)/350);
+    const cyr=noteBottom+8;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(cx,cyr,cw,chH); ctx.clip();
+    ctx.translate((1-slide)*(-cw),0);
+    ctx.fillStyle='#b31217'; ctx.fillRect(cx,cyr,cw,chH);
+    ctx.fillStyle='#fff'; ctx.font='900 10px system-ui';
+    ctx.fillText('BREAKING',cx+8,cyr+15);
+    ctx.fillStyle='#ffd54f'; ctx.font='bold 10px system-ui';
+    let cyText=policy.chyron;
+    while (ctx.measureText(cyText).width>cw-84 && cyText.length>8) cyText=cyText.slice(0,-2);
+    ctx.fillText(cyText,cx+72,cyr+15);
+    ctx.restore();
+  }
+  ctx.restore();
+  // dismiss hint
+  ctx.save(); ctx.globalAlpha=0.6+0.4*Math.sin(t/350);
+  ctx.fillStyle='#fff'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText(IS_TOUCH?'Tap to dismiss':'Tap or press E to dismiss', VW/2, Math.min(VH-12,cy+ch+24));
+  ctx.restore(); ctx.textAlign='left';
+}
 function drawOvalImageCover(img,x,y,w,h){
   const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
   const scale=Math.max(w/iw,h/ih);
@@ -2779,6 +4340,15 @@ function drawOvalPolicyButton(x,y,pressed){
   ctx.translate(x,y+(pressed?3:0));
   const scale=OV.compact ? .86 : 1;
   ctx.scale(scale,scale);
+  // gentle come-press-me glow until the first policy (invisible assistance)
+  if (!(OV.d && OV.d.policyCount)){
+    const gp=0.5+0.5*Math.sin(now()/300);
+    ctx.save();
+    ctx.strokeStyle=`rgba(255,213,79,${0.25+0.45*gp})`;
+    ctx.lineWidth=3;
+    ctx.beginPath(); ctx.ellipse(0,-7,29+gp*3,18+gp*2,0,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
   ctx.fillStyle='#151515';
   roundRectPath(ctx,-31,-8,62,16,8); ctx.fill();
   ctx.fillStyle='#4a4038';
@@ -2880,12 +4450,18 @@ function drawOvalArtifactWall(){
   roundRectPath(ctx,shelfX-8,shelfY-48,shelfW+16,58,8); ctx.fill();
   ctx.fillStyle='#d9d2c4'; ctx.fillRect(shelfX,shelfY,shelfW,8);
   ctx.fillStyle='#c2a26a'; ctx.fillRect(shelfX,shelfY+8,shelfW,4);
-  ctx.fillStyle='#8a6b2f'; ctx.font=`900 ${compact?7:8}px system-ui`; ctx.textAlign='center';
   items.forEach((item,i)=>{
     const x=shelfX+shelfW/(items.length+1)*(i+1);
     drawOvalArtifact(x,shelfY-12,item,compact ? .82 : .92);
-    ctx.fillText(item.label,x,shelfY+22);
   });
+  // one plaque beats eight colliding labels
+  ctx.font=`900 ${compact?7:8}px system-ui`; ctx.textAlign='center';
+  const plaque=(DATA.OVAL.LINES.libraryLabel||'THE TRUMP PRESIDENTIAL LIBRARY');
+  const pw2=ctx.measureText(plaque).width+16;
+  ctx.fillStyle='#8a6b2f';
+  roundRectPath(ctx,shelfX+shelfW/2-pw2/2,shelfY+14,pw2,13,4); ctx.fill();
+  ctx.fillStyle='#f6e8c8';
+  ctx.fillText(plaque,shelfX+shelfW/2,shelfY+23.5);
   ctx.textAlign='left';
   ctx.restore();
 }
@@ -4703,6 +6279,11 @@ addEventListener('keydown', e=>{
     if (golfKeyDown(e,k)) e.preventDefault();
     return;
   }
+  if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && (k==='e'||k==='x'||k==='escape'||k===' ')){
+    OV.d.postUntil=0;
+    e.preventDefault();
+    return;
+  }
   if (scene===SCENE.OVAL && (k==='1'||k==='2')){
     const near=nearestOV();
     if (k==='1' && near && near.type==='policy'){ ovalPressPolicy(); e.preventDefault(); return; }
@@ -4750,6 +6331,11 @@ cvs.addEventListener('pointerdown', e=>{
   ensureAudio();
   if (scene===SCENE.INTRO){ startGame(); return; }
   const sx=e.clientX, sy=e.clientY;
+  // post-lightbox: any tap dismisses it
+  if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && !GS.over){
+    OV.d.postUntil=0;
+    return;
+  }
   // overlays eat taps first
   if (GS.over){
     if (GS.overMode==='continue' && continueOverlay){
@@ -5180,7 +6766,9 @@ function step(t){
     beginScreen();
     ctx.clearRect(0,0,VW,VH);
     if (scene===SCENE.GREENLAND) drawGreenland();
-    else if (scene===SCENE.OVAL){ drawOval(); drawNuke(); }
+    else if (scene===SCENE.OVAL){ drawOval(); drawNuke();
+      if (OV.d.policy && OV.d.policy.mediaMode==='post' && OV.d.postUntil && now()<OV.d.postUntil && !GS.over && !NUKE.active) drawOvalPostLightbox(OV.d.policy);
+    }
     else if (scene===SCENE.KREMLIN){ drawKremlin(); if (tug) drawTug(); if (flagOverlay) drawFlagOverlayScreen(); }
     else if (scene===SCENE.EPSTEIN){ drawEpstein(); }
     else if (scene===SCENE.GOLF){ drawGolf(); }
@@ -5310,7 +6898,12 @@ window.__tv2 = {
               putinTrust: RELATIONSHIPS.putin.trust },
     medals: { ...GS.medals }
   }),
-  cheat: { gold: n => { player.gold = n; renderHUD(); } }
+  cheat: { gold: n => { player.gold = n; renderHUD(); },
+           policy: title => { const p=(DATA.OVAL.POLICIES||[]).find(pp=>pp.title===title);
+             if (p){ OV.d.policy=p; OV.d.policyCount=(OV.d.policyCount||0)+1;
+                     OV.d.chyronAt=p.chyron?now()+300:0; OV.d.policyFlashUntil=now()+300;
+                     if (p.mediaMode==='post'){ OV.d.postShownAt=now(); OV.d.postUntil=now()+6200; }
+                     else OV.d.postUntil=0; } } }
 };
 
 })();

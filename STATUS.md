@@ -61,6 +61,25 @@ Fuld automatiseret regression (Playwright, desktop 1280×720 + iPhone 390×844):
 - ⚠️ REDAKTIONELT: `assets/oval office/obamaabes.jpeg` censureres I SPILLET,
   men rå-filen er offentligt tilgængelig på pages.dev-URL'en. Bevidst valg?
 
+## Oval Office finesse-pass (Fable) — 2026-07-08 ✅
+
+Efter Kristians afklaring (billedet har kørt i alle større medier — ingen
+redaktionel hindring) er Obama-reposten nu et fuldt satirisk beat:
+
+- ✅ **Post-lightbox:** AI-posterne (Obama + Jesus) popper ud af TV'et som en
+  stor social media-post: @REALPRESIDENT, caption, ÅBENT billede, likes,
+  og for Obama-posten en **Community Note** ("AI-generated and racist. It
+  was reposted anyway.") + BREAKING-chyron. Tap/E lukker; auto-luk efter 6 s
+- ✅ Trumps quip ved Obama-posten: "I know nothing about it. Great picture
+  though." — selve den virkelige gag
+- ✅ Alle 14 policies har nu kicker-tags (TRADE WAR/JUSTICE/STATE MEDIA...),
+  strammede punchlines og personlige Trump-quips i stedet for generisk ros
+- ✅ Grafik: kicker-pill + LIVE-dot på Executive Screen, glow på POLICY-
+  knappen indtil første tryk, artefakthyldens 8 kolliderende etiketter
+  erstattet af ét skilt: "THE TRUMP PRESIDENTIAL LIBRARY"
+- ✅ Playwright-verificeret desktop+mobil: lightbox begge billeder, 5 tryk →
+  Pulitzer, 0 fejl
+
 ## Næste skridt
 
 1. Kristian tester hele `trumpspillet-v2.html` på fysisk iPhone
