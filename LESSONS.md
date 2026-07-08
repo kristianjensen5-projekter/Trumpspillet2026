@@ -115,6 +115,24 @@ ingen golfgren.
 
 ---
 
+## Nyt levels medalje overlever ikke refresh uden at røre `GS.medals`
+
+**Problem:** Under accept-testen af `LEVEL_TEMPLATE.md` (Trump Tower-level,
+2026-07-08) blev medaljen tildelt korrekt i sessionen, men ville forsvinde
+fra HUD/heli-menu efter en sideindlæsning.
+**Årsag:** `GS.medals` (linje ~1970) er et hårdkodet objekt med de fem
+oprindelige banes nøgler. `awardMedal(key)` sætter gerne en ny nøgle
+dynamisk, så alt ser rigtigt ud i sessionen — men `loadMedals()` gennemløber
+KUN `Object.keys(GS.medals)` ved opstart, så en gemt medalje for en nøgle der
+ikke findes i det oprindelige objekt bliver aldrig genindlæst fra
+`localStorage`.
+**Fix:** Tilføj den nye levels nøgle til `GS.medals`-objektets initialisering
+(`key:false`) samtidig med JSON-MEDALS-posten. `LEVEL_TEMPLATE.md` trin 4
+nævner det ikke — bør rettes der.
+**Dato:** 2026-07-08
+
+---
+
 ## Touch-chips er ikke desktop-knapper
 
 **Problem:** Golfens Leave/Reset-chips var nyttige på iPhone, men på desktop

@@ -177,6 +177,11 @@
       "name": "FIFA Trophy",
       "icon": "🏆",
       "desc": "Beat Sleepy Joe at golf"
+    },
+    "tower": {
+      "name": "Penthouse Key",
+      "icon": "🔑",
+      "desc": "Ride the elevator to floor 10"
     }
   },
   "AREAS": [
@@ -520,6 +525,19 @@
       "Very classy gold. The best gold.",
       "Putin won't miss just one...",
       "I could fit three of these in Mar-a-Lago!"
+    ]
+  },
+  "TOWER": {
+    "LINES": {
+      "arrive": "Straight to the penthouse — the best floors, believe me.",
+      "top": "The best floors. Nobody goes higher."
+    },
+    "BOASTS": [
+      "Higher than anyone, believe me.",
+      "This is the fastest elevator ever built. Tremendous engineering.",
+      "Every floor up there is a five-star floor.",
+      "Nobody builds like Trump builds. Nobody.",
+      "Going up! Just like my approval ratings."
     ]
   },
   "EPSTEIN": {
@@ -1967,7 +1985,7 @@ let scene = SCENE.INTRO;
 
 const GS = {
   lives:0, nonViolent:false,
-  medals:{ greenland:false, oval:false, kremlin:false, epstein:false, golf:false },
+  medals:{ greenland:false, oval:false, kremlin:false, epstein:false, golf:false, tower:false },
   over:false, overMode:null
 };
 function loadMedals(){
@@ -6352,6 +6370,113 @@ registerLevel({
       trophyReady:GOLF.trophyReady,
       biden:{sleeping:!!GOLF.biden.sleeping,pose:GOLF.biden.sleepPose||0} } };
   }
+});
+
+/* ================================================================
+   LEVEL: TOWER — Trump Tower elevator lobby. One gold UP button;
+   every press bumps the floor readout, dings and boasts. Floor 10
+   confetti + medal, then keeps counting forever. No game over.
+   ================================================================ */
+const TL = DATA.TOWER.LINES;
+const TW = {
+  heli:{x:160,y:GROUND_Y-18,type:'heli'},
+  button:{x:640,y:GROUND_Y,type:'button',say:'',speakingUntil:0,pressedUntil:0},
+  coins:[],
+  floor:0
+};
+function resetTower(){
+  player.x=200; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
+  Object.assign(TW.button,{say:'',speakingUntil:0,pressedUntil:0});
+  TW.floor=0;
+  TW.coins=[];
+  playEntryHeli(TL.arrive);
+}
+function pressTowerButton(){
+  TW.floor++;
+  TW.button.pressedUntil=now()+220;
+  tone(880,.08,'sine',.25); setTimeout(()=>tone(1320,.12,'sine',.2),80); // "ding"
+  say(player, pick(DATA.TOWER.BOASTS), 1800);
+  if (TW.floor===10){
+    spawnConfetti(TW.button.x, player.y-60, 60);
+    SFX.achievement();
+    awardMedal('tower');
+    setTimeout(()=>say(player, TL.top, 2600), 700);
+  }
+}
+function drawTowerElevator(){
+  const dx=TW.button.x+40;
+  ctx.fillStyle='#c9a641'; ctx.fillRect(dx-40,GROUND_Y-170,80,170);
+  ctx.fillStyle='#3a2f14'; ctx.fillRect(dx-32,GROUND_Y-160,28,160);
+  ctx.fillStyle='#2a2210'; ctx.fillRect(dx+4,GROUND_Y-160,28,160);
+  ctx.fillStyle='#111'; ctx.fillRect(dx-3,GROUND_Y-160,6,160);
+  ctx.fillStyle='#111'; ctx.fillRect(dx-30,GROUND_Y-206,60,28);
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=2; ctx.strokeRect(dx-30,GROUND_Y-206,60,28);
+  ctx.fillStyle='#ff3b30'; ctx.font='bold 18px monospace'; ctx.textAlign='center';
+  ctx.fillText(String(TW.floor), dx, GROUND_Y-186);
+  ctx.textAlign='left';
+  const pressed=now()<TW.button.pressedUntil;
+  const by=TW.button.y-70;
+  ctx.beginPath(); ctx.arc(TW.button.x,by,pressed?11:13,0,Math.PI*2);
+  ctx.fillStyle=pressed?'#a67c00':'#ffd700'; ctx.fill();
+  ctx.strokeStyle='#7a5c00'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='#3a2a00'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText('▲', TW.button.x, by+4);
+  ctx.textAlign='left';
+}
+function drawTower(){
+  beginWorld();
+  const grad=ctx.createLinearGradient(0,0,0,GROUND_Y);
+  grad.addColorStop(0,'#4a3a12'); grad.addColorStop(1,'#8a6a1e');
+  ctx.fillStyle=grad; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,GROUND_Y);
+  ctx.strokeStyle='rgba(255,223,128,0.25)'; ctx.lineWidth=2;
+  for (let x=Math.floor((CAM.x-40)/120)*120; x<CAM.x+CAM.viewW+40; x+=120){
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke();
+  }
+  ctx.fillStyle='#e9e2d0'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
+  ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1;
+  for (let x=Math.floor((CAM.x-40)/80)*80; x<CAM.x+CAM.viewW+40; x+=80){
+    ctx.beginPath(); ctx.moveTo(x,GROUND_Y); ctx.lineTo(x,GROUND_Y+CFG.FLOOR_H); ctx.stroke();
+  }
+  drawTowerElevator();
+  if (!entryHeli.active) drawHeli(TW.heli.x,TW.heli.y,0.35);
+  drawTrump(player.x,player.y,player.facing);
+  drawFx();
+  if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
+  const placed=[];
+  renderActorBubble(player,placed,'trump');
+  endWorld();
+}
+function nearestTower(){
+  const arr=[TW.heli,TW.button];
+  let best=null,bd=1e9;
+  for (const o of arr){
+    const d = o.type==='heli' ? distToRect(player.x,player.y,o.x+20,o.y-6,220,120)
+            : dist2(player.x,player.y,o.x,o.y);
+    if (d<bd){ bd=d; best=o; }
+  }
+  return bd<CFG.INTERACT_DIST*1.3 ? best : null;
+}
+function interactTower(){
+  const o=nearestTower(); if (!o) return;
+  if (o.type==='heli'){ openHeliLevelSelect(SCENE_TOWER); }
+  else if (o.type==='button'){ pressTowerButton(); }
+}
+
+const SCENE_TOWER='tower';
+registerLevel({
+  id:SCENE_TOWER, name:'Trump Tower', worldW:1200,
+  reset:resetTower,
+  draw:drawTower,
+  coins(){ return TW.coins; },
+  interact:interactTower,
+  nearest:nearestTower,
+  chip(){
+    const o=nearestTower(); if (!o) return null;
+    return o.type==='heli'?'🚁':'E';
+  },
+  tapTargets(){ return [TW.heli,TW.button].map(o=>({obj:o})); },
+  onRestart(){ TW.floor=0; },
+  snapshot(){ return { tower:{ floor:TW.floor, medalAwarded:!!GS.medals.tower } }; }
 });
 
 /* ============================================================

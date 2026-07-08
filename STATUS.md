@@ -97,10 +97,35 @@ restart, snapshot, walk-in) er erstattet af generiske registry-opslag.
 - Accept-testen (nyt legetøjs-level < 1 time, bygget af en anden model
   alene ud fra skabelonen) udestår — kør den med Codex/Sonnet
 
+## Accept-test af level-systemet — 2026-07-08 ✅ (Sonnet)
+
+Bygget "Trump Tower Elevator" (id `tower`) KUN ud fra `LEVEL_TEMPLATE.md`
+(+ AI_INDEX.md, LESSONS.md, KREMLIN-registreringen som forbillede — ingen
+andre dokumenter læst). Ét gyldent UP-tryk, floor-display, 5 skrydelinjer,
+medalje ved etage 10 (`tower`-nøgle), ingen game over, heli-menu begge veje.
+
+- ✅ Syntaks-tjek (JSON + `node --check`) grønt før browsertest
+- ✅ Playwright-røgtest desktop (1280×720) + iPhone-viewport (390×844,
+  touch): 0 pageerrors, floor talte korrekt op til 11, konfetti+medalje
+  udløst ved etage 10, action-chip virker på mobil
+- ✅ Regression: Greenland (gå/hop/interager) → heli → Oval (policy-tryk) →
+  heli → Tower → heli → Greenland, 0 fejl undervejs
+- ⚠️ **Skabelon-hul fundet:** `GS.medals`-objektet (linje ~1970) er en
+  HÅRDKODET liste af medalje-nøgler (`greenland/oval/kremlin/epstein/golf`),
+  og `loadMedals()` gennemløber kun disse forudkendte nøgler ved indlæsning
+  fra `localStorage`. Skabelonens trin 4 nævner kun JSON-MEDALS-blokken +
+  `awardMedal(...)`-kaldet — intet om at nyt levels medalje-nøgle også skal
+  tilføjes her. Uden fixet: medaljen vises korrekt i selve sessionen (fordi
+  `awardMedal` sætter nøglen dynamisk), men overlever IKKE en sideindlæsning
+  (forsvinder fra HUD og heli-menuens ✓-status efter refresh). Rettet med én
+  linje (tilføjet `tower:false`) — se `ACCEPT_TEST_RESULTAT.md` for detaljer.
+- Dom: **bestået** — < 1 time, ét reelt skabelon-hul fundet og dokumenteret
+  (se `ACCEPT_TEST_RESULTAT.md`)
+
 ## Næste skridt
 
-1. Accept-test af level-systemet: lad Codex/Sonnet bygge et legetøjs-level
-   KUN ud fra LEVEL_TEMPLATE.md
+1. Overvej at rette `LEVEL_TEMPLATE.md` trin 4 til at nævne `GS.medals`
+   (se hul fundet ovenfor)
 2. Spor A: desktop i landskabsformat (stage-ramme + kompositionspas) —
    se PLAN_DESKTOP_OG_LEVELSYSTEM.md
 
