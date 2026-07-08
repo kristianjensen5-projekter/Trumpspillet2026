@@ -2035,13 +2035,11 @@ function renderAreas(){
   areasEl.hidden=true;
 }
 
-const HELI_DESTINATIONS = [
-  { key:'greenland', scene:SCENE.GREENLAND, label:'Greenland' },
-  { key:'oval', scene:SCENE.OVAL, label:'White House' },
-  { key:'kremlin', scene:SCENE.KREMLIN, label:'Kremlin' },
-  { key:'epstein', scene:SCENE.EPSTEIN, label:'Epstein files' },
-  { key:'golf', scene:SCENE.GOLF, label:'Mar-a-Lago' }
-];
+/* Destinations derive from the level registry — a registered level is
+   automatically in the helicopter menu. (Lazy: registry loads later.) */
+function HELI_DESTINATIONS_LIST(){
+  return LEVEL_ORDER.map(id=>({ key:id, scene:id, label:LEVELS[id].name }));
+}
 function heliLevelLabel(dest){
   const done=!!GS.medals[dest.key];
   const icon=(DATA.MEDALS[dest.key] && DATA.MEDALS[dest.key].icon) || '🏅';
@@ -2049,7 +2047,7 @@ function heliLevelLabel(dest){
 }
 function openHeliLevelSelect(currentScene){
   ensureAudio(); SFX.helicopter();
-  const destinations=HELI_DESTINATIONS.filter(d=>d.scene!==currentScene);
+  const destinations=HELI_DESTINATIONS_LIST().filter(d=>d.scene!==currentScene);
   openChoice(DATA.GREENLAND.HELI_MENU_HEADER, ['Stay here', ...destinations.map(heliLevelLabel)], k=>{
     closeChoice();
     const idx=parseInt(k,10)-2;
@@ -6123,20 +6121,251 @@ function golfPointerUp(e){
 /* ================================================================
    11. SCENE SYSTEM
    ================================================================ */
-const SCENES = {
-  [SCENE.INTRO]: {},
-  [SCENE.GREENLAND]: { reset: resetGreenland, worldW: CFG.GREENLAND_W },
-  [SCENE.OVAL]: { reset: resetOval, worldW: 1200 },
-  [SCENE.KREMLIN]: { reset: resetKremlin, worldW: 1200 },
-  [SCENE.EPSTEIN]: { reset: resetEpstein, worldW: 1200 },
-  [SCENE.GOLF]: { reset: resetGolf, worldW: 960 }
-};
+/* ================================================================
+   LEVEL REGISTRY — THE single place a level plugs into the engine.
+   Contract (see LEVEL_TEMPLATE.md for the full guide):
+     id, name, worldW          — required
+     reset()                   — required: scene state to start
+     draw()                    — required: full scene render
+     update(dt)                — per-frame logic
+     coins() -> array|null     — engine collects them generically
+     interact()                — E key / action chip / intent-tap final step
+     nearest() -> obj|null     — nearest interactable (chip + tap check)
+     chip() -> label|null      — action-chip icon (null = hidden)
+     tapTargets() -> [{obj,rank?,tapHit?(wx,wy)}] — mobile intent-tap
+     onWalkInDone()            — after entry-heli walk-in (else default line)
+     cameraFocus() -> x|null   — override camera (else follows player)
+     onRestart()               — full-restart cleanup
+     snapshot() -> object      — merged into window.__tv2.snapshot()
+   Register with registerLevel(...) — heli menu, medal status, coins,
+   debug and mobile input then follow automatically.
+   ================================================================ */
+const LEVELS={};
+const LEVEL_ORDER=[];
+function registerLevel(L){ LEVELS[L.id]=L; LEVEL_ORDER.push(L.id); }
+function currentLevel(){ return LEVELS[scene]||null; }
+
+registerLevel({
+  id:SCENE.GREENLAND, name:'Greenland', worldW:CFG.GREENLAND_W,
+  reset:resetGreenland,
+  draw:drawGreenland,
+  update(dt){
+    const t=now();
+    if (!GL.lars.nextBlink||t>GL.lars.nextBlink){ GL.lars.blinkUntil=t+120; GL.lars.nextBlink=t+2000+Math.random()*2500; }
+    CLOUDS.forEach(c=>{ c.x+=c.vx*dt; if (c.x>CAM.worldW+c.w) c.x=-c.w; });
+    updateBear(dt);
+    if (GL.lars.blownUp){
+      GL.lars.vy+=800*dt;
+      GL.lars.x+=GL.lars.vx*dt; GL.lars.y+=GL.lars.vy*dt;
+      GL.lars.rotation=(GL.lars.rotation||0)+10*dt;
+    }
+    if (flagDrop && !flagDrop.landed){
+      flagDrop.vy=Math.min(flagDrop.vy+200*dt,150);
+      flagDrop.y+=flagDrop.vy*dt;
+      flagDrop.x+=(player.x-flagDrop.x)*2*dt;
+      if (flagDrop.y>=player.y-20){
+        flagDrop.landed=true; flagDrop.x=player.x;
+        GL.flag={x:player.x,y:GROUND_Y};
+        GL.state.flagPlanted=true;
+        say(player, L.flagLanded, 3000);
+        SFX.achievement();
+        spawnSparks(player.x,player.y-30,20);
+      }
+    }
+    if (glFlagDrop && glFlagDrop.active){
+      glFlagDrop.vy+=300*dt; glFlagDrop.y+=glFlagDrop.vy*dt;
+      glFlagDrop.swingPhase+=dt*4; glFlagDrop.swingAmp*=0.992;
+      const headY=player.y-40;
+      if (glFlagDrop.y>=headY){
+        glFlagDrop.y=headY; glFlagDrop.active=false;
+        spawnConfetti(player.x,headY,60);
+        SFX.achievement();
+        setTimeout(()=>say(player, L.fightWon, 3000),600);
+      }
+    }
+    if (glacierExplosion.active){
+      glacierExplosion.iceChunks=glacierExplosion.iceChunks.filter(c=>{
+        c.life-=dt*1000; if (c.life<=0) return false;
+        c.vy+=1120*dt; c.x+=c.vx*dt; c.y+=c.vy*dt; c.rotation+=c.rotSpeed*dt;
+        if (c.y>=GROUND_Y){ c.y=GROUND_Y; c.vy*=-0.3; c.vx*=0.8; }
+        return true;
+      });
+    }
+  },
+  coins(){ return GL.coins; },
+  interact:interactGreenland,
+  nearest:nearestGL,
+  chip(){
+    if (FightEngine.active) return FightEngine.countdown?null:'👊';
+    const o=nearestGL(); if (!o) return null;
+    return o.type==='heli'?'🚁' : o.type==='shop'?'🛒' :
+           o.type==='lars'?'💬' : o.type==='bear'?'🐻' :
+           player.selectedItem==='dynamite'?'🧨' : 'E';
+  },
+  tapTargets(){
+    return [
+      ...[GL.mine,GL.rig,GL.shop,GL.heli,
+          ...(GL.bear.alive?[GL.bear]:[]),
+          ...(GL.lars.blownUp?[]:[GL.lars])].map(o=>({obj:o})),
+      // glaciers: rank 1 = only when no specific object is tapped
+      // (their bounding box would otherwise swallow everything — see LESSONS)
+      ...GL.glaciers.filter(g=>!g.blown).map(g=>({
+        obj:g, rank:1, tapHit:(wx,wy)=>distToRect(wx,wy,g.x,g.y-g.h/2,g.w,g.h)
+      }))
+    ];
+  },
+  onRestart(){ resetGreenlandRunState(); },
+  snapshot(){
+    return {
+      bear:{ x:Math.round(GL.bear.x), hp:GL.bear.hp, angry:GL.bear.angry,
+             chasing:GL.bear.chasing, bites:GL.bear.biteCount, alive:GL.bear.alive },
+      lars:{ x:Math.round(GL.lars.x), rounds:GL.state.larsDialogRounds,
+             fight:GL.state.larsFightRequested, blownUp:GL.lars.blownUp }
+    };
+  }
+});
+
+registerLevel({
+  id:SCENE.OVAL, name:'White House', worldW:1200,
+  reset:resetOval,
+  draw(){
+    drawOval(); drawNuke();
+    if (OV.d.policy && OV.d.policy.mediaMode==='post' && OV.d.postUntil && now()<OV.d.postUntil && !GS.over && !NUKE.active)
+      drawOvalPostLightbox(OV.d.policy);
+  },
+  update(dt){ updateOval(dt); updateNuke(); updateOvalMedalDrop(dt); },
+  coins(){ return OV.coins; },
+  interact:interactOval,
+  nearest:nearestOV,
+  chip(){
+    const o=nearestOV(); if (!o) return null;
+    return o.type==='heli'?'🚁' : o.type==='door'?'🚪' :
+           o.type==='policy'?'⚫' : o.type==='surprise'?'☢️' : 'E';
+  },
+  tapTargets(){ return [OV.door,OV.heli,OV.policy,OV.surprise].map(o=>({obj:o})); },
+  cameraFocus(){
+    const deskFocus=OV.cameraFocus || (OV.deskX+OV.deskW/2);
+    if (entryHeli.active || OV.d.phase==='arriving' || walkTween) return (player.x+deskFocus)/2;
+    if (player.x < OV.deskX-70) return player.x+65;
+    return deskFocus;
+  },
+  onWalkInDone(){
+    startWalkTo(OV.trumpDeskX, ()=>{
+      if (entryHeli.line) say(player,entryHeli.line,1800);
+      if (!OV.introShown){ OV.introShown=true; ovalStartIntroCard(); }
+      else { OV.d.phase='play'; }
+    });
+  },
+  onRestart(){
+    resetOvalDecisions();
+    OV.introShown=false; OV.shelfLoot=[];
+    NUKE.active=false; ovalMedalDrop=null;
+  },
+  snapshot(){
+    return { oval:{ phase:OV.d.phase, policies:OV.d.policyCount,
+      policyTitle:OV.d.policy?OV.d.policy.title:null,
+      policyMedia:OV.d.policy&&OV.d.policy.media?OV.d.policy.media:null,
+      completed:OV.d.completed, nuke:NUKE.active,
+      buttons:{ policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} },
+      mediaLoaded:Object.fromEntries(Object.entries(OVAL_POLICY_IMAGES).map(([key,img])=>[key,!!(img.complete&&img.naturalWidth&&!img.__broken)])) } };
+  }
+});
+
+registerLevel({
+  id:SCENE.KREMLIN, name:'Kremlin', worldW:1200,
+  reset:resetKremlin,
+  draw(){ drawKremlin(); if (tug) drawTug(); if (flagOverlay) drawFlagOverlayScreen(); },
+  update(dt){
+    const t=now();
+    if (!KR.putin.nextBlink||t>KR.putin.nextBlink){ KR.putin.blinkUntil=t+120; KR.putin.nextBlink=t+2000+Math.random()*2500; }
+    updateTug();
+    updateWagner(dt);
+    updateNobelDrop(dt);
+  },
+  coins(){ return KR.coins; },
+  interact:interactKremlin,
+  nearest:nearestKR,
+  chip(){
+    if (tug||flagOverlay) return null;
+    const o=nearestKR(); if (!o) return null;
+    return o.type==='heli'?'🚁' : o.type==='door'?'🚪' :
+           o.type==='putin'?'🤝' : o.type==='statue'?'💰' : 'E';
+  },
+  tapTargets(){ return [KR.door,KR.heli,KR.putin,...KR.statues.filter(s=>!s.collected)].map(o=>({obj:o})); },
+  onWalkInDone(){
+    startWalkTo(player.x+40, ()=>{
+      if (entryHeli.line) say(player,entryHeli.line,1800);
+      if (!KR.introShown){
+        KR.introShown=true;
+        openInfoCard(DATA.KREMLIN.INTRO_CARD, ()=>{
+          closeInfoCard();
+          say(KR.putin, KL.putinSetup, 3200);
+        });
+      }
+    });
+  },
+  onRestart(){
+    KR.introShown=false;
+    tug=null; flagOverlay=null; nobelDrop=null; KR.wagner=null;
+  },
+  snapshot(){
+    return { kremlin:{ tug:tug?{pos:+tug.pos.toFixed(2),elapsed:Math.round(now()-tug.start)}:null,
+      flag:flagOverlay?flagOverlay.type:null,
+      statues:KR.statues.filter(s=>s.collected).length,
+      watched:KR.statues.filter(s=>!s.collected).map(s=>pointWatched(s.x,s.y-20)),
+      wagner:KR.wagner?{escaped:KR.wagner.escaped,caught:KR.wagner.caught}:null,
+      shoes:player.goldenShoesOn } };
+  }
+});
+
+registerLevel({
+  id:SCENE.EPSTEIN, name:'Epstein files', worldW:1200,
+  reset:resetEpstein,
+  draw:drawEpstein,
+  update:updateEpstein,
+  chip(){ return null; }, // the big REDACT button is the action here
+  onRestart(){ EP.active=false; EP.success=null; },
+  snapshot(){
+    return { epstein:{ active:EP.active, found:EP.found, total:EP.totalTargets,
+      missed:EP.missed, protectedClicks:EP.protectedClicks,
+      atArt:EP.atArt, artDone:EP.finalArt.redacted,
+      success:EP.success?{...EP.success}:null,
+      zoneKinds:EP.targets.filter(tg=>{const z=epZone(); return tg.y>=z.top-22&&tg.y<=z.bottom+22;}).map(tg=>tg.kind) } };
+  }
+});
+
+registerLevel({
+  id:SCENE.GOLF, name:'Mar-a-Lago', worldW:960,
+  reset:resetGolf,
+  draw:drawGolf,
+  update:updateGolf,
+  chip(){ return null; }, // golf has its own Leave/Reset chips
+  onRestart(){
+    GOLF.state='idle'; GOLF.banner=null; GOLF.aim.active=false;
+    GOLF.charge.active=false; GOLF.trophy=null;
+  },
+  snapshot(){
+    return { golf:{ state:GOLF.state, hole:GOLF.hole?golfDisplayId(GOLF.hole):null,
+      strokes:GOLF.strokesThisHole, total:GOLF.total+GOLF.strokesThisHole,
+      joe:GOLF.joeTotal, ball:{x:Math.round(GOLF.ball.x),y:Math.round(GOLF.ball.y),
+      speed:Math.round(Math.hypot(GOLF.ball.vx,GOLF.ball.vy))}, banner:!!GOLF.banner,
+      trophyReady:GOLF.trophyReady,
+      biden:{sleeping:!!GOLF.biden.sleeping,pose:GOLF.biden.sleepPose||0} } };
+  }
+});
+
+/* ============================================================
+   >>> NYE LEVELS REGISTRERES HER — se LEVEL_TEMPLATE.md <<<
+   Indsæt hele dit level-afsnit (state + funktioner +
+   registerLevel-kaldet) LIGE OVER denne kommentar.
+   ============================================================ */
+
 function switchScene(to){
-  const def=SCENES[to];
-  if (!def){ say(player,'Coming soon!',1500); return; }
+  const Lv=LEVELS[to];
+  if (!Lv){ say(player,'Coming soon!',1500); return; }
   scene=to;
-  if (def.worldW) CAM.worldW=def.worldW;
-  if (def.reset) def.reset();
+  if (Lv.worldW) CAM.worldW=Lv.worldW;
+  if (Lv.reset) Lv.reset();
   renderAreas();
   Music.startForScene(scene);
 }
@@ -6148,16 +6377,7 @@ function startGame(){
 }
 function fullRestartRun(){
   closeAllOverlays();
-  resetGreenlandRunState();
-  resetOvalDecisions();
-  OV.introShown=false;
-  OV.shelfLoot=[];
-  NUKE.active=false;
-  ovalMedalDrop=null;
-  KR.introShown=false;
-  tug=null; flagOverlay=null; nobelDrop=null; KR.wagner=null;
-  EP.active=false; EP.success=null;
-  GOLF.state='idle'; GOLF.banner=null; GOLF.aim.active=false; GOLF.charge.active=false; GOLF.trophy=null;
+  LEVEL_ORDER.forEach(id=>{ const Lv=LEVELS[id]; if (Lv.onRestart) Lv.onRestart(); });
   resetTweetState();
   inventory.length=0; collectedCoins=0; player.gold=0;
   player.baseSpeedMul=1; player.goldenShoesOn=false; updateSpeedMul();
@@ -6205,9 +6425,8 @@ function stepWalkTween(t){
   return true;
 }
 function interact(){
-  if (scene===SCENE.GREENLAND) interactGreenland();
-  else if (scene===SCENE.OVAL) interactOval();
-  else if (scene===SCENE.KREMLIN) interactKremlin();
+  const Lv=currentLevel();
+  if (Lv && Lv.interact) Lv.interact();
 }
 
 /* --- Keyboard --- */
@@ -6409,48 +6628,30 @@ cvs.addEventListener('touchmove', e=>{ if (scene===SCENE.GOLF) e.preventDefault(
 cvs.addEventListener('touchend', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 
 function intentTap(wx,wy){
-  let best=null,bd=1e9,nearFn=null;
-  if (scene===SCENE.GREENLAND){
-    nearFn=nearestGL;
-    // Specific objects win over glaciers: check them first, then glacier rects.
-    const targets=[GL.mine,GL.rig,GL.shop,GL.heli,
-      ...(GL.bear.alive?[GL.bear]:[]),
-      ...(GL.lars.blownUp?[]:[GL.lars])];
-    for (const o of targets){
-      const d = dist2(wx,wy,o.x,o.y-20);
-      if (d<bd){ bd=d; best=o; }
+  const Lv=currentLevel();
+  if (!Lv || !Lv.tapTargets) return; // scene handles its own taps (golf/epstein)
+  const targets=Lv.tapTargets();
+  const hitOf=t=>t.tapHit ? t.tapHit(wx,wy) : dist2(wx,wy,t.obj.x,t.obj.y-20);
+  // rank 0 targets win; rank 1 (big background objects) only as fallback
+  let best=null,bd=1e9;
+  for (const t of targets.filter(t=>!(t.rank>0))){
+    const d=hitOf(t); if (d<bd){ bd=d; best=t.obj; }
+  }
+  if (!best || bd>=110){
+    for (const t of targets.filter(t=>t.rank>0)){
+      const d=hitOf(t); if (d<bd){ bd=d; best=t.obj; }
     }
-    if (!best || bd>=110){
-      for (const g of GL.glaciers.filter(g=>!g.blown)){
-        const d = distToRect(wx,wy,g.x,g.y-g.h/2,g.w,g.h);
-        if (d<bd){ bd=d; best=g; }
-      }
-    }
-  } else if (scene===SCENE.OVAL){
-    nearFn=nearestOV;
-    const targets=[OV.door,OV.heli,OV.policy,OV.surprise];
-    for (const o of targets){
-      const d = dist2(wx,wy,o.x,o.y-20);
-      if (d<bd){ bd=d; best=o; }
-    }
-  } else if (scene===SCENE.KREMLIN){
-    nearFn=nearestKR;
-    const targets=[KR.door,KR.heli,KR.putin,...KR.statues.filter(s=>!s.collected)];
-    for (const o of targets){
-      const d = dist2(wx,wy,o.x,o.y-20);
-      if (d<bd){ bd=d; best=o; }
-    }
-  } else return;
+  }
   if (best && bd<110){
     // near enough already? interact now. Otherwise auto-walk then interact.
-    const near=nearFn();
+    const near=Lv.nearest?Lv.nearest():null;
     if (near && near.type===best.type){ interact(); return; }
     const side=Math.sign(best.x-player.x)||1;
     const targetX=clamp(best.x-side*(CFG.INTERACT_DIST-6),40,CAM.worldW-40);
     startWalkTo(targetX, ()=>interact());
   } else {
     // tapped empty area: if Trump is already near something, just interact
-    if (nearFn()) interact();
+    if (Lv.nearest && Lv.nearest()) interact();
   }
 }
 actBtn.addEventListener('pointerdown', e=>{
@@ -6474,73 +6675,9 @@ tweetBtn.addEventListener('pointerdown', e=>{
    13. MAIN LOOP
    ================================================================ */
 function updateActors(dt){
-  // blink scheduling (player always; Lars only matters in Greenland)
+  // engine-level: player blink. Everything else lives in level.update(dt).
   const t=now();
-  [player,GL.lars].forEach(o=>{
-    if (!o.nextBlink||t>o.nextBlink){ o.blinkUntil=t+120; o.nextBlink=t+2000+Math.random()*2500; }
-  });
-  if (scene===SCENE.OVAL){
-    updateOval(dt);
-    updateNuke();
-    updateOvalMedalDrop(dt);
-    return;
-  }
-  if (scene===SCENE.EPSTEIN){ return; } // updateEpstein runs from step (needs dt even under GS.over=false gating)
-  if (scene===SCENE.KREMLIN){
-    if (!KR.putin.nextBlink||t>KR.putin.nextBlink){ KR.putin.blinkUntil=t+120; KR.putin.nextBlink=t+2000+Math.random()*2500; }
-    updateTug();
-    updateWagner(dt);
-    updateNobelDrop(dt);
-    return;
-  }
-  if (scene===SCENE.GOLF){
-    updateGolf(dt);
-    return;
-  }
-  if (scene!==SCENE.GREENLAND) return;
-  CLOUDS.forEach(c=>{ c.x+=c.vx*dt; if (c.x>CAM.worldW+c.w) c.x=-c.w; });
-  updateBear(dt);
-  // Lars blown-up physics
-  if (GL.lars.blownUp){
-    GL.lars.vy+=800*dt;
-    GL.lars.x+=GL.lars.vx*dt; GL.lars.y+=GL.lars.vy*dt;
-    GL.lars.rotation=(GL.lars.rotation||0)+10*dt;
-  }
-  // parachute flag drop
-  if (flagDrop && !flagDrop.landed){
-    flagDrop.vy=Math.min(flagDrop.vy+200*dt,150);
-    flagDrop.y+=flagDrop.vy*dt;
-    flagDrop.x+=(player.x-flagDrop.x)*2*dt;
-    if (flagDrop.y>=player.y-20){
-      flagDrop.landed=true; flagDrop.x=player.x;
-      GL.flag={x:player.x,y:GROUND_Y};
-      GL.state.flagPlanted=true;
-      say(player, L.flagLanded, 3000);
-      SFX.achievement();
-      spawnSparks(player.x,player.y-30,20);
-    }
-  }
-  // fight-win flag drop onto head
-  if (glFlagDrop && glFlagDrop.active){
-    glFlagDrop.vy+=300*dt; glFlagDrop.y+=glFlagDrop.vy*dt;
-    glFlagDrop.swingPhase+=dt*4; glFlagDrop.swingAmp*=0.992;
-    const headY=player.y-40;
-    if (glFlagDrop.y>=headY){
-      glFlagDrop.y=headY; glFlagDrop.active=false;
-      spawnConfetti(player.x,headY,60);
-      SFX.achievement();
-      setTimeout(()=>say(player, L.fightWon, 3000),600);
-    }
-  }
-  // ice chunks
-  if (glacierExplosion.active){
-    glacierExplosion.iceChunks=glacierExplosion.iceChunks.filter(c=>{
-      c.life-=dt*1000; if (c.life<=0) return false;
-      c.vy+=1120*dt; c.x+=c.vx*dt; c.y+=c.vy*dt; c.rotation+=c.rotSpeed*dt;
-      if (c.y>=GROUND_Y){ c.y=GROUND_Y; c.vy*=-0.3; c.vx*=0.8; }
-      return true;
-    });
-  }
+  if (!player.nextBlink||t>player.nextBlink){ player.blinkUntil=t+120; player.nextBlink=t+2000+Math.random()*2500; }
 }
 
 function drawGreenland(){
@@ -6709,34 +6846,17 @@ function step(t){
         if (k>=1){
           entryHeli.active=false; introPlayed=true;
           player.y=GROUND_Y;
-          if (scene===SCENE.OVAL){
-            // walk behind the Resolute Desk, then the premise card (once)
-            startWalkTo(OV.trumpDeskX, ()=>{
-              if (entryHeli.line) say(player,entryHeli.line,1800);
-              if (!OV.introShown){ OV.introShown=true; ovalStartIntroCard(); }
-              else { OV.d.phase='play'; }
-            });
-          } else if (scene===SCENE.KREMLIN){
-            startWalkTo(player.x+40, ()=>{
-              if (entryHeli.line) say(player,entryHeli.line,1800);
-              if (!KR.introShown){
-                KR.introShown=true;
-                openInfoCard(DATA.KREMLIN.INTRO_CARD, ()=>{
-                  closeInfoCard();
-                  say(KR.putin, KL.putinSetup, 3200);
-                });
-              }
-            });
-          } else {
-            startWalkTo(player.x+40, ()=>{ if (entryHeli.line) say(player,entryHeli.line,1800); });
-          }
+          { const Lv=currentLevel();
+            if (Lv && Lv.onWalkInDone) Lv.onWalkInDone();
+            else startWalkTo(player.x+40, ()=>{ if (entryHeli.line) say(player,entryHeli.line,1800); }); }
         }
       }
       updateActors(dt);
-      if (scene===SCENE.EPSTEIN) updateEpstein(dt);
+      { const Lv=currentLevel(); if (Lv && Lv.update) Lv.update(dt); }
       updateFx(dt);
       // coin collection while airborne (not while riding the entry heli)
-      const sceneCoins = scene===SCENE.GREENLAND?GL.coins : scene===SCENE.OVAL?OV.coins : scene===SCENE.KREMLIN?KR.coins : null;
+      const LvC=currentLevel();
+      const sceneCoins = (LvC && LvC.coins) ? LvC.coins() : null;
       if (player.y<GROUND_Y-4 && sceneCoins && !entryHeli.active){
         const hx=player.x, hy=player.y-38;
         sceneCoins.forEach(c=>{
@@ -6752,26 +6872,16 @@ function step(t){
         });
       }
     }
-    // camera: in Oval, keep the compact desk/buttons/screen composition readable
+    // camera: level may override the focus (default: follow the player)
     let camFocus=player.x;
-    if (scene===SCENE.OVAL){
-      const deskFocus=OV.cameraFocus || (OV.deskX+OV.deskW/2);
-      if (entryHeli.active || OV.d.phase==='arriving' || walkTween) camFocus=(player.x+deskFocus)/2;
-      else if (player.x < OV.deskX-70) camFocus=player.x+65;
-      else camFocus=deskFocus;
-    }
+    { const Lv=currentLevel();
+      if (Lv && Lv.cameraFocus){ const f=Lv.cameraFocus(); if (typeof f==='number') camFocus=f; } }
     updateCamera(camFocus);
 
     /* draw */
     beginScreen();
     ctx.clearRect(0,0,VW,VH);
-    if (scene===SCENE.GREENLAND) drawGreenland();
-    else if (scene===SCENE.OVAL){ drawOval(); drawNuke();
-      if (OV.d.policy && OV.d.policy.mediaMode==='post' && OV.d.postUntil && now()<OV.d.postUntil && !GS.over && !NUKE.active) drawOvalPostLightbox(OV.d.policy);
-    }
-    else if (scene===SCENE.KREMLIN){ drawKremlin(); if (tug) drawTug(); if (flagOverlay) drawFlagOverlayScreen(); }
-    else if (scene===SCENE.EPSTEIN){ drawEpstein(); }
-    else if (scene===SCENE.GOLF){ drawGolf(); }
+    { const Lv=currentLevel(); if (Lv && Lv.draw) Lv.draw(); }
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
     if (choiceOverlay) drawChoiceOverlay();
@@ -6798,36 +6908,13 @@ function step(t){
   }
 }
 function updateActionChip(){
-  let show=false, label='E';
+  let label=null;
   if (!GS.over && !anyOverlayActive()){
-    if (scene===SCENE.GREENLAND){
-      if (FightEngine.active && !FightEngine.countdown){ show=true; label='👊'; }
-      else if (!FightEngine.active){
-        const nearObj=nearestGL();
-        if (nearObj){ show=true;
-          label = nearObj.type==='heli'?'🚁' : nearObj.type==='shop'?'🛒' :
-                  nearObj.type==='lars'?'💬' : nearObj.type==='bear'?'🐻' :
-                  player.selectedItem==='dynamite'?'🧨' : 'E';
-        }
-      }
-    } else if (scene===SCENE.OVAL){
-      const nearObj=nearestOV();
-      if (nearObj){ show=true;
-        label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
-                nearObj.type==='policy'?'⚫' : nearObj.type==='surprise'?'☢️' : 'E';
-      }
-    } else if (scene===SCENE.EPSTEIN){
-      show=false;
-    } else if (scene===SCENE.KREMLIN && !tug && !flagOverlay){
-      const nearObj=nearestKR();
-      if (nearObj){ show=true;
-        label = nearObj.type==='heli'?'🚁' : nearObj.type==='door'?'🚪' :
-                nearObj.type==='putin'?'🤝' : nearObj.type==='statue'?'💰' : 'E';
-      }
-    }
+    const Lv=currentLevel();
+    if (Lv && Lv.chip) label=Lv.chip();
   }
-  actBtn.textContent=label;
-  actBtn.classList.toggle('show', show);
+  actBtn.textContent=label||'E';
+  actBtn.classList.toggle('show', !!label);
 }
 function updateMobileToolButtons(){
   if (!IS_TOUCH){
@@ -6860,44 +6947,22 @@ requestAnimationFrame(step);
 
 // Dev-only debug handle (read-only snapshots; harmless in production)
 window.__tv2 = {
-  snapshot: () => ({
-    scene, over: GS.over, overMode: GS.overMode, lives: GS.lives,
-    nonViolent: GS.nonViolent,
-    player: { x: Math.round(player.x), y: Math.round(player.y), gold: player.gold },
-    bear: { x: Math.round(GL.bear.x), hp: GL.bear.hp, angry: GL.bear.angry,
-            chasing: GL.bear.chasing, bites: GL.bear.biteCount, alive: GL.bear.alive },
-    lars: { x: Math.round(GL.lars.x), rounds: GL.state.larsDialogRounds,
-            fight: GL.state.larsFightRequested, blownUp: GL.lars.blownUp },
-    fight: { active: FightEngine.active, trumpHP: FightEngine.trumpHP, larsHP: FightEngine.larsHP },
-    oval: { phase: OV.d.phase, policies: OV.d.policyCount,
-            policyTitle: OV.d.policy?OV.d.policy.title:null,
-            policyMedia: OV.d.policy&&OV.d.policy.media?OV.d.policy.media:null,
-            completed: OV.d.completed, nuke: NUKE.active,
-            buttons: { policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} },
-            mediaLoaded:Object.fromEntries(Object.entries(OVAL_POLICY_IMAGES).map(([key,img])=>[key,!!(img.complete&&img.naturalWidth&&!img.__broken)])) },
-    epstein: { active: EP.active, found: EP.found, total: EP.totalTargets,
-               missed: EP.missed, protectedClicks: EP.protectedClicks,
-               atArt: EP.atArt, artDone: EP.finalArt.redacted,
-               success: EP.success?{...EP.success}:null,
-               zoneKinds: EP.targets.filter(tg=>{const z=epZone(); return tg.y>=z.top-22&&tg.y<=z.bottom+22;}).map(tg=>tg.kind) },
-    kremlin: { tug: tug?{pos:+tug.pos.toFixed(2),elapsed:Math.round(now()-tug.start)}:null,
-               flag: flagOverlay?flagOverlay.type:null,
-               statues: KR.statues.filter(s=>s.collected).length,
-               watched: KR.statues.filter(s=>!s.collected).map(s=>pointWatched(s.x,s.y-20)),
-               wagner: KR.wagner?{escaped:KR.wagner.escaped,caught:KR.wagner.caught}:null,
-               shoes: player.goldenShoesOn },
-    golf: { state:GOLF.state, hole:GOLF.hole?golfDisplayId(GOLF.hole):null,
-            strokes:GOLF.strokesThisHole, total:GOLF.total+GOLF.strokesThisHole,
-            joe:GOLF.joeTotal, ball:{x:Math.round(GOLF.ball.x),y:Math.round(GOLF.ball.y),
-            speed:Math.round(Math.hypot(GOLF.ball.vx,GOLF.ball.vy))}, banner:!!GOLF.banner,
-            trophyReady:GOLF.trophyReady,
-            biden:{sleeping:!!GOLF.biden.sleeping,pose:GOLF.biden.sleepPose||0} },
-    music: { muted: Music.muted, current: Music.current?Music.current.name:null,
-             pendingScene: Music.pendingScene },
-    tweets: { total: tweetCount, byScene: { ...tweetCounts },
-              putinTrust: RELATIONSHIPS.putin.trust },
-    medals: { ...GS.medals }
-  }),
+  snapshot: () => {
+    const base = {
+      scene, over: GS.over, overMode: GS.overMode, lives: GS.lives,
+      nonViolent: GS.nonViolent,
+      player: { x: Math.round(player.x), y: Math.round(player.y), gold: player.gold },
+      fight: { active: FightEngine.active, trumpHP: FightEngine.trumpHP, larsHP: FightEngine.larsHP },
+      music: { muted: Music.muted, current: Music.current?Music.current.name:null,
+               pendingScene: Music.pendingScene },
+      tweets: { total: tweetCount, byScene: { ...tweetCounts },
+                putinTrust: RELATIONSHIPS.putin.trust },
+      medals: { ...GS.medals }
+    };
+    // every registered level contributes its own debug view
+    LEVEL_ORDER.forEach(id=>{ const Lv=LEVELS[id]; if (Lv.snapshot) Object.assign(base, Lv.snapshot()); });
+    return base;
+  },
   cheat: { gold: n => { player.gold = n; renderHUD(); },
            policy: title => { const p=(DATA.OVAL.POLICIES||[]).find(pp=>pp.title===title);
              if (p){ OV.d.policy=p; OV.d.policyCount=(OV.d.policyCount||0)+1;

@@ -81,10 +81,28 @@ redaktionel hindring) er Obama-reposten nu et fuldt satirisk beat:
 - ✅ Playwright-verificeret desktop+mobil: lightbox begge billeder, 5 tryk →
   Pulitzer, 0 fejl
 
+## Spor B: Level-system — FÆRDIGT 2026-07-08 ✅ (Fable)
+
+Hele spillet kører nu på en **level-registry**: hver bane er ét objekt
+registreret med `registerLevel({...})` — de ~12 håndkoblede dispatch-steder
+(interact, intent-tap, action-chip, coins, kamera, draw/update, heli-menu,
+restart, snapshot, walk-in) er erstattet af generiske registry-opslag.
+
+- ✅ Alle 5 baner porteret til kontrakten; heli-menuen autogenereres af
+  registreringsrækkefølgen (nyt level = automatisk i menuen m. ✓/○)
+- ✅ `LEVEL_TEMPLATE.md`: komplet guide til IKKE-Fable-modeller — kontrakt,
+  copy-paste-skelet, tjekliste, kendte fælder, Playwright-røgtest-skabelon.
+  Indsætningsmarkør i index.html: ">>> NYE LEVELS REGISTRERES HER <<<"
+- ✅ Fuld regression efter omlægningen: alle 5 baner + mobil, 0 fejl
+- Accept-testen (nyt legetøjs-level < 1 time, bygget af en anden model
+  alene ud fra skabelonen) udestår — kør den med Codex/Sonnet
+
 ## Næste skridt
 
-1. Kristians beslutning på `PLAN_DESKTOP_OG_LEVELSYSTEM.md` (to nye spor)
-2. Derefter: byg valgt spor
+1. Accept-test af level-systemet: lad Codex/Sonnet bygge et legetøjs-level
+   KUN ud fra LEVEL_TEMPLATE.md
+2. Spor A: desktop i landskabsformat (stage-ramme + kompositionspas) —
+   se PLAN_DESKTOP_OG_LEVELSYSTEM.md
 
 ## Trin 9 udført — 2026-07-08 ✅
 

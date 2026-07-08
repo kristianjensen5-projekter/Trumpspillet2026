@@ -150,7 +150,14 @@ sektioner med markører i filen.
 3. B er ren intern refaktorering med eksisterende regressionssuite som
    sikkerhedsnet — ingen synlig ændring for spillere, lav risiko
 
-**Beslutninger til Kristian:**
-- [ ] Rækkefølge: B → A som anbefalet?
-- [ ] Spor A: afklar embed-format med redaktionen (iframe 9:16 vs inline)
-- [ ] Spor B accept-kriterium OK? (nyt legetøjs-level på < 1 time)
+**Kristians beslutninger (2026-07-08):**
+- [x] Rækkefølge: **B → A** — godkendt
+- [x] Spor A: begge embed-formater mulige, ingen præference — men
+  **desktop skal være landskabsformat** (dvs. A1 stage-ramme + A2
+  landscape-kompositionspas)
+- [x] Spor B accept-kriterium godkendt, med SKÆRPELSE: **Fable forsvinder
+  som model-option ca. 2026-07-15.** Level-systemet skal derfor kunne
+  betjenes af ANDRE modeller (Sonnet/Codex) alene: skabelon + tjekliste +
+  medfølgende røgtest skal bære hele vejen uden stammeviden. Accept-testen
+  udføres derfor IKKE af Fable, men beskrives så en anden model kan bestå
+  den: "byg et legetøjs-level på < 1 time KUN ud fra LEVEL_TEMPLATE.md".
