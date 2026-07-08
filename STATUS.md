@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-05
+**Senest opdateret:** 2026-07-08
 
 ---
 
@@ -122,12 +122,46 @@ medalje ved etage 10 (`tower`-nøgle), ingen game over, heli-menu begge veje.
 - Dom: **bestået** — < 1 time, ét reelt skabelon-hul fundet og dokumenteret
   (se `ACCEPT_TEST_RESULTAT.md`)
 
+## Skabelon-huller lukket + Spor A1: desktop-stage — 2026-07-08 ✅ (Fable)
+
+Opfølgning på accept-testen — alle tre fund lukket mens Fable stadig er
+tilgængelig:
+
+- ✅ **Engine-fix (Sonnets anbefaling):** `GS.medals` bygges nu dynamisk af
+  JSON'ens MEDALS-nøgler (`Object.keys(DATA.MEDALS)`) i stedet for en
+  hårdkodet liste — fremtidige levels behøver KUN deres MEDALS-post, og
+  medaljen overlever refresh automatisk. Verificeret: tower-medalje vundet
+  → reload → stadig ✓ i snapshot
+- ✅ `LEVEL_TEMPLATE.md` opdateret: trin 4 (medalje-persistens + verificér
+  efter reload), taster i røgtesten (ArrowLeft/Right — IKKE a/d) og note om
+  hvorfor skelettet bevidst ikke rører det delte `SCENE`-objekt
+
+**Spor A1 — desktop i landskabsformat (stage-ramme) — FÆRDIGT:**
+
+- ✅ På desktop-landscape (mus + bredere end høj + ≥900 px) tegnes spillet
+  nu i en centreret 16:9-scene (maks. 1240 px bred) med mørkeblå baggrund,
+  guldramme og titel — i stedet for at strække sig over hele vinduet.
+  Mobil/portrait er 100 % uændret (stagen er slået fra dér)
+- ✅ Verden clippes til scenen (ingen "bleed" uden for rammen), HUD +
+  hjælpeboks forankres til scenens hjørner, alle pointer-koordinater
+  (klik-gå, golf-sigte) oversættes gennem scene-offsettet
+- ✅ Fuld regression på `index.html` efter patchen: ultrawide 2560×1080 +
+  1280×720 + iPhone 390×844 — klik-på-mine-gåtur, heli→Tower→medalje→
+  refresh-persistens, golf-entry+Esc, Oval policy-tryk, touch på mobil.
+  **Alle tjek grønne, 0 pageerrors** (testscript: `reg_index_a1.mjs` i
+  scratchpad, kan genskabes fra LEVEL_TEMPLATE-skabelonen)
+- Arbejdskopien `desktop-dev.html` + patch-værktøjet er slettet efter
+  vellykket overførsel til `index.html`
+
 ## Næste skridt
 
-1. Overvej at rette `LEVEL_TEMPLATE.md` trin 4 til at nævne `GS.medals`
-   (se hul fundet ovenfor)
-2. Spor A: desktop i landskabsformat (stage-ramme + kompositionspas) —
-   se PLAN_DESKTOP_OG_LEVELSYSTEM.md
+1. **Kristian beslutter:** skal test-banen "Trump Tower Elevator" blive i
+   spillet eller fjernes før næste deploy? (Den ligger i `index.html` og
+   heli-menuen nu — deploy er bevidst IKKE kørt endnu)
+2. Spor A2: kompositionspas per bane i landskab (bredere kamera, pynte-
+   props, evt. bredere Oval-komposition, hover-glow) — se
+   PLAN_DESKTOP_OG_LEVELSYSTEM.md
+3. `oval-office-simple-prototype.html` ligger stadig utracket — slet/arkivér?
 
 ## Trin 9 udført — 2026-07-08 ✅
 

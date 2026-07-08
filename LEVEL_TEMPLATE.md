@@ -31,7 +31,10 @@ musik-skift. Du skriver KUN banens indhold.
    nedenfor.
 4. **Medalje (hvis banen kan gennemføres):** Tilføj en post i
    `"MEDALS"`-blokken i JSON'en med samme nøgle som dit level-id, og kald
-   `awardMedal('<dit-id>')` ved sejr.
+   `awardMedal('<dit-id>')` ved sejr. `GS.medals` bygges automatisk af
+   MEDALS-blokkens nøgler (fixet 2026-07-08 efter accept-testen), så
+   medaljen overlever refresh uden mere arbejde — men VERIFICÉR det i
+   røgtesten: reload siden og tjek at medaljen stadig står i snapshot.
 5. **Game over (hvis banen kan tabes):** Tilføj en post i `"GAMEOVER"`-
    JSON-blokken og kald `gameOverCause('<cause>',{delayMs:...})`.
    Vil du have et flot dødstableau: tilføj en branch i `drawTableau()`
@@ -57,6 +60,12 @@ musik-skift. Du skriver KUN banens indhold.
     --branch=main --commit-dirty=true` — og curl-verificér liveness.
 
 ## Skelet (kopiér, erstat `mylevel` overalt)
+
+> Bemærk: skelettet bruger med vilje en standalone `const SCENE_MYLEVEL`
+> i stedet for at udvide det delte `const SCENE = {...}`-objekt (som de
+> fem oprindelige baner gør). Det er bevidst: hele dit arbejde skal holde
+> sig inden for de to berøringszoner (JSON-blokken + markør-sektionen) —
+> rør IKKE det delte SCENE-objekt.
 
 ```js
 /* ================================================================
@@ -164,6 +173,9 @@ Epstein), tilføj en tidlig scene-branch i keydown/pointerdown-routerne
   (mønt-lektien): tjek `entryHeli.active`
 
 ## Røgtest-skabelon (Playwright)
+
+**Taster i testen:** bevægelse = `ArrowLeft`/`ArrowRight` (IKKE a/d —
+`d` er reserveret til dynamit-valg), hop = `ArrowUp`, interager = `e`.
 
 ```js
 // scratchpad/smoke_mylevel.mjs — npm install playwright først

@@ -1792,16 +1792,82 @@ let DPR=1, VW=0, VH=0;            // CSS pixels
 const CAM = { scale:1, x:0, viewW:0, worldW: CFG.GREENLAND_W };
 const GROUND_Y = CFG.WORLD_H - CFG.FLOOR_H; // 420
 
+/* Track A1 — desktop stage: on landscape desktop the game renders in a
+   fixed-proportion stage centered in the window (themed frame around it)
+   instead of stretching across the whole browser. Mobile is untouched:
+   STAGE_X/Y stay 0 and VW/VH equal the window. */
+let WIN_W=0, WIN_H=0, STAGE_X=0, STAGE_Y=0, STAGE_ON=false;
 function fit(){
   DPR = window.devicePixelRatio || 1;
-  VW = Math.round(window.innerWidth);
-  VH = Math.round(window.innerHeight);
-  cvs.width = Math.round(VW*DPR);
-  cvs.height = Math.round(VH*DPR);
-  // Scale so the 540-unit world height fills the screen (min cap so very
+  WIN_W = Math.round(window.innerWidth);
+  WIN_H = Math.round(window.innerHeight);
+  cvs.width = Math.round(WIN_W*DPR);
+  cvs.height = Math.round(WIN_H*DPR);
+  const coarse = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+  STAGE_ON = !coarse && WIN_W>WIN_H && WIN_W>=900;
+  if (STAGE_ON){
+    const margin=Math.max(26, Math.min(WIN_W,WIN_H)*0.045);
+    let sw=Math.min(WIN_W-margin*2, 1240);
+    let sh=Math.min(WIN_H-margin*2, Math.round(sw*9/16));
+    sw=Math.min(sw, Math.round(sh*16/9));
+    VW=sw; VH=sh;
+    STAGE_X=Math.round((WIN_W-sw)/2);
+    STAGE_Y=Math.round((WIN_H-sh)/2);
+  } else {
+    VW=WIN_W; VH=WIN_H; STAGE_X=0; STAGE_Y=0;
+  }
+  // Scale so the 540-unit world height fills the stage (min cap so very
   // wide desktop windows don't blow sprites up absurdly)
   CAM.scale = clamp(VH / CFG.WORLD_H, 0.5, 2.4);
   CAM.viewW = VW / CAM.scale;
+  positionStageUI();
+}
+/* DOM HUD elements are position:fixed to the window — anchor them to the
+   stage's corners when the stage is active. */
+function positionStageUI(){
+  const hud=document.getElementById('hud');
+  const help=document.getElementById('helpbox');
+  if (STAGE_ON){
+    if (hud){ hud.style.right=(WIN_W-STAGE_X-VW+10)+'px'; hud.style.top=(STAGE_Y+10)+'px'; }
+    if (help){ help.style.left=(STAGE_X+10)+'px'; help.style.bottom=(WIN_H-STAGE_Y-VH+10)+'px'; }
+  } else {
+    if (hud){ hud.style.right=''; hud.style.top=''; }
+    if (help){ help.style.left=''; help.style.bottom=''; }
+  }
+}
+/* Painted every frame BEFORE the scene: the room around the stage. */
+function paintStageBackdrop(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if (STAGE_ON){
+    const g=ctx.createRadialGradient(WIN_W/2,WIN_H*0.42,80,WIN_W/2,WIN_H/2,Math.max(WIN_W,WIN_H)*0.72);
+    g.addColorStop(0,'#20293f'); g.addColorStop(1,'#0a0e1a');
+    ctx.fillStyle=g; ctx.fillRect(0,0,WIN_W,WIN_H);
+    if (STAGE_Y>34){
+      ctx.textAlign='center';
+      ctx.fillStyle='rgba(255,255,255,0.45)';
+      ctx.font=`800 ${clamp(STAGE_Y*0.36,13,22)}px "Courier New",monospace`;
+      ctx.fillText('T R U M P S P I L L E T   2 0 2 6', WIN_W/2, STAGE_Y-14);
+      ctx.textAlign='left';
+    }
+  } else {
+    ctx.clearRect(0,0,WIN_W,WIN_H);
+  }
+  ctx.translate(STAGE_X,STAGE_Y);
+  ctx.clearRect(0,0,VW,VH);
+  // Clip the whole frame's drawing to the stage — v2 never needed clipping
+  // because the canvas edge WAS the viewport; with a stage inside a larger
+  // canvas everything past VW/VH would bleed onto the backdrop.
+  if (STAGE_ON){ ctx.save(); ctx.beginPath(); ctx.rect(0,0,VW,VH); ctx.clip(); }
+}
+/* Painted every frame AFTER everything: pops the stage clip + gold frame. */
+function paintStageFrame(){
+  if (!STAGE_ON) return;
+  ctx.restore(); // pop the stage clip from paintStageBackdrop
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.strokeStyle='rgba(212,175,55,0.9)'; ctx.lineWidth=3;
+  ctx.strokeRect(STAGE_X-5.5,STAGE_Y-5.5,VW+11,VH+11);
+  ctx.strokeStyle='rgba(0,0,0,0.65)'; ctx.lineWidth=2;
+  ctx.strokeRect(STAGE_X-9,STAGE_Y-9,VW+18,VH+18);
 }
 fit();
 addEventListener('resize', fit);
@@ -1813,6 +1879,7 @@ function updateCamera(focusX){
 function beginWorld(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
   ctx.save();
+  ctx.translate(STAGE_X,STAGE_Y);
   // camera shake lives here so every world draw gets it
   if (now()<SHAKE.until){
     const p=(SHAKE.until-now())/SHAKE.dur;
@@ -1822,7 +1889,7 @@ function beginWorld(){
   ctx.translate(-CAM.x, 0);
 }
 function endWorld(){ ctx.restore(); }
-function beginScreen(){ ctx.setTransform(DPR,0,0,DPR,0,0); }
+function beginScreen(){ ctx.setTransform(DPR,0,0,DPR,0,0); ctx.translate(STAGE_X,STAGE_Y); }
 function screenToWorld(sx,sy){ return { x: sx/CAM.scale + CAM.x, y: sy/CAM.scale }; }
 
 /* ================================================================
@@ -1985,7 +2052,9 @@ let scene = SCENE.INTRO;
 
 const GS = {
   lives:0, nonViolent:false,
-  medals:{ greenland:false, oval:false, kremlin:false, epstein:false, golf:false, tower:false },
+  // Medaljenøglerne kommer fra JSON'ens MEDALS-blok — nye levels skal KUN
+  // tilføje deres MEDALS-post, ikke røre dette objekt (jf. LESSONS.md)
+  medals:Object.fromEntries(Object.keys(DATA.MEDALS).map(k=>[k,false])),
   over:false, overMode:null
 };
 function loadMedals(){
@@ -6105,7 +6174,7 @@ function golfKeyUp(e,k){
   return false;
 }
 function golfPointerDown(e){
-  const sx=e.clientX, sy=e.clientY;
+  const sx=e.clientX-STAGE_X, sy=e.clientY-STAGE_Y;
   const hit=b=>b&&sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h;
   if (hit(GOLF._btnLeave)){ golfLeave(); return; }
   if (hit(GOLF._btnDrop)){ golfDrop(); return; }
@@ -6122,7 +6191,7 @@ function golfPointerDown(e){
 }
 function golfPointerMove(e){
   if (!GOLF.aim.active || GOLF.aim.pointerId!==e.pointerId) return;
-  const p=golfToCourse(e.clientX,e.clientY);
+  const p=golfToCourse(e.clientX-STAGE_X,e.clientY-STAGE_Y);
   GOLF.aim.x=p.x; GOLF.aim.y=p.y;
   const dx=GOLF.ball.x-p.x, dy=GOLF.ball.y-p.y;
   GOLF.aim.power=clamp(Math.hypot(dx,dy)/GOLF_MAX_DRAG,0,1);
@@ -6674,7 +6743,7 @@ let holdDir=0;            // -1/0/1 from held touch
 cvs.addEventListener('pointerdown', e=>{
   ensureAudio();
   if (scene===SCENE.INTRO){ startGame(); return; }
-  const sx=e.clientX, sy=e.clientY;
+  const sx=e.clientX-STAGE_X, sy=e.clientY-STAGE_Y;
   // post-lightbox: any tap dismisses it
   if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && !GS.over){
     OV.d.postUntil=0;
@@ -6729,7 +6798,7 @@ cvs.addEventListener('pointerdown', e=>{
 cvs.addEventListener('pointermove', e=>{
   if (scene===SCENE.GOLF){ e.preventDefault(); golfPointerMove(e); return; }
   const p=pointers.get(e.pointerId); if (!p) return;
-  p.x=e.clientX; p.y=e.clientY;
+  p.x=e.clientX-STAGE_X; p.y=e.clientY-STAGE_Y;
   if (Math.hypot(p.x-p.startX,p.y-p.startY)>14) p.moved=true;
   p.zone = p.x<VW/2?-1:1;
 });
@@ -7004,8 +7073,7 @@ function step(t){
     updateCamera(camFocus);
 
     /* draw */
-    beginScreen();
-    ctx.clearRect(0,0,VW,VH);
+    paintStageBackdrop();
     { const Lv=currentLevel(); if (Lv && Lv.draw) Lv.draw(); }
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
@@ -7025,6 +7093,7 @@ function step(t){
     // contextual action chip (mobile)
     updateActionChip();
     updateMobileToolButtons();
+    paintStageFrame();
 
     requestAnimationFrame(step);
   }catch(err){
@@ -7082,7 +7151,9 @@ window.__tv2 = {
                pendingScene: Music.pendingScene },
       tweets: { total: tweetCount, byScene: { ...tweetCounts },
                 putinTrust: RELATIONSHIPS.putin.trust },
-      medals: { ...GS.medals }
+      medals: { ...GS.medals },
+      stage: { on:STAGE_ON, x:STAGE_X, y:STAGE_Y, vw:VW, vh:VH,
+               scale:+CAM.scale.toFixed(3), camX:Math.round(CAM.x) }
     };
     // every registered level contributes its own debug view
     LEVEL_ORDER.forEach(id=>{ const Lv=LEVELS[id]; if (Lv.snapshot) Object.assign(base, Lv.snapshot()); });
