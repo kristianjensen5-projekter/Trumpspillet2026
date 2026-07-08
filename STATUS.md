@@ -1,8 +1,9 @@
 # Trumpspillet 2026 — Status
 
 **Type:** arbejde (bekræftet af Kristian 2026-07-02)
-**Live URL:** https://trumpspillet2026.pages.dev/ (gammel version) ·
-**v2-test:** https://trumpspillet2026.pages.dev/trumpspillet-v2
+**Live URL:** https://trumpspillet2026.pages.dev/ (v2 — NY version, Trin 9
+udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
+gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
 **Senest opdateret:** 2026-07-05
 
@@ -82,8 +83,16 @@ redaktionel hindring) er Obama-reposten nu et fuldt satirisk beat:
 
 ## Næste skridt
 
-1. Kristian tester hele `trumpspillet-v2.html` på fysisk iPhone
-2. Hvis iPhone-testen er godkendt: kør Trin 9 (`v2 → index.html`)
+1. Kristians beslutning på `PLAN_DESKTOP_OG_LEVELSYSTEM.md` (to nye spor)
+2. Derefter: byg valgt spor
+
+## Trin 9 udført — 2026-07-08 ✅
+
+- `trumpspillet-v2.html` → `index.html` (hoved-URL serverer nu v2)
+- Gammel version arkiveret som `index-v1.html` (live på `/index-v1`)
+- `_redirects`: `/trumpspillet-v2` → `/` (301), så delte links overlever
+- localStorage-nøgler uændrede → medaljer overlever URL-skiftet
+- AI_INDEX.md omskrevet til v2-virkeligheden
 
 ## Oval Office v3 — udskiftet 2026-07-05 (simpel knapbane)
 

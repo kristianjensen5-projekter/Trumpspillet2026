@@ -1,46 +1,37 @@
 # AI_INDEX — Trumpspillet 2026 (kort indgangsfil)
 
-Formål: Hurtig onboarding for AI. Detaljer findes i:
-- `WORKFLOW_ANCHORS.md` (anchors, Mini‑TOC, workflow‑regler)
-- `START_PROMPT.md` (arbejdskontrakt + status)
+Formål: Hurtig onboarding for AI. **Læs STATUS.md først.**
 
 ## Filer (kort)
-- `index.html` — alt spil (HTML/CSS/JS, scenes, input, render). Filen blev omdøbt fra `Trumpspillet 2026.html` for Cloudflare Pages-publicering.
-- `Trumpspillet2026Mobil.html` — separat mobiltestfil. Aktuelt fokus: portrait-first Greenland-test med touch/intent-tap.
-- `assets/` — spilassets. Tidligere root-assets er flyttet hertil.
-- `assets/music/` — placeholder-struktur til kommende egne musikfiler.
-- `WORKFLOW_ANCHORS.md` — anchors + workflow
-- `START_PROMPT.md` — arbejdskontrakt + seneste ændringer
+- `index.html` — HELE spillet (v2-genopbygningen, 2026-07-08). Én responsiv
+  fil, mobile-first, desktop+mobil i samme kodebase. Alt spil-state i én
+  IIFE; redaktionel tekst i `#game-data` JSON-blokken øverst.
+- `index-v1.html` — ARKIV: den gamle version (13.633 linjer, desktop-only).
+  Rør den ikke; kun reference. Live på `/index-v1`.
+- `GAME_SPEC.md` — gameplay-facit fra genopbygningen ⭐
+- `BUILD_PLAN_V2.md` — genopbygningens trin (alle ✅ pr. 2026-07-08)
+- `SCENE_REVIEW_KREMLIN_EPSTEIN_GOLF.md` — UX-beslutninger (pakke B)
+- `LESSONS.md` — projekt-lektier (læs før debugging!)
+- `assets/` — golfbane-overlays, drawing.png, oval office-billeder
+- `Musik til trumpspillet/` — 4 MP3-underlægningsspor
+- `_redirects` — Cloudflare: gamle `/trumpspillet-v2`-links → `/`
+- `Trumpspillet 2026-kopi.html`, `Trumpspillet2026Mobil.html`,
+  `START_PROMPT.md`, `WORKFLOW_ANCHORS.md` — historiske v1-arbejdsfiler
 
 ## Deploy/status
 - Git remote: `https://github.com/kristianjensen5/Trumpspillet2026.git`
-- Cloudflare Pages project: `trumpspillet2026`
-- Production URL: `https://trumpspillet2026.pages.dev/`
-- Mobiltest: `https://trumpspillet2026.pages.dev/Trumpspillet2026Mobil?mobileTest=1`
-- User-regel: deploy som standard efter hver færdig update, medmindre andet aftales.
+- Cloudflare Pages: `trumpspillet2026` → https://trumpspillet2026.pages.dev/
+- Deploy: `npx wrangler pages deploy . --project-name trumpspillet2026
+  --branch=main --commit-dirty=true` (ALTID `--branch=main`, ellers preview)
+- User-regel: deploy som standard efter hver færdig update
 
-## Hot zones (ændr kun med eksplicit OK)
-- Global render/update loop (scene‑gated)
-- `INPUT_GLOBAL_KEYDOWN` (alt tastaturinput)
-- Save/load/localStorage‑logik
-- Fight-input-bridge (`installFightInputBridge` IIFE) — capture-phase listeners + scene-guard + debug telemetri bag `DEBUG_FIGHT_STATE`
-- `Trumpspillet2026Mobil.html` touch-input: ændr kun mobilflowet; desktop `index.html` må ikke røres ved mobiltest uden eksplicit OK.
-
-## Scene/State‑API (koncept)
-- `resetScene()`‑funktioner initierer scene‑state
-- Update/render sker i global loop med `if (scene === SCENE.X)`
-- Scene‑specifik UI/hints kaldes betinget på `scene`
-- **Brug altid `SCENE.*`-constants** i sammenligninger og `switchScene()`-kald — strings (`'greenland'`, etc.) er udfaset
-- `SCENES`-registry styrer scene-livscyklus (reset/enter/onLeave-hooks). Scene-skift går igennem `switchScene(SCENE.X, params)`
-
-## Globals (må ikke omdøbes)
-- `CFG`, `GAME_CONSTANTS`, `GS`, `GL`, `OV`, `KR`, `EP`, `GOLF`
-- `SCENE` (constants), `SCENES` (registry)
-
-## Anchors (navne)
-- `SCENE_GREENLAND`, `SCENE_OVAL`, `SCENE_KREMLIN`, `SCENE_EPSTEIN`, `SCENE_GOLF`
-- `INPUT_GLOBAL_KEYDOWN`
-- SCENE_GOLF har 40-linjers state-maskine-dokumentation i toppen — start dér ved Golf-debugging
-
-## Debug-flags (kun til udvikling)
-- `window.DEBUG_FIGHT_STATE = true` — viser fight-overlay HUD + tæller bridge-events + advarer ved post-stop state-leaks
+## v2-arkitektur (index.html)
+- Kamera: verden 540 høj, gulv y=420, `CAM.scale=VH/540 (clamp .5–2.4)`,
+  `beginWorld()/endWorld()/beginScreen()`; worldW per scene i SCENES
+- Overlays: `openChoice/openInfoCard`; død: `gameOverCause(...)` →
+  fuldskærms-tableau → voting machine (`startContinueOverlay`)
+- Mobil-input: pointers-map (hold >200 ms = gå, tap = intentTap,
+  2. finger = hop) + kontekst-chips
+- Debug: `window.__tv2.snapshot()` + `.cheat.gold(n)` / `.cheat.policy(title)`
+- Verifikation: Playwright headless (npm install playwright i scratchpad;
+  browsers cached i ~/Library/Caches/ms-playwright)

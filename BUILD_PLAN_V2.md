@@ -112,10 +112,13 @@ på `SCENES`/input/render-loop. Codex implementerede og verificerede pakken
 - ✅ Automatiseret regressionssuite kørt lokalt; mangler Kristians totale
   gennemspilning på fysisk iPhone
 
-### Trin 9: Skiftet
-- `trumpspillet-v2.html` → `index.html`; gammel version arkiveres som
-  `index-v1.html` (Cloudflare-URL'en uændret)
-- STATUS/AI_INDEX opdateres; gamle arbejdsdokumenter markeres historiske
+### ✅ Trin 9: Skiftet (2026-07-08)
+- `trumpspillet-v2.html` → `index.html`; gammel version arkiveret som
+  `index-v1.html` (live på /index-v1); `_redirects` sender gamle
+  /trumpspillet-v2-links til /
+- STATUS/AI_INDEX opdateret; gamle arbejdsdokumenter markeret historiske
+- **GENOPBYGNINGEN ER HERMED KOMPLET.** Nye spor: se
+  `PLAN_DESKTOP_OG_LEVELSYSTEM.md`
 
 ## Tekniske noter til kold start
 - Alt spil-state bor i én IIFE i `trumpspillet-v2.html`; debug-adgang via
