@@ -539,7 +539,18 @@
       "Every floor up there is a five-star floor.",
       "Nobody builds like Trump builds. Nobody.",
       "Going up! Just like my approval ratings."
-    ]
+    ],
+    "FLOORS": [
+      { "title": "THE BIBLE FLOOR", "caption": "$59.99.\nVery holy. Very unsold.", "kind": "bibles" },
+      { "title": "THE PRIZE FLOOR", "caption": "Reserved for the\nNobel Peace Prize.", "kind": "prize" },
+      { "title": "THE BEST DEALS FLOOR", "caption": "Iran deal:\n-$300,000,000,000", "kind": "deals" },
+      { "title": "THE TARIFF FLOOR", "caption": "Made in America.\nPriced everywhere.", "kind": "tariffs" }
+    ],
+    "PENTHOUSE": {
+      "title": "THE PENTHOUSE",
+      "creditsLine1": "BUILT BY KRISTIAN JENSEN · POLITIKEN",
+      "creditsLine2": "CODED WITH CLAUDE & CODEX, 2026"
+    }
   },
   "EPSTEIN": {
     "INTRO_CARD": "THE EPSTEIN FILES\n\nTrump is OBVIOUSLY not mentioned\nin these documents.\n\nCross out the 10 'mistakes' before\nDemocrats spread conspiracy theories!\n\n🖊 Redact RED names in the golden zone\n🛑 NEVER touch the BLUE names\n❌❌❌ three misses and it's over\n\nTap or press any key to begin",
@@ -6476,37 +6487,153 @@ const TW = {
   heli:{x:160,y:GROUND_Y-18,type:'heli'},
   button:{x:640,y:GROUND_Y,type:'button',say:'',speakingUntil:0,pressedUntil:0},
   coins:[],
-  floor:0
+  floor:0,
+  ride:null            // {phase:'closing'|'traveling'|'opening', start}
 };
+const TOWER_PENTHOUSE_FLOOR = DATA.TOWER.FLOORS.length + 1; // 4 jokes -> penthouse is floor 5
 function resetTower(){
   player.x=200; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
   Object.assign(TW.button,{say:'',speakingUntil:0,pressedUntil:0});
   TW.floor=0;
+  TW.ride=null;
   TW.coins=[];
   playEntryHeli(TL.arrive);
 }
+function towerCarX(){ return TW.button.x+40; }
+// Zero-distance "hold": reuses the walk-tween as a timer that also blocks
+// player movement input (see input router's `!walkTween` gate), so the
+// ride can't be interrupted without touching shared engine code.
+function towerHold(ms,onDone){
+  startWalkTo(towerCarX(), onDone);
+  if (walkTween) walkTween.dur=ms;
+}
+function towerDoorOpenAmount(){
+  if (TW.ride){
+    const el=now()-TW.ride.start;
+    if (TW.ride.phase==='closing') return clamp(1-el/350,0,1);
+    if (TW.ride.phase==='traveling') return 0;
+    if (TW.ride.phase==='opening') return clamp(el/350,0,1);
+  }
+  return TW.floor>0 ? 1 : 0;
+}
 function pressTowerButton(){
-  TW.floor++;
+  if (walkTween || TW.ride) return;
   TW.button.pressedUntil=now()+220;
-  tone(880,.08,'sine',.25); setTimeout(()=>tone(1320,.12,'sine',.2),80); // "ding"
-  say(player, pick(DATA.TOWER.BOASTS), 1800);
-  if (TW.floor===10){
-    spawnConfetti(TW.button.x, player.y-60, 60);
-    SFX.achievement();
-    awardMedal('tower');
-    setTimeout(()=>say(player, TL.top, 2600), 700);
+  SFX.buttonPress();
+  startWalkTo(towerCarX(), ()=>{ // walk Trump into the car first (real distance = normal tween speed)
+    TW.ride={phase:'closing',start:now()};
+    towerHold(350,()=>{
+      TW.ride={phase:'traveling',start:now()};
+      SFX.whoosh();
+      towerHold(650,()=>{
+        TW.floor++;
+        TW.ride={phase:'opening',start:now()};
+        tone(880,.08,'sine',.25); setTimeout(()=>tone(1320,.12,'sine',.2),80); // "ding"
+        say(player, pick(DATA.TOWER.BOASTS), 1800);
+        if (TW.floor===TOWER_PENTHOUSE_FLOOR){
+          spawnConfetti(towerCarX(), player.y-70, 60);
+          SFX.achievement();
+          awardMedal('tower');
+          setTimeout(()=>say(player, TL.top, 2600), 700);
+        }
+        towerHold(350,()=>{
+          TW.ride=null;
+          startWalkTo(TW.button.x, ()=>{}); // step out so the reveal isn't hidden behind Trump
+        });
+      });
+    });
+  });
+}
+function drawTowerFloorVignette(kind,dx){
+  switch(kind){
+    case 'bibles': {
+      const colors=['#7a1620','#8a1c28','#6a1218','#7a1620'];
+      for (let i=0;i<5;i++){
+        const w=24-i*2, h=7, y=GROUND_Y-14-i*8, x=dx-w/2+((i%2)?3:-3);
+        ctx.fillStyle=colors[i%colors.length]; ctx.fillRect(x,y,w,h);
+        ctx.fillStyle='#c9a641'; ctx.fillRect(x+2,y+2,w-4,1);
+      }
+      ctx.fillStyle='#fff'; ctx.font='7px system-ui'; ctx.textAlign='center';
+      ctx.fillText('$59.99', dx, GROUND_Y-62);
+      ctx.textAlign='left';
+      break;
+    }
+    case 'prize': {
+      ctx.fillStyle='#3a3a3a'; ctx.beginPath(); ctx.ellipse(dx,GROUND_Y-8,16,5,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#4a4a4a'; ctx.fillRect(dx-10,GROUND_Y-32,20,24);
+      ctx.strokeStyle='#c9a641'; ctx.setLineDash([2,2]); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(dx,GROUND_Y-40,7,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#e9e2d0'; ctx.font='6px system-ui'; ctx.textAlign='center';
+      ctx.fillText('RESERVED', dx, GROUND_Y-20);
+      ctx.textAlign='left';
+      break;
+    }
+    case 'deals': {
+      ctx.save(); ctx.translate(dx,GROUND_Y-56); ctx.rotate(-0.08);
+      ctx.fillStyle='#b91824'; ctx.fillRect(-22,-6,44,10);
+      ctx.fillStyle='#fff'; ctx.font='bold 5px system-ui'; ctx.textAlign='center';
+      ctx.fillText('BEST DEALS EVER', 0, 2);
+      ctx.restore(); ctx.textAlign='left';
+      ctx.fillStyle='#1a2a1a'; ctx.fillRect(dx-17,GROUND_Y-42,34,26);
+      ctx.strokeStyle='#8a6a1e'; ctx.lineWidth=2; ctx.strokeRect(dx-17,GROUND_Y-42,34,26);
+      ctx.fillStyle='#e9e2d0'; ctx.font='7px monospace'; ctx.textAlign='center';
+      ctx.fillText('-$300B', dx, GROUND_Y-26);
+      ctx.textAlign='left';
+      break;
+    }
+    case 'tariffs': {
+      for (let i=0;i<3;i++){
+        const x=dx-18+i*16, y=GROUND_Y-44+((i%2)?8:0);
+        ctx.fillStyle='#e9e2d0'; ctx.beginPath();
+        ctx.moveTo(x,y); ctx.lineTo(x+10,y); ctx.lineTo(x+12,y+6); ctx.lineTo(x+10,y+12); ctx.lineTo(x,y+12); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle='#b91824'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(x+1,y+10); ctx.lineTo(x+9,y+2); ctx.stroke();
+      }
+      break;
+    }
   }
 }
-function drawTowerElevator(){
-  const dx=TW.button.x+40;
+function drawTowerFloorPlaque(dx){
+  const idx=TW.floor-1;
+  const floors=DATA.TOWER.FLOORS;
+  if (idx<0 || idx>=floors.length) return;
+  const openAmt=towerDoorOpenAmount();
+  if (openAmt<=0.05) return;
+  const f=floors[idx];
+  const px=dx-210, py=GROUND_Y-150, pw=150, ph=56;
+  ctx.save();
+  ctx.globalAlpha=clamp(openAmt*1.6,0,1);
+  ctx.fillStyle='#1c1c1c'; roundRectPath(ctx,px,py,pw,ph,6); ctx.fill();
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=2; roundRectPath(ctx,px,py,pw,ph,6); ctx.stroke();
+  ctx.fillStyle='#e9c766'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+  ctx.fillText(f.title, px+pw/2, py+18);
+  ctx.fillStyle='#e9e2d0'; ctx.font='8px system-ui';
+  f.caption.split('\n').forEach((line,i)=>ctx.fillText(line, px+pw/2, py+34+i*12));
+  ctx.textAlign='left';
+  ctx.restore();
+}
+function drawTowerElevatorBack(dx){
+  const inPenthouse=TW.floor>=TOWER_PENTHOUSE_FLOOR;
   ctx.fillStyle='#c9a641'; ctx.fillRect(dx-40,GROUND_Y-170,80,170);
-  ctx.fillStyle='#3a2f14'; ctx.fillRect(dx-32,GROUND_Y-160,28,160);
-  ctx.fillStyle='#2a2210'; ctx.fillRect(dx+4,GROUND_Y-160,28,160);
-  ctx.fillStyle='#111'; ctx.fillRect(dx-3,GROUND_Y-160,6,160);
+  const voidX=dx-30, voidY=GROUND_Y-160, voidW=60, voidH=160;
+  if (inPenthouse){
+    const g=ctx.createRadialGradient(dx,GROUND_Y-90,4,dx,GROUND_Y-90,50);
+    g.addColorStop(0,'#fff3c4'); g.addColorStop(1,'#caa53d');
+    ctx.fillStyle=g; ctx.fillRect(voidX,voidY,voidW,voidH);
+  } else {
+    ctx.fillStyle='#241c0c'; ctx.fillRect(voidX,voidY,voidW,voidH);
+    const openAmt=towerDoorOpenAmount();
+    if (TW.floor>=1 && TW.floor<TOWER_PENTHOUSE_FLOOR && openAmt>0.15){
+      ctx.save(); ctx.beginPath(); ctx.rect(voidX,voidY,voidW,voidH); ctx.clip();
+      ctx.globalAlpha=clamp((openAmt-0.15)/0.5,0,1);
+      drawTowerFloorVignette(DATA.TOWER.FLOORS[TW.floor-1].kind, dx);
+      ctx.restore();
+    }
+  }
   ctx.fillStyle='#111'; ctx.fillRect(dx-30,GROUND_Y-206,60,28);
   ctx.strokeStyle='#c9a641'; ctx.lineWidth=2; ctx.strokeRect(dx-30,GROUND_Y-206,60,28);
   ctx.fillStyle='#ff3b30'; ctx.font='bold 18px monospace'; ctx.textAlign='center';
-  ctx.fillText(String(TW.floor), dx, GROUND_Y-186);
+  ctx.fillText(inPenthouse?'PH':String(TW.floor), dx, GROUND_Y-186);
   ctx.textAlign='left';
   const pressed=now()<TW.button.pressedUntil;
   const by=TW.button.y-70;
@@ -6516,24 +6643,86 @@ function drawTowerElevator(){
   ctx.fillStyle='#3a2a00'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
   ctx.fillText('▲', TW.button.x, by+4);
   ctx.textAlign='left';
+  if (!inPenthouse) drawTowerFloorPlaque(dx);
+}
+// Drawn AFTER Trump so the sliding panels visually swallow him on close
+// and reveal him on open — order matters here, unlike most of the scene.
+function drawTowerElevatorDoors(dx){
+  const voidX=dx-30, voidY=GROUND_Y-160, voidW=60, voidH=160;
+  const openAmt=towerDoorOpenAmount();
+  const shift=30*openAmt;
+  ctx.save(); ctx.beginPath(); ctx.rect(voidX,voidY,voidW,voidH); ctx.clip();
+  ctx.fillStyle='#3a2f14'; ctx.fillRect(dx-30-shift,voidY,30,voidH);
+  ctx.fillStyle='#2a2210'; ctx.fillRect(dx+shift,voidY,30,voidH);
+  if (openAmt<0.9){
+    ctx.fillStyle='#111'; ctx.fillRect(dx-2,voidY,4,voidH);
+  }
+  ctx.restore();
+}
+function drawPenthouseBackdrop(){
+  const grad=ctx.createLinearGradient(0,0,0,GROUND_Y);
+  grad.addColorStop(0,'#2a1a3a'); grad.addColorStop(0.55,'#7a3a4a'); grad.addColorStop(1,'#c98a3a');
+  ctx.fillStyle=grad; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,GROUND_Y);
+  const winX=CAM.x+40, winW=CAM.viewW-80, winY=40, winH=GROUND_Y-90;
+  if (winW>20){
+    ctx.fillStyle='#ffdca0'; ctx.fillRect(winX,winY,winW,winH);
+    ctx.save(); ctx.beginPath(); ctx.rect(winX,winY,winW,winH); ctx.clip();
+    ctx.fillStyle='#ffb366'; ctx.beginPath(); ctx.arc(winX+winW*0.7, winY+winH*0.35, 46,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#3a2a4a';
+    let bx=winX-20;
+    while (bx<winX+winW+20){
+      const bw=30+((bx*7)%40), bh=60+((bx*13)%120);
+      ctx.fillRect(bx, winY+winH-bh, bw, bh);
+      bx+=bw+8;
+    }
+    ctx.restore();
+    ctx.strokeStyle='#c9a641'; ctx.lineWidth=6; ctx.strokeRect(winX,winY,winW,winH);
+    ctx.strokeStyle='#c9a641'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(winX+winW/2,winY); ctx.lineTo(winX+winW/2,winY+winH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(winX,winY+winH/2); ctx.lineTo(winX+winW,winY+winH/2); ctx.stroke();
+  }
+  ctx.fillStyle='#5a1420'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
+  ctx.strokeStyle='rgba(255,215,128,0.15)'; ctx.lineWidth=1;
+  for (let x=Math.floor((CAM.x-40)/70)*70; x<CAM.x+CAM.viewW+40; x+=70){
+    ctx.beginPath(); ctx.moveTo(x,GROUND_Y); ctx.lineTo(x,GROUND_Y+CFG.FLOOR_H); ctx.stroke();
+  }
+}
+function drawPenthouseCredits(){
+  const px=220, py=GROUND_Y-150, pw=190, ph=70;
+  ctx.save();
+  ctx.fillStyle='#1c1c1c'; roundRectPath(ctx,px,py,pw,ph,8); ctx.fill();
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=2; roundRectPath(ctx,px,py,pw,ph,8); ctx.stroke();
+  ctx.fillStyle='#e9c766'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
+  ctx.fillText(DATA.TOWER.PENTHOUSE.title, px+pw/2, py+22);
+  ctx.fillStyle='#e9e2d0'; ctx.font='9px system-ui';
+  ctx.fillText(DATA.TOWER.PENTHOUSE.creditsLine1, px+pw/2, py+40);
+  ctx.fillText(DATA.TOWER.PENTHOUSE.creditsLine2, px+pw/2, py+54);
+  ctx.textAlign='left';
+  ctx.restore();
 }
 function drawTower(){
   beginWorld();
-  const grad=ctx.createLinearGradient(0,0,0,GROUND_Y);
-  grad.addColorStop(0,'#4a3a12'); grad.addColorStop(1,'#8a6a1e');
-  ctx.fillStyle=grad; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,GROUND_Y);
-  ctx.strokeStyle='rgba(255,223,128,0.25)'; ctx.lineWidth=2;
-  for (let x=Math.floor((CAM.x-40)/120)*120; x<CAM.x+CAM.viewW+40; x+=120){
-    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke();
+  const dx=towerCarX();
+  const inPenthouse=TW.floor>=TOWER_PENTHOUSE_FLOOR;
+  if (inPenthouse) drawPenthouseBackdrop(); else {
+    const grad=ctx.createLinearGradient(0,0,0,GROUND_Y);
+    grad.addColorStop(0,'#4a3a12'); grad.addColorStop(1,'#8a6a1e');
+    ctx.fillStyle=grad; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,GROUND_Y);
+    ctx.strokeStyle='rgba(255,223,128,0.25)'; ctx.lineWidth=2;
+    for (let x=Math.floor((CAM.x-40)/120)*120; x<CAM.x+CAM.viewW+40; x+=120){
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke();
+    }
+    ctx.fillStyle='#e9e2d0'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
+    ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1;
+    for (let x=Math.floor((CAM.x-40)/80)*80; x<CAM.x+CAM.viewW+40; x+=80){
+      ctx.beginPath(); ctx.moveTo(x,GROUND_Y); ctx.lineTo(x,GROUND_Y+CFG.FLOOR_H); ctx.stroke();
+    }
   }
-  ctx.fillStyle='#e9e2d0'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
-  ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1;
-  for (let x=Math.floor((CAM.x-40)/80)*80; x<CAM.x+CAM.viewW+40; x+=80){
-    ctx.beginPath(); ctx.moveTo(x,GROUND_Y); ctx.lineTo(x,GROUND_Y+CFG.FLOOR_H); ctx.stroke();
-  }
-  drawTowerElevator();
+  drawTowerElevatorBack(dx);
   if (!entryHeli.active) drawHeli(TW.heli.x,TW.heli.y,0.35);
   drawTrump(player.x,player.y,player.facing);
+  drawTowerElevatorDoors(dx);
+  if (inPenthouse) drawPenthouseCredits();
   drawFx();
   if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
   const placed=[];
@@ -6551,6 +6740,7 @@ function nearestTower(){
   return bd<CFG.INTERACT_DIST*1.3 ? best : null;
 }
 function interactTower(){
+  if (walkTween || TW.ride) return;
   const o=nearestTower(); if (!o) return;
   if (o.type==='heli'){ openHeliLevelSelect(SCENE_TOWER); }
   else if (o.type==='button'){ pressTowerButton(); }
@@ -6565,12 +6755,17 @@ registerLevel({
   interact:interactTower,
   nearest:nearestTower,
   chip(){
+    if (walkTween || TW.ride) return null;
     const o=nearestTower(); if (!o) return null;
     return o.type==='heli'?'🚁':'E';
   },
   tapTargets(){ return [TW.heli,TW.button].map(o=>({obj:o})); },
-  onRestart(){ TW.floor=0; },
-  snapshot(){ return { tower:{ floor:TW.floor, medalAwarded:!!GS.medals.tower } }; }
+  onRestart(){ TW.floor=0; TW.ride=null; walkTween=null; },
+  snapshot(){
+    return { tower:{ floor:TW.floor, medalAwarded:!!GS.medals.tower,
+      penthouse:TW.floor>=TOWER_PENTHOUSE_FLOOR, doorOpen:+towerDoorOpenAmount().toFixed(2),
+      riding:!!(walkTween||TW.ride) } };
+  }
 });
 
 /* ============================================================

@@ -204,9 +204,48 @@ Kristians feedback efter gennemspil af desktop-versionen:
 - ✅ Verificeret: skærmbilleder i ro/tryk/jubel/udløb på desktop 1600×900 +
   mobil 390×844, begge regressionssuiter grønne, 0 pageerrors
 
+## Trump Tower finesse-pass — 2026-07-09 ✅ (Sonnet)
+
+Kristian testede tower-banen og pegede på tre ting: Trump gik ikke ind i
+elevatoren, elevatoren "kørte" ikke (kun tallet skiftede), og banen manglede
+et formål ud over selve tallet. Brainstormet frem til: 5 tryk → 4 satiriske
+etage-stop, 5. tryk → penthouse med baggrundsskift + credits.
+
+- ✅ **Rigtig elevatortur:** Trump går ind i kabinen (genbruger den
+  eksisterende `startWalkTo`-tween som en nul-distance "hold", så turen også
+  blokerer bevægelse uden at røre den delte input-gate) → dørene lukker
+  (350 ms) → rejse-beat med ding + let ryst (650 ms) → dørene åbner (350 ms)
+  → Trump træder ud af kabinen igen, så etage-indholdet ikke gemmer sig bag
+  ham (fundet og rettet under egen Playwright-test — første version havde
+  ham stående midt i synet)
+- ✅ **4 satiriske etager** (Kristians retning: kommentér virkelige
+  begivenheder), hver med et indgraveret væg-skilt + en lille scene bag
+  døren: BIBLE FLOOR (usolgte $59.99-bibler), PRIZE FLOOR (tom sokkel,
+  "RESERVED FOR THE NOBEL PEACE PRIZE"), BEST DEALS FLOOR (skæv
+  "BEST DEALS EVER"-banner over "-$300B"-tavle, Iran-aftalen), TARIFF FLOOR
+  (overstregede prismærker, højere priser under)
+- ✅ **5. tryk = penthouse:** hele baggrunden skifter til en
+  solnedgangs-palet med panoramavindue + skyline-silhuet, gulvet bliver rødt
+  tæppe, display viser "PH". Konfetti + `tower`-medalje udløses her; en
+  guldindrammet plakette (samme stil som Oval Office-biblioteksskiltet)
+  viser "THE PENTHOUSE" + credits ("BUILT BY KRISTIAN JENSEN · POLITIKEN" /
+  "CODED WITH CLAUDE & CODEX, 2026") — tekst som en del af grafikken, ikke
+  et UI-overlay, efter Kristians ønske
+- ✅ Efter penthouse fortsætter tælleren uendeligt (display viser "PH"),
+  replikkerne roterer, ingen game over — som oprindeligt spec'et
+- ✅ Playwright-verificeret: fuld tur gennem alle 5 stop + endnu et tryk
+  bagefter, desktop + mobil-viewport, 0 pageerrors, skærmbilleder af hvert
+  etage-skilt kigget igennem. Stress-testet: 20× hurtige E-tryk midt i én
+  tur springer INGEN etager over (nul-distance-hold-guarden holder), og
+  Shift+R midt i en tur nulstiller rent uden hængende callbacks
+- ✅ Fuld regression (Grønland → Oval → Tower → Grønland via heli begge
+  veje) kørt igen efter ændringerne — 0 fejl
+- Committet, **ikke deployet** — afventer Kristians OK
+
 ## Næste skridt
 
-- Ingen åbne spor. Evt. fremtidige baner bygges af Sonnet/Codex efter
+- Deploy af tower-finesse-passet, når Kristian har set det
+- Ellers ingen åbne spor. Evt. fremtidige baner bygges af Sonnet/Codex efter
   `LEVEL_TEMPLATE.md` (accept-testet 2026-07-08)
 
 ## Trin 9 udført — 2026-07-08 ✅
