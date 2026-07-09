@@ -179,6 +179,31 @@ Desktop-polish oven på A1-stagen — ingen ny logik, kun iscenesættelse:
   screenshots af alle tre baner) + fuld A1-regression (3 viewports) +
   Epstein-cursortjek — **alle grønne, 0 pageerrors**. Mobil upåvirket
 
+## Oval Office visuel oprydning (Kristians 5 punkter) — 2026-07-09 ✅ (Fable)
+
+Kristians feedback efter gennemspil af desktop-versionen:
+
+1. ✅ **Pokalhylder synlige:** to hylder på væggen udenfor vinduerne
+   (EAST WING ANNEX til venstre, THE TRUMP PRESIDENTIAL LIBRARY til
+   højre). NB: Oval-kameraet er FAST (world-x 158–1118 synligt) — hylder
+   skal ligge inde i det bånd. Mobil-kompakt beholder én hylde under TV'et
+2. ✅ **Knapper står PÅ bordet:** begge knapper har base på bordpladen
+   (GROUND_Y-14) med en sokkel — ingen svævende knapper
+3. ✅ **Rektangulære knapper + tryk-animation:** ellipse/kuppel-look
+   erstattet af firkantede caps; ved tryk synker cappen 6-7 px ned i
+   soklen (160 ms). Glow-hjælpen på POLICY er nu en rekt-outline
+4. ✅ **Gule artefakter væk:** hazard-striberne under den røde knap
+   fjernet; rød pulserende farve beholdt
+5. ✅ **Yes-mænd løber ind fra døren (Kristians valg):** popup-systemet i
+   skærm-koordinater (svævende + brune kasser) er erstattet af løbere i
+   VERDENS-koordinater: de spurter ind fra døren på gulvet, jubler ved
+   bordet (forskudte talebobler, ingen overlap) og spurter ud igen.
+   Mobil-kompakt: kameraet viser kun bordet, så dér myldrer de ind FORAN
+   bordet på forgrundstæppet i stedet. Døde funktioner (drawYesGroup,
+   drawOvalReactionBase) slettet
+- ✅ Verificeret: skærmbilleder i ro/tryk/jubel/udløb på desktop 1600×900 +
+  mobil 390×844, begge regressionssuiter grønne, 0 pageerrors
+
 ## Næste skridt
 
 - Ingen åbne spor. Evt. fremtidige baner bygges af Sonnet/Codex efter

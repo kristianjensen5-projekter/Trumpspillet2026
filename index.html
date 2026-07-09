@@ -449,7 +449,8 @@
       "policyTap": "Perfect policy.",
       "buttonHint": "Stand by a button first.",
       "nukeLine": "Who wrote this label?",
-      "libraryLabel": "THE TRUMP PRESIDENTIAL LIBRARY"
+      "libraryLabel": "THE TRUMP PRESIDENTIAL LIBRARY",
+      "libraryLabel2": "EAST WING ANNEX"
     },
     "PRAISE": [
       "Genius move, sir!",
@@ -3831,9 +3832,9 @@ function ovalApplyLayout(){
   OV.door.x=compact?300:140;
   OV.heli.x=OV.landingX; OV.heli.y=GROUND_Y-18;
   OV.policy.x=OV.deskX+(compact?72:138);
-  OV.policy.y=GROUND_Y-(compact?26:28);
+  OV.policy.y=GROUND_Y-14;   // desk top surface — buttons stand ON the desk
   OV.surprise.x=OV.deskX+(compact?224:306);
-  OV.surprise.y=GROUND_Y-(compact?14:14);
+  OV.surprise.y=GROUND_Y-14;
   OV.yes.x=OV.deskX+OV.deskW+90;
   OV.tv={
     w:compact?218:282,
@@ -3920,11 +3921,12 @@ function ovalChoir(happy){
     vance: happy?['YES, SIR!','BRILLIANT!']:['UH OH!']
   };
   const t=now();
+  // runners: they sprint in from the door, cheer by the desk, sprint out
   OV.yes.reactions=(OV.yes.members||[]).map((m,i)=>({
     ...m,
     x:0,
-    start:t+i*90,
-    dur:1500,
+    start:t+i*240,
+    dur:3100,
     slot:i,
     phrase:pick(phrases[m.kind]||['YES!'])
   }));
@@ -4033,17 +4035,6 @@ function drawOvalMedalDrop(){
 }
 
 /* ---- Oval drawing ---- */
-function drawYesGroup(x,y){
-  const cheering = OV.yes.speakingUntil>now();
-  ctx.save(); ctx.translate(x,y);
-  (OV.yes.members||[]).forEach((member,i)=>drawYesArchetype(member,cheering,i));
-  if (cheering){
-    ctx.fillStyle='#111'; ctx.font='900 18px system-ui'; ctx.textAlign='center';
-    ctx.fillText('YES! YES! YES!',66,-152);
-    ctx.textAlign='left';
-  }
-  ctx.restore();
-}
 function drawYesArchetype(member,cheering,i){
   const s=1.52, bounce=cheering?Math.sin(now()/110+i)*1.5:Math.sin(now()/950+i)*0.5;
   const armLift=cheering?8+Math.sin(now()/90+i)*4:0;
@@ -4114,64 +4105,54 @@ function drawOvalReactionText(text,x,y){
   ctx.font='900 15px system-ui';
   ctx.textAlign='center'; ctx.textBaseline='middle';
   const w=ctx.measureText(text).width+18, h=24;
+  x=clamp(x, CAM.x+w/2+4, CAM.x+CAM.viewW-w/2-4); // keep bubble in view
   ctx.fillStyle='rgba(255,255,255,0.96)';
   ctx.strokeStyle='#111'; ctx.lineWidth=2;
   roundRectPath(ctx,x-w/2,y-h/2,w,h,7); ctx.fill(); ctx.stroke();
   ctx.fillStyle='#111'; ctx.fillText(text,x,y+1);
   ctx.restore();
 }
-function drawOvalReactionBase(edge){
-  ctx.save();
-  ctx.fillStyle='rgba(0,0,0,.28)';
-  ctx.beginPath(); ctx.ellipse(0,12,48,10,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#5f371b';
-  roundRectPath(ctx,-48,-16,96,34,7); ctx.fill();
-  ctx.fillStyle='#8a5a2a'; ctx.fillRect(-48,-19,96,8);
-  ctx.fillStyle='#3b2414'; ctx.fillRect(-38,8,76,6);
-  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.5;
-  roundRectPath(ctx,-48,-16,96,34,7); ctx.stroke();
-  ctx.fillStyle='#ffd54f'; ctx.font='900 7px system-ui'; ctx.textAlign='center';
-  ctx.fillText(edge==='bottom'?'MAGA FEED':'LIVE REACTION',0,2);
-  ctx.restore();
-}
-function drawOvalYesPopups(){
+function drawOvalYesRunners(){
+  // world-space: they run in ON THE FLOOR, cheer, run out again.
+  // Wide: in from the door, cheering left of the desk.
+  // Compact (mobile): the fixed camera only shows the desk, so they mob
+  // the desk FRONT on the foreground carpet instead.
   const reactions=OV.yes.reactions||[];
   if (!reactions.length) return;
-  beginScreen();
   const t=now();
+  const IN=650, OUT=650;
+  const compact=OV.compact;
+  const startX=compact ? CAM.x-26 : OV.door.x+6;
+  const baseY=compact ? GROUND_Y+42 : GROUND_Y;
+  const figScale=compact ? .72 : .9;
   reactions.forEach((r,i)=>{
     const age=t-r.start;
     if (age<0 || age>r.dur) return;
-    const enter=1-Math.pow(1-clamp(age/260,0,1),3);
-    const fade=1-clamp((age-(r.dur-280))/280,0,1);
-    const alpha=Math.min(1,age/140)*fade;
-    const compact=IS_TOUCH && VW<720;
-    const groundY=compact?Math.max(260,VH-118):Math.max(260,VH-112);
-    const slots=compact
-      ? [
-          {edge:'left',x:62,y:groundY,scale:.78},
-          {edge:'right',x:VW-62,y:groundY,scale:.76},
-          {edge:'bottom',x:VW*.52,y:groundY+22,scale:.68}
-        ]
-      : [
-          {edge:'left',x:128,y:groundY,scale:.95},
-          {edge:'right',x:VW-130,y:groundY,scale:.95},
-          {edge:'bottom',x:VW*.52,y:groundY+20,scale:.86}
-        ];
-    const slot=slots[r.slot%slots.length];
-    let x=slot.x, y=slot.y;
-    if (slot.edge==='left') x=-85+(slot.x+85)*enter;
-    if (slot.edge==='right') x=VW+85-(VW+85-slot.x)*enter;
-    if (slot.edge==='bottom') y=VH+92-(VH+92-slot.y)*enter;
-    y+=Math.sin(age/85+i)*3;
+    const cheerEnd=r.dur-OUT;
+    const stopX=compact
+      ? CAM.x+44+r.slot*76
+      : OV.deskX-48-r.slot*56;
+    let x, running=true;
+    if (age<IN){
+      const k=1-Math.pow(1-age/IN,3);
+      x=startX+(stopX-startX)*k;
+    } else if (age<cheerEnd){
+      x=stopX; running=false;
+    } else {
+      const k=Math.pow((age-cheerEnd)/OUT,2);
+      x=stopX+(startX-stopX)*k;
+    }
+    const hop=running?Math.abs(Math.sin(age/70))*5:0;
+    const fade=age>r.dur-140 ? (r.dur-age)/140 : Math.min(1,age/120);
     ctx.save();
-    ctx.globalAlpha=alpha;
-    ctx.translate(x,y);
-    ctx.scale(slot.scale,slot.scale);
-    drawYesArchetype({...r,x:0},true,i);
-    drawOvalReactionBase(slot.edge);
-    drawOvalReactionText(r.phrase||'YES!',0,-158);
+    ctx.globalAlpha=fade;
+    ctx.translate(x,baseY-hop);
+    ctx.scale(figScale,figScale);
+    drawYesArchetype({...r,x:0},!running,i);
     ctx.restore();
+    // stagger bubble heights per slot so three cheers never overlap
+    if (!running) drawOvalReactionText(r.phrase||'YES!',x,
+      baseY-(compact?118:152)-r.slot*(compact?26:30));
   });
   ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.globalAlpha=1;
 }
@@ -4419,38 +4400,35 @@ function drawOvalDesk(){
   ctx.moveTo(deskX+deskW*0.66,y-8); ctx.lineTo(deskX+deskW*0.66,y+10);
   ctx.stroke();
   ctx.fillStyle='#d4af37'; ctx.fillRect(deskX+deskW*0.33-4,y+1,8,4); ctx.fillRect(deskX+deskW*0.66-4,y+1,8,4);
-  const topY=y-44;
   drawOvalPolicyButton(OV.policy.x,OV.policy.y,OV.policy.pressed);
-  drawOvalRedButton(OV.surprise.x,topY,OV.surprise.pressed);
+  drawOvalRedButton(OV.surprise.x,OV.surprise.y,OV.surprise.pressed);
 }
+/* Rectangular buttons standing ON the desk (origin = desk top surface).
+   Pressed state: the cap visibly sinks into its plinth. */
 function drawOvalPolicyButton(x,y,pressed){
   ctx.save();
-  ctx.translate(x,y+(pressed?3:0));
+  ctx.translate(x,y);
   const scale=OV.compact ? .86 : 1;
   ctx.scale(scale,scale);
+  const d=pressed?6:0;
   // gentle come-press-me glow until the first policy (invisible assistance)
   if (!(OV.d && OV.d.policyCount)){
     const gp=0.5+0.5*Math.sin(now()/300);
-    ctx.save();
     ctx.strokeStyle=`rgba(255,213,79,${0.25+0.45*gp})`;
     ctx.lineWidth=3;
-    ctx.beginPath(); ctx.ellipse(0,-7,29+gp*3,18+gp*2,0,0,Math.PI*2); ctx.stroke();
-    ctx.restore();
+    roundRectPath(ctx,-31-gp*3,-33-gp*3,62+gp*6,33+gp*6,5); ctx.stroke();
   }
-  ctx.fillStyle='#151515';
-  roundRectPath(ctx,-31,-8,62,16,8); ctx.fill();
-  ctx.fillStyle='#4a4038';
-  roundRectPath(ctx,-26,-4,52,12,6); ctx.fill();
-  ctx.fillStyle='#050505';
-  ctx.beginPath(); ctx.ellipse(0,-7,23,14,0,0,Math.PI*2); ctx.fill();
-  ctx.strokeStyle='#2f2f2f'; ctx.lineWidth=3;
-  ctx.beginPath(); ctx.ellipse(0,-7,23,14,0,0,Math.PI*2); ctx.stroke();
-  ctx.fillStyle='rgba(255,255,255,.18)';
-  ctx.beginPath(); ctx.ellipse(-7,-13,11,4,0,0,Math.PI*2); ctx.fill();
+  // plinth on the desk
+  ctx.fillStyle='#3b332c'; ctx.fillRect(-30,-7,60,7);
+  ctx.fillStyle='#241f1a'; ctx.fillRect(-30,-3,60,3);
+  // black cap
+  ctx.fillStyle='#0a0a0a'; ctx.fillRect(-23,-29+d,46,22-d);
+  ctx.fillStyle='rgba(255,255,255,.16)'; ctx.fillRect(-23,-29+d,46,4);
+  ctx.fillStyle='#000'; ctx.fillRect(-23,-11,46,4);
   ctx.fillStyle='#fff'; ctx.font='900 9px system-ui'; ctx.textAlign='center';
-  ctx.fillText('POLICY',0,33);
+  ctx.fillText('POLICY',0,19);
   ctx.fillStyle='#111'; ctx.font='bold 7px system-ui';
-  ctx.fillText('RANDOM',0,44);
+  ctx.fillText('RANDOM',0,30);
   ctx.textAlign='left';
   ctx.restore();
 }
@@ -4458,25 +4436,18 @@ function drawOvalRedButton(sx,sy,pressed){
   ctx.save();
   const scale=OV.compact ? .86 : 1;
   ctx.translate(sx,sy); ctx.scale(scale,scale);
-  ctx.fillStyle='#202020';
-  roundRectPath(ctx,-42,-8,84,18,8); ctx.fill();
-  ctx.fillStyle='#f4d03f';
-  for (let s=0;s<7;s++) ctx.fillRect(-37+s*12,-6,6,12);
-  ctx.fillStyle='#555';
-  ctx.beginPath(); ctx.ellipse(0,-9,36,18,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#9ca3af';
-  ctx.beginPath(); ctx.ellipse(0,-12,31,15,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#6b7280';
-  ctx.beginPath(); ctx.ellipse(0,-6,31,12,0,0,Math.PI*2); ctx.fill();
+  const d=pressed?7:0;
   const pulse=pressed?1:(0.86+0.14*Math.sin(now()/200));
-  ctx.fillStyle='#7f0000';
-  ctx.beginPath(); ctx.arc(0,-15+(pressed?4:0),24,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle=pressed?'#b00000':`rgb(${Math.floor(218*pulse)},${Math.floor(24*pulse)},${Math.floor(30*pulse)})`;
-  ctx.beginPath(); ctx.arc(0,-19+(pressed?4:0),20,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(255,175,175,0.45)';
-  ctx.beginPath(); ctx.arc(-7,-27+(pressed?4:0),8,0,Math.PI*2); ctx.fill();
+  // dark metal plinth on the desk
+  ctx.fillStyle='#2e2e2e'; ctx.fillRect(-38,-8,76,8);
+  ctx.fillStyle='#151515'; ctx.fillRect(-38,-3,76,3);
+  // red cap (pulsing)
+  ctx.fillStyle='#7f0000'; ctx.fillRect(-30,-15,60,7);
+  ctx.fillStyle=`rgb(${Math.floor(218*pulse)},${Math.floor(24*pulse)},${Math.floor(30*pulse)})`;
+  ctx.fillRect(-30,-40+d,60,27-d);
+  ctx.fillStyle='rgba(255,175,175,0.45)'; ctx.fillRect(-30,-40+d,60,5);
   ctx.fillStyle='#ffeb3b'; ctx.font='bold 8px system-ui'; ctx.textAlign='center';
-  ctx.fillText('DO NOT PRESS',0,18);
+  ctx.fillText('DO NOT PRESS',0,16);
   ctx.restore();
   ctx.textAlign='left';
 }
@@ -4520,6 +4491,26 @@ function drawOvalArtifact(x,y,item,scale=1){
   }
   ctx.restore();
 }
+function drawOvalShelf(shelfX,shelfY,shelfW,items,plaque,itemScale,plaqueFont){
+  ctx.save();
+  ctx.fillStyle='rgba(150,118,70,.15)';
+  roundRectPath(ctx,shelfX-8,shelfY-48,shelfW+16,58,8); ctx.fill();
+  ctx.fillStyle='#d9d2c4'; ctx.fillRect(shelfX,shelfY,shelfW,8);
+  ctx.fillStyle='#c2a26a'; ctx.fillRect(shelfX,shelfY+8,shelfW,4);
+  items.forEach((item,i)=>{
+    const x=shelfX+shelfW/(items.length+1)*(i+1);
+    drawOvalArtifact(x,shelfY-12,item,itemScale);
+  });
+  // one plaque beats eight colliding labels
+  ctx.font=`900 ${plaqueFont}px system-ui`; ctx.textAlign='center';
+  const pw2=ctx.measureText(plaque).width+16;
+  ctx.fillStyle='#8a6b2f';
+  roundRectPath(ctx,shelfX+shelfW/2-pw2/2,shelfY+14,pw2,13,4); ctx.fill();
+  ctx.fillStyle='#f6e8c8';
+  ctx.fillText(plaque,shelfX+shelfW/2,shelfY+23.5);
+  ctx.textAlign='left';
+  ctx.restore();
+}
 function drawOvalArtifactWall(){
   const compact=OV.compact;
   const loot=(OV.shelfLoot||[]).map(v=>({kind:'statue',variant:v,label:'KREMLIN'}));
@@ -4529,29 +4520,25 @@ function drawOvalArtifactWall(){
     {kind:'sharpie',label:'SHARPIE'},
     {kind:'coke',label:'DIET COKE'}
   ];
-  const items=(compact ? base.slice(0,3) : base).concat(loot).slice(0,compact?6:8);
-  const shelfW=compact?232:354;
-  const shelfX=OV.tv.cx-shelfW/2;
-  const shelfY=OV.tv.cy+OV.tv.h/2+(compact?26:32);
-  ctx.save();
-  ctx.fillStyle='rgba(150,118,70,.15)';
-  roundRectPath(ctx,shelfX-8,shelfY-48,shelfW+16,58,8); ctx.fill();
-  ctx.fillStyle='#d9d2c4'; ctx.fillRect(shelfX,shelfY,shelfW,8);
-  ctx.fillStyle='#c2a26a'; ctx.fillRect(shelfX,shelfY+8,shelfW,4);
-  items.forEach((item,i)=>{
-    const x=shelfX+shelfW/(items.length+1)*(i+1);
-    drawOvalArtifact(x,shelfY-12,item,compact ? .82 : .92);
-  });
-  // one plaque beats eight colliding labels
-  ctx.font=`900 ${compact?7:8}px system-ui`; ctx.textAlign='center';
-  const plaque=(DATA.OVAL.LINES.libraryLabel||'THE TRUMP PRESIDENTIAL LIBRARY');
-  const pw2=ctx.measureText(plaque).width+16;
-  ctx.fillStyle='#8a6b2f';
-  roundRectPath(ctx,shelfX+shelfW/2-pw2/2,shelfY+14,pw2,13,4); ctx.fill();
-  ctx.fillStyle='#f6e8c8';
-  ctx.fillText(plaque,shelfX+shelfW/2,shelfY+23.5);
-  ctx.textAlign='left';
-  ctx.restore();
+  const L=DATA.OVAL.LINES;
+  if (compact){
+    // narrow portrait: no windows -> one shelf under the TV, as before
+    const items=base.slice(0,3).concat(loot).slice(0,6);
+    const shelfW=232, shelfX=OV.tv.cx-shelfW/2;
+    const shelfY=OV.tv.cy+OV.tv.h/2+26;
+    drawOvalShelf(shelfX,shelfY,shelfW,items,
+      L.libraryLabel||'THE TRUMP PRESIDENTIAL LIBRARY',.82,7);
+    return;
+  }
+  // wide: two shelves on the wall OUTSIDE the windows, so the trophies
+  // are never hidden behind the Executive Screen. NB: the Oval camera is
+  // FIXED on the desk (world x 158-1118 visible) — both shelves must
+  // stay fully inside that band, or they get clipped at the edges.
+  const items=base.concat(loot).slice(0,7);
+  drawOvalShelf(162,210,100,items.slice(0,2),
+    L.libraryLabel2||'EAST WING ANNEX',.8,7);
+  drawOvalShelf(962,210,150,items.slice(2),
+    L.libraryLabel||'THE TRUMP PRESIDENTIAL LIBRARY',.8,8);
 }
 function drawOvalBackdrop(){
   // wall
@@ -4609,13 +4596,13 @@ function drawOval(){
   if (!entryHeli.active) drawHeli(OV.heli.x,OV.heli.y,0.35);
   drawTrump(player.x,player.y,player.facing);
   drawOvalDesk();   // desk in front of Trump (he stands behind it)
+  drawOvalYesRunners(); // after the desk: on mobile they mob the desk front
   drawFx();
   if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
   drawOvalMedalDrop();
   const placed=[];
   renderActorBubble(player,placed,'trump');
   endWorld();
-  drawOvalYesPopups();
 }
 /* ================================================================
    10C. KREMLIN SCENE — handshake battle, statue heists, Wagner
