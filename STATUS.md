@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-08
+**Senest opdateret:** 2026-07-09
 
 ---
 
@@ -153,15 +153,36 @@ tilgængelig:
 - Arbejdskopien `desktop-dev.html` + patch-værktøjet er slettet efter
   vellykket overførsel til `index.html`
 
+## Kristians beslutninger — 2026-07-08/09
+
+- ✅ Tower-banen BEHOLDES i spillet (Kristians valg) — deployet
+- ✅ `oval-office-simple-prototype.html` slettet (Kristians valg)
+
+## Spor A2: landskabs-kompositionspas — FÆRDIGT 2026-07-09 ✅ (Fable)
+
+Desktop-polish oven på A1-stagen — ingen ny logik, kun iscenesættelse:
+
+- ✅ **Hover-glow + pointer-cursor:** mus over et interaktivt objekt giver
+  et blødt gyldent glow + `cursor:pointer` (genbruger levels `tapTargets()`
+  — nye levels får det GRATIS). Store baggrundsobjekter (rank>0) glower
+  ikke, jf. glacier-lektien. Slukket under overlays/fight/cutscenes og på
+  touch. I Epstein (hvor ethvert klik er et redaction-forsøg) viser hele
+  scenen pointer-cursor
+- ✅ **Greenland:** fjern fjeldkæde med sne-toppe i horisonten
+  (parallakse 0,35) — udfylder det brede format
+- ✅ **Kreml:** draperier i fuld bredde (også bag Putin), guldgesims
+  langs loftet og lysekrone over bordet
+- ✅ **Oval:** de klassiske høje buede vinduer med marineblå gardiner og
+  guldstænger flankerer TV'et (kun ikke-kompakt visning)
+- ✅ **Golf:** u-roteret + stor bane i landskab var allerede på plads (A1)
+- ✅ Verificeret: A2-visueltest (cursor over mine/POLICY/tom luft,
+  screenshots af alle tre baner) + fuld A1-regression (3 viewports) +
+  Epstein-cursortjek — **alle grønne, 0 pageerrors**. Mobil upåvirket
+
 ## Næste skridt
 
-1. **Kristian beslutter:** skal test-banen "Trump Tower Elevator" blive i
-   spillet eller fjernes før næste deploy? (Den ligger i `index.html` og
-   heli-menuen nu — deploy er bevidst IKKE kørt endnu)
-2. Spor A2: kompositionspas per bane i landskab (bredere kamera, pynte-
-   props, evt. bredere Oval-komposition, hover-glow) — se
-   PLAN_DESKTOP_OG_LEVELSYSTEM.md
-3. `oval-office-simple-prototype.html` ligger stadig utracket — slet/arkivér?
+- Ingen åbne spor. Evt. fremtidige baner bygges af Sonnet/Codex efter
+  `LEVEL_TEMPLATE.md` (accept-testet 2026-07-08)
 
 ## Trin 9 udført — 2026-07-08 ✅
 

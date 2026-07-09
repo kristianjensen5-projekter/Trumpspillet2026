@@ -3430,6 +3430,9 @@ const GL = {
   coins:[], flag:null
 };
 let CLOUDS=[];
+// distant peaks [farX, width, height] — drawn with parallax in drawGreenland
+const ARCTIC_PEAKS=[[-140,320,150],[60,260,110],[240,380,180],[470,300,130],
+  [660,420,200],[900,340,150],[1090,280,120],[1290,360,170],[1500,300,140]];
 let glacierExplosion={active:false,waterLevel:0,explosions:[],iceChunks:[],riseTimer:null};
 let flagDrop=null;      // parachute flag after dynamite-on-Lars
 let glFlagDrop=null;    // small flag dropping onto head after fight win
@@ -4559,6 +4562,27 @@ function drawOvalBackdrop(){
       ctx.beginPath(); ctx.ellipse(x,y,18,8,0,0,Math.PI*2); ctx.fill();
   }
   ctx.restore();
+  // wide-view dressing (Spor A2): the Oval's tall windows flanking the TV
+  if (!OV.compact){
+    for (const wx of [330,890]){
+      ctx.save();
+      ctx.fillStyle='#fff'; ctx.fillRect(wx-46,66,92,190);
+      ctx.beginPath(); ctx.arc(wx,70,46,Math.PI,0); ctx.fill();
+      ctx.fillStyle='#bfe0f2'; ctx.fillRect(wx-38,74,76,174);
+      ctx.beginPath(); ctx.moveTo(wx-38,74); ctx.arc(wx,70,38,Math.PI,0); ctx.fill();
+      // muntins
+      ctx.strokeStyle='#fff'; ctx.lineWidth=4;
+      ctx.beginPath(); ctx.moveTo(wx,36); ctx.lineTo(wx,248); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wx-38,140); ctx.lineTo(wx+38,140); ctx.stroke();
+      // navy drapes with gold tiebacks
+      ctx.fillStyle='#274468';
+      ctx.fillRect(wx-64,28,20,224); ctx.fillRect(wx+44,28,20,224);
+      ctx.fillStyle='#c9a641';
+      ctx.fillRect(wx-66,24,132,8);
+      ctx.fillRect(wx-64,150,20,7); ctx.fillRect(wx+44,150,20,7);
+      ctx.restore();
+    }
+  }
   drawOvalArtifactWall();
   // carpet with seal
   ctx.fillStyle='#d4c6a6'; ctx.fillRect(CAM.x-2,GROUND_Y,CAM.viewW+4,CFG.FLOOR_H+400);
@@ -5050,6 +5074,20 @@ function drawKremlin(){
   ctx.fillStyle='#f2e6e6'; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,CFG.WORLD_H);
   ctx.fillStyle='#b33';
   for (let i=0;i<4;i++){ const dx=300+i*160; ctx.fillRect(dx,80,80,160); }
+  // wide-view dressing (Spor A2): drapes behind Putin's end of the hall,
+  // gold cornice along the ceiling and a chandelier over the table
+  ctx.fillRect(940,80,80,160); ctx.fillRect(1100,80,80,160);
+  ctx.fillStyle='#c9a641'; ctx.fillRect(CAM.x-2,64,CAM.viewW+4,8);
+  ctx.save();
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(600,72); ctx.lineTo(600,120); ctx.stroke();
+  ctx.fillStyle='#c9a641';
+  ctx.beginPath(); ctx.arc(600,132,16,Math.PI,0); ctx.fill();
+  ctx.fillStyle='#ffd54f';
+  for (const cx of [578,600,622]){
+    ctx.beginPath(); ctx.arc(cx,138,5,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
   // Stalin portrait in gold frame
   ctx.fillStyle='#c9a641'; ctx.fillRect(154,84,102,82);
   ctx.fillStyle='#f5efe1'; ctx.fillRect(160,90,90,70);
@@ -6796,6 +6834,7 @@ cvs.addEventListener('pointerdown', e=>{
   try{cvs.setPointerCapture(e.pointerId);}catch(_){}
 });
 cvs.addEventListener('pointermove', e=>{
+  if (e.pointerType!=='touch'){ MOUSE.x=e.clientX-STAGE_X; MOUSE.y=e.clientY-STAGE_Y; MOUSE.on=true; }
   if (scene===SCENE.GOLF){ e.preventDefault(); golfPointerMove(e); return; }
   const p=pointers.get(e.pointerId); if (!p) return;
   p.x=e.clientX-STAGE_X; p.y=e.clientY-STAGE_Y;
@@ -6820,6 +6859,39 @@ cvs.addEventListener('pointercancel', releasePointer);
 cvs.addEventListener('touchstart', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 cvs.addEventListener('touchmove', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 cvs.addEventListener('touchend', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
+
+/* Desktop hover (Spor A2): mus over interaktivt objekt -> glow + pointer.
+   Genbruger levels tapTargets(); rank>0 (store baggrundsobjekter) glower
+   ikke — jf. glacier-lektien i LESSONS.md. */
+const MOUSE={x:0,y:0,on:false};
+cvs.addEventListener('pointerleave', ()=>{ MOUSE.on=false; });
+function hoverTarget(){
+  if (IS_TOUCH || !MOUSE.on || GS.over || anyOverlayActive()) return null;
+  if (entryHeli.active || FightEngine.active || walkTween) return null;
+  const Lv=currentLevel(); if (!Lv || !Lv.tapTargets) return null;
+  const w=screenToWorld(MOUSE.x,MOUSE.y);
+  const hitOf=t=>t.tapHit ? t.tapHit(w.x,w.y) : dist2(w.x,w.y,t.obj.x,t.obj.y-20);
+  let best=null,bd=1e9;
+  for (const t of Lv.tapTargets().filter(t=>!(t.rank>0))){
+    const d=hitOf(t); if (d<bd){ bd=d; best=t.obj; }
+  }
+  return (best && bd<64) ? best : null;
+}
+function drawHoverGlow(){
+  // Epstein: every click is a redaction attempt -> whole stage is a button
+  if (scene===SCENE.EPSTEIN && MOUSE.on && !GS.over){ cvs.style.cursor='pointer'; return; }
+  const h=hoverTarget();
+  cvs.style.cursor = h ? 'pointer' : '';
+  if (!h) return;
+  beginWorld();
+  const t=now()/400, r=34+3*Math.sin(t);
+  const g=ctx.createRadialGradient(h.x,h.y-20,6,h.x,h.y-20,r+12);
+  g.addColorStop(0,'rgba(255,214,80,0.30)');
+  g.addColorStop(1,'rgba(255,214,80,0)');
+  ctx.fillStyle=g;
+  ctx.beginPath(); ctx.arc(h.x,h.y-20,r+12,0,Math.PI*2); ctx.fill();
+  endWorld();
+}
 
 function intentTap(wx,wy){
   const Lv=currentLevel();
@@ -6885,6 +6957,26 @@ function drawGreenland(){
   // clouds
   CLOUDS.forEach(c=>{ ctx.globalAlpha=c.a; ctx.fillStyle='#fff';
     ctx.beginPath(); ctx.ellipse(c.x,c.y,c.w/2,c.h/2,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; });
+  // distant mountain range (parallax 0.35) — fills the horizon on wide views
+  ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle='#bfe2f4';
+  const par=CAM.x*0.65;
+  for (const m of ARCTIC_PEAKS){
+    const mx=m[0]+par, mw=m[1], mh=m[2];
+    ctx.beginPath();
+    ctx.moveTo(mx-mw/2,GROUND_Y);
+    ctx.lineTo(mx,GROUND_Y-mh);
+    ctx.lineTo(mx+mw/2,GROUND_Y);
+    ctx.closePath(); ctx.fill();
+    // snow cap
+    ctx.fillStyle='#eef9ff';
+    ctx.beginPath();
+    ctx.moveTo(mx-mw*0.12,GROUND_Y-mh+mh*0.24);
+    ctx.lineTo(mx,GROUND_Y-mh);
+    ctx.lineTo(mx+mw*0.12,GROUND_Y-mh+mh*0.24);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#bfe2f4';
+  }
+  ctx.restore();
   // glaciers (background)
   GL.glaciers.forEach(drawGlacier);
   // ground
@@ -7075,6 +7167,7 @@ function step(t){
     /* draw */
     paintStageBackdrop();
     { const Lv=currentLevel(); if (Lv && Lv.draw) Lv.draw(); }
+    if (!IS_TOUCH) drawHoverGlow();
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
     if (choiceOverlay) drawChoiceOverlay();
