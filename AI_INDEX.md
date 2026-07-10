@@ -12,6 +12,9 @@ Formål: Hurtig onboarding for AI. **Læs STATUS.md først.**
 - `LEVEL_TEMPLATE.md` — SÅDAN BYGGES NYE BANER (kontrakt + tjekliste +
   røgtest). Levels registreres i `index.html` via `registerLevel({...})`
   ved markøren ">>> NYE LEVELS REGISTRERES HER <<<" ⭐
+- `ENGINE_MAP.md` — MOTORKORTET: filens anatomi, koordinatsystemer/stage,
+  input-stigen, død-loopet, persistens, debug. LÆS DEN før du fejlretter
+  eller ændrer noget uden for et level ⭐
 - `BUILD_PLAN_V2.md` — genopbygningens trin (alle ✅ pr. 2026-07-08)
 - `SCENE_REVIEW_KREMLIN_EPSTEIN_GOLF.md` — UX-beslutninger (pakke B)
 - `LESSONS.md` — projekt-lektier (læs før debugging!)

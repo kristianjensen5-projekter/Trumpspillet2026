@@ -275,13 +275,26 @@ Tower er ombygget til rigtig elevatortur (E = én etage op m. animation),
 4 satiriske etager + penthouse på 5. → "Penthouse Key"-medaljen.
 Fable har opdateret regressionssuiten til den nye mekanik — alt grønt.
 
+## ENGINE_MAP.md — motorkortet — 2026-07-10 ✅ (Fable)
+
+Videnoverdragelsen er komplet: `ENGINE_MAP.md` dækker alt UDENOM levels
+(det LEVEL_TEMPLATE.md ikke gør): filens anatomi (sektion 0–14),
+koordinatsystemerne (world/screen/browser + stagen), main-loopets update-
+og draw-rækkefølge, input-stigen (og reglen om nye modale tilstande),
+overlay/død-loopet, persistens-nøglerne, musik/iOS-reglen, sprite-facts
+(bl.a. drawTrump ~50 units), debug-hooks og "ti bud for motor-ændringer".
+Alle henvisninger er søgbare strenge (ankertjek kørt — alle findes i
+koden). Sammen med LEVEL_TEMPLATE.md + LESSONS.md + GAME_SPEC.md kan
+Sonnet/Codex nu både bygge baner OG vedligeholde motoren efter ~15/7.
+
 ## Næste skridt
 
 - Kristian tester finalen live: saml alle 6 medaljer (tower = elevator
   til penthouse) — eller kør `__tv2.cheat.finale()` i konsollen.
   NB: tower-passet gik live sammen med finalen (2026-07-10)
-- Inden ~15/7 (Fable-deadline): ENGINE_MAP.md — motorkort så Sonnet/Codex
-  kan vedligeholde selve enginen (LEVEL_TEMPLATE dækker kun nye baner)
+- Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til
+  politiken.dk (iframe-embed-test + sikkerheds-baseline + brand-tjek) —
+  afventer redaktionens valg af embed-format
 
 ## Trin 9 udført — 2026-07-08 ✅
 
