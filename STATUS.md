@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-09
+**Senest opdateret:** 2026-07-10
 
 ---
 
@@ -242,11 +242,46 @@ etage-stop, 5. tryk → penthouse med baggrundsskift + credits.
   veje) kørt igen efter ændringerne — 0 fejl
 - Committet, **ikke deployet** — afventer Kristians OK
 
+## FINALEN: The Medal of Medals Ceremony — 2026-07-10 ✅ (Fable)
+
+Spillet har nu en SLUTNING. Når alle 6 medaljer er samlet (vilkårlig
+rækkefølge), udløses finalen 2,6 s efter sidste medalje — Kristians valg:
+**Obama-medalje-memet i Trump-udgave: Trump tildeler Trump medaljen.**
+
+- ✅ Beat-rækkefølge (skærm-overlay, ens på mobil+desktop, uafhængig af
+  bane): BREAKING-chyron + ceremonititel → de 6 medaljer flyver ind én ad
+  gangen med navne → East Room-kulisse (guldgardiner + flag) →
+  modtager-Trump ind fra venstre, overrækker-Trump ind fra højre og
+  stiller sig BAGVED (memets komposition: begge ansigter synlige,
+  overrækkeren højere) → kæmpemedaljen "№1" sænkes over hovedet og lander
+  om HALSEN (bånd om nakken, hænder på skuldrene — lagdelt tegning) →
+  konfetti + yes-mænd-parade → replikker ("I'd like to thank the
+  committee. It's me.") → **stats-kort**: FINAL RESULTS (OFFICIAL — DO
+  NOT RECOUNT) med medaljer, guld, "Elections needed" (voting
+  machine-tælleren!) og Time in office + [RUN AGAIN] / [KEEP GOVERNING]
+- ✅ RUN AGAIN nulstiller medaljer+run og starter forfra i Greenland
+  (verificeret); KEEP GOVERNING lukker overlayet og spillet fortsætter
+- ✅ Al tekst i JSON (`FINALE`-blokken); trigger i `awardMedal()` er
+  generisk over `DATA.MEDALS` — et 7. level kræver automatisk 7 medaljer
+- ✅ Debug: `__tv2.cheat.finale()` udløser finalen direkte (til test)
+- ✅ Verificeret: hele beatet + stats + begge knapper på desktop 1600×900
+  + iPhone 390×844, fuld regression, 0 pageerrors
+- Tegneviden til eftertiden: `drawTrump` er ~50 units høj (fødder y=0,
+  hårtop -50, bryst -22) — finale-geometrien følger dét
+
+## Tower finesse-pass (b98a6aa, ikke-Fable) — regressionstjek 2026-07-10 ✅
+
+Tower er ombygget til rigtig elevatortur (E = én etage op m. animation),
+4 satiriske etager + penthouse på 5. → "Penthouse Key"-medaljen.
+Fable har opdateret regressionssuiten til den nye mekanik — alt grønt.
+
 ## Næste skridt
 
-- Deploy af tower-finesse-passet, når Kristian har set det
-- Ellers ingen åbne spor. Evt. fremtidige baner bygges af Sonnet/Codex efter
-  `LEVEL_TEMPLATE.md` (accept-testet 2026-07-08)
+- Kristian tester finalen live: saml alle 6 medaljer (tower = elevator
+  til penthouse) — eller kør `__tv2.cheat.finale()` i konsollen.
+  NB: tower-passet gik live sammen med finalen (2026-07-10)
+- Inden ~15/7 (Fable-deadline): ENGINE_MAP.md — motorkort så Sonnet/Codex
+  kan vedligeholde selve enginen (LEVEL_TEMPLATE dækker kun nye baner)
 
 ## Trin 9 udført — 2026-07-08 ✅
 

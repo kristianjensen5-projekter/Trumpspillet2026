@@ -152,6 +152,27 @@
       "buyLine": "Boom! Five sticks of dynamite. Press D to select, then E to plant."
     }
   },
+  "FINALE": {
+    "chyron": "BREAKING: PRESIDENT AWARDS PRESIDENT",
+    "title": "THE MEDAL OF MEDALS CEREMONY",
+    "subtitle": "For unprecedented achievements in achieving achievements",
+    "medalName": "MEDAL OF MEDALS",
+    "medalSub": "PARTICIPATION — NOBODY PARTICIPATES BETTER",
+    "presenterLine": "Congratulations, sir. You earned it. From me.",
+    "quips": [
+      "Nobody deserves me more than me.",
+      "I'd like to thank the committee. It's me.",
+      "The most beautiful ceremony. Everyone is crying."
+    ],
+    "statsTitle": "FINAL RESULTS (OFFICIAL — DO NOT RECOUNT)",
+    "statsMedals": "Medals",
+    "statsGold": "Gold bars",
+    "statsElections": "Elections needed",
+    "statsTime": "Time in office",
+    "playAgain": "RUN AGAIN",
+    "keepPlaying": "KEEP GOVERNING",
+    "tapHint": "Tap or press E for the results"
+  },
   "MEDALS": {
     "greenland": {
       "name": "Greenland flag",
@@ -2063,7 +2084,7 @@ const SCENE = { INTRO:'intro', GREENLAND:'greenland', OVAL:'oval', KREMLIN:'krem
 let scene = SCENE.INTRO;
 
 const GS = {
-  lives:0, nonViolent:false,
+  lives:0, nonViolent:false, runStartAt:0,
   // Medaljenøglerne kommer fra JSON'ens MEDALS-blok — nye levels skal KUN
   // tilføje deres MEDALS-post, ikke røre dette objekt (jf. LESSONS.md)
   medals:Object.fromEntries(Object.keys(DATA.MEDALS).map(k=>[k,false])),
@@ -2728,7 +2749,7 @@ function openChoice(header, options, onKey){
 function closeChoice(){ choiceOverlay=null; }
 function openInfoCard(text,onKey){ infoCard={text,onKey}; }
 function closeInfoCard(){ infoCard=null; }
-function anyOverlayActive(){ return !!(choiceOverlay||infoCard); }
+function anyOverlayActive(){ return !!(choiceOverlay||infoCard||(typeof FINALE!=='undefined'&&FINALE.active)); }
 function closeAllOverlays(){ choiceOverlay=null; infoCard=null; continueOverlay=null; }
 
 function layoutChoice(){
@@ -3670,6 +3691,10 @@ function awardMedal(key){
   SFX.achievement();
   say(player, `${DATA.MEDALS[key].icon} MEDAL: ${DATA.MEDALS[key].name}!`, 2500);
   saveMedals(); renderHUD(); renderAreas();
+  // all medals collected -> the Medal of Medals ceremony (after the
+  // level's own celebration has had its moment)
+  if (Object.keys(DATA.MEDALS).every(k=>GS.medals[k]))
+    setTimeout(()=>{ if (!FINALE.active) startFinale(); },2600);
 }
 function startGreenlandFlagDrop(){
   glFlagDrop={y:-80,vy:0,swingPhase:0,swingAmp:0.5,active:true};
@@ -6786,6 +6811,7 @@ function switchScene(to){
 function startGame(){
   document.getElementById('intro').style.display='none';
   ensureAudio();
+  if (!GS.runStartAt) GS.runStartAt=now();
   switchScene(SCENE.GREENLAND);
   entryHeli.line=L.arrive;
 }
@@ -6797,6 +6823,7 @@ function fullRestartRun(){
   player.baseSpeedMul=1; player.goldenShoesOn=false; updateSpeedMul();
   player.tanLevel=0; player.capOn=false; player.selectedItem=null;
   player.speedBoost10=false; player.healthBoost18=false; player.masterCollector=false;
+  GS.runStartAt=now();
   renderInv(); renderHUD();
 }
 function fullRestartToIntro(){
@@ -6806,6 +6833,266 @@ function fullRestartToIntro(){
   scene=SCENE.INTRO;
   Music.stop();
   document.getElementById('intro').style.display='flex';
+}
+
+/* ================================================================
+   11B. FINALE — the Medal of Medals ceremony.
+   Triggered by awardMedal when ALL medals are won. Screen-space
+   overlay (mobile + desktop identical), independent of the scene.
+   Beat: chyron -> the six medals fly in -> TWO Trumps walk in and
+   Trump awards Trump the giant medal (the Obama-medal meme) ->
+   confetti + yes-men parade -> stats card with RUN AGAIN.
+   ================================================================ */
+const FINALE={active:false,start:0,phase:'show',quip:'',confetti:[],btns:[]};
+const FIN_L=DATA.FINALE||{};
+function startFinale(){
+  if (FINALE.active) return;
+  FINALE.active=true; FINALE.start=now(); FINALE.phase='show'; FINALE.btns=[];
+  FINALE.quip=pick(FIN_L.quips||['...']);
+  FINALE.confetti=[];
+  for (let i=0;i<110;i++) FINALE.confetti.push({
+    x:Math.random(), y:-Math.random()*1.2, vy:.06+Math.random()*.12,
+    vx:(Math.random()-.5)*.05, s:3+Math.random()*4, ph:Math.random()*6.28,
+    c:pick(['#ffd54f','#e63946','#f6e27d','#4a90d9','#ffffff'])
+  });
+  const hb=document.querySelector('.helpbox'); if (hb) hb.style.display='none';
+  SFX.achievement();
+}
+function finaleRestoreUI(){
+  const hb=document.querySelector('.helpbox'); if (hb) hb.style.display='';
+}
+function finaleAdvance(){
+  const age=now()-FINALE.start;
+  if (FINALE.phase==='show' && age>1200){ FINALE.phase='stats'; FINALE.statsAt=now(); }
+}
+function finalePlayAgain(){
+  Object.keys(GS.medals).forEach(k=>GS.medals[k]=false);
+  saveMedals(); renderAreas();
+  GS.lives=0;
+  FINALE.active=false;
+  finaleRestoreUI();
+  fullRestartRun();
+  switchScene(SCENE.GREENLAND);
+}
+function finaleDismiss(){ FINALE.active=false; finaleRestoreUI(); }
+function finaleKey(k){
+  if (FINALE.phase!=='stats'){ finaleAdvance(); return; }
+  if (k==='1'){ finalePlayAgain(); return; }
+  if (k==='2'||k==='escape'||k==='e') finaleDismiss();
+}
+function finaleTap(sx,sy){
+  if (FINALE.phase!=='stats'){ finaleAdvance(); return; }
+  for (const b of FINALE.btns){
+    if (sx>=b.x&&sx<=b.x+b.w&&sy>=b.y&&sy<=b.y+b.h){
+      if (b.act==='again') finalePlayAgain(); else finaleDismiss();
+      return;
+    }
+  }
+}
+function finPill(text,x,y,font,pad,fg,bg){
+  ctx.font=font; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const w=ctx.measureText(text).width+pad*2, h=pad*2+10;
+  x=clamp(x,w/2+6,VW-w/2-6);
+  ctx.fillStyle=bg; roundRectPath(ctx,x-w/2,y-h/2,w,h,7); ctx.fill();
+  ctx.fillStyle=fg; ctx.fillText(text,x,y+1);
+}
+function drawFinaleGiantMedal(x,y,r,ribY,spread){
+  // ribbon (top anchor provided by caller: over the head while being
+  // lowered, around the neck once seated)
+  if (ribY===undefined) ribY=y-r*2.6;
+  if (spread===undefined) spread=r*0.9;
+  ctx.strokeStyle='#8b0000'; ctx.lineWidth=10;
+  ctx.beginPath(); ctx.moveTo(x-spread,ribY); ctx.lineTo(x,y-r*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+spread,ribY); ctx.lineTo(x,y-r*0.4); ctx.stroke();
+  ctx.strokeStyle='#b22234'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(x-spread,ribY); ctx.lineTo(x,y-r*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+spread,ribY); ctx.lineTo(x,y-r*0.4); ctx.stroke();
+  // medal
+  ctx.fillStyle='#8a6b2f'; ctx.beginPath(); ctx.arc(x,y,r+4,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#d4af37'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f6e27d'; ctx.beginPath(); ctx.arc(x-r*0.28,y-r*0.28,r*0.42,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#8a6b2f'; ctx.font=`900 ${Math.max(9,r*0.42)}px system-ui`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('№1',x,y+1);
+}
+function drawFinale(){
+  if (!FINALE.active) return;
+  const t=now(), age=t-FINALE.start;
+  beginScreen();
+  // curtain
+  const cAl=Math.min(0.93,age/600*0.93);
+  ctx.fillStyle=`rgba(9,12,26,${cAl})`; ctx.fillRect(0,0,VW,VH);
+  const compact=VW<560;
+  // confetti (from the ceremony beat onwards)
+  if (age>4600){
+    const ct=(t-FINALE.start-4600)/1000;
+    FINALE.confetti.forEach(p=>{
+      const px=(p.x+p.vx*ct)*VW + Math.sin(ct*3+p.ph)*8;
+      const py=(p.y+p.vy*ct)*VH;
+      if (py<-10||py>VH+10) return;
+      ctx.save(); ctx.translate(px,py%(VH+20)); ctx.rotate(ct*4+p.ph);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); ctx.restore();
+    });
+  }
+  // chyron + title
+  if (age>250){
+    ctx.fillStyle='#b3122e'; ctx.fillRect(0,0,VW,26);
+    ctx.fillStyle='#fff'; ctx.font='900 12px system-ui';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(FIN_L.chyron||'',VW/2,14);
+    ctx.fillStyle='#f6e27d'; ctx.font=`900 ${compact?19:26}px Georgia,serif`;
+    ctx.fillText(FIN_L.title||'',VW/2,Math.max(56,VH*0.09));
+    ctx.fillStyle='rgba(255,255,255,.75)'; ctx.font=`italic 12px Georgia,serif`;
+    ctx.fillText(FIN_L.subtitle||'',VW/2,Math.max(78,VH*0.09+22));
+  }
+  if (FINALE.phase==='show'){
+    const keys=Object.keys(DATA.MEDALS);
+    const baseY=VH*(compact?0.68:0.76);
+    const cxx=VW/2;
+    // NB: drawTrump er ~50 units høj (fødder y=0, hårtop y=-50,
+    // ansigt -46..-34, bryst ~-22) — al geometri herunder følger dét
+    const sc=compact?2.0:Math.min(3.4,VH/200);
+    const walk=clamp((age-3600)/900,0,1), wk=1-Math.pow(1-walk,3);
+    // backdrop FIRST: gold drapes + US flag (the East Room look) —
+    // everything else must render on top of it
+    if (age>3400){
+      const bAl=clamp((age-3400)/600,0,1);
+      ctx.save(); ctx.globalAlpha=bAl*0.9;
+      const dw=compact?36:52, dTop=VH*0.14, dBot=baseY+16;
+      for (let i=-3;i<=3;i++){
+        const dx=cxx+i*dw*1.7;
+        ctx.fillStyle=i%2?'#8a6b2f':'#c9a641';
+        ctx.fillRect(dx-dw/2,dTop,dw,dBot-dTop);
+      }
+      ctx.fillStyle='rgba(9,12,26,.45)'; ctx.fillRect(cxx-dw*6,dTop,dw*12,dBot-dTop);
+      const fx=Math.min(VW-40,cxx+dw*6.4);
+      ctx.fillStyle='#5e4a1e'; ctx.fillRect(fx-2,dTop,4,dBot-dTop);
+      ctx.fillStyle='#b22234'; ctx.fillRect(fx+2,dTop+8,34,22);
+      ctx.fillStyle='#fff'; ctx.fillRect(fx+2,dTop+13,34,4); ctx.fillRect(fx+2,dTop+22,34,4);
+      ctx.fillStyle='#3C3B6E'; ctx.fillRect(fx+2,dTop+8,13,11);
+      ctx.restore();
+    }
+    // the six medals fly in, one by one (on top of the drapes)
+    const arcY=VH*(compact?0.20:0.22);
+    keys.forEach((k,i)=>{
+      const born=900+i*420, ka=age-born;
+      if (ka<0) return;
+      const kk=1-Math.pow(1-clamp(ka/420,0,1),3);
+      const tx=VW/2+(i-(keys.length-1)/2)*Math.min(compact?58:96,VW/(keys.length+1));
+      const ty=arcY+Math.abs(i-(keys.length-1)/2)*8;
+      const y=-40+(ty+40)*kk;
+      ctx.font=`${compact?22:30}px system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(DATA.MEDALS[k].icon,tx,y);
+      if (kk>=1){
+        ctx.font='900 8px system-ui'; ctx.fillStyle='#f6e27d';
+        ctx.fillText(DATA.MEDALS[k].name.toUpperCase(),tx,y+(compact?20:26));
+        ctx.fillStyle='#fff';
+      }
+    });
+    // THE MEME (Obama medal, Trump edition): a second Trump stands
+    // BEHIND Trump and hangs the medal around his neck. Recipient in
+    // front facing us; presenter behind, reaching over the shoulders.
+    if (age>3400){
+      const bob=walk<1?Math.abs(Math.sin(age/80))*4:0;
+      // meme composition: recipient front-left-lower, presenter
+      // behind-right-higher — BOTH faces visible (as in the photo)
+      const recX=cxx-sc*7, preX=cxx+sc*16;
+      const preY=baseY-sc*14;                       // presenter stands "behind" = higher
+      const frontX=-70+(recX+70)*wk;                // recipient in from the left
+      const backX=VW+70-(VW+70-preX)*wk;            // presenter in from the right
+      // medal geometry (needed before drawing so the layers stack right)
+      const medalOn=age>4600 && walk>=1;
+      const mk=medalOn?1-Math.pow(1-clamp((age-4600)/900,0,1),3):0;
+      const seated=mk>=1;
+      const r=compact?16:20;
+      const my=(baseY-sc*66)+((baseY-sc*22)-(baseY-sc*66))*mk;  // over hovedet -> ned på brystet
+      const ribY=seated ? baseY-sc*33 : my-r*2.2;   // siddende: bånd om HALSEN
+      const spread=seated ? sc*5 : r*0.9;
+      const hlx=seated ? recX-sc*10 : recX-spread;  // siddende: hænder på skuldrene
+      const hrx=seated ? recX+sc*11 : recX+spread;
+      const hy=seated ? baseY-sc*30 : ribY;
+      // LAYERS (the meme): presenter behind -> his arms reach AROUND
+      // the recipient's head (drawn behind him) -> recipient -> medal
+      ctx.save(); ctx.translate(backX,preY-bob); ctx.scale(sc*0.94,sc*0.94); drawTrump(0,0,-1); ctx.restore();
+      if (medalOn){
+        ctx.strokeStyle='#16213e'; ctx.lineWidth=Math.max(5,sc*2.6); ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(preX-sc*10,preY-sc*28); ctx.lineTo(hlx,hy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(preX+sc*6,preY-sc*28); ctx.lineTo(hrx,hy); ctx.stroke();
+        ctx.fillStyle='#f5c9a0';
+        ctx.beginPath(); ctx.arc(hlx,hy,Math.max(4,sc*2),0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(hrx,hy,Math.max(4,sc*2),0,Math.PI*2); ctx.fill();
+      }
+      ctx.save(); ctx.translate(frontX,baseY-bob); ctx.scale(sc,sc); drawTrump(0,0,1); ctx.restore();
+      if (medalOn){
+        drawFinaleGiantMedal(recX,my,r,ribY,spread);
+        if (seated){
+          finPill(FIN_L.medalName||'',cxx,baseY+(compact?24:32),'900 13px system-ui',8,'#111','#f6e27d');
+          finPill(FIN_L.medalSub||'',cxx,baseY+(compact?46:56),'900 9px system-ui',6,'#f6e27d','rgba(0,0,0,.72)');
+        }
+      }
+      // quips: the recipient brags, the presenter congratulates himself
+      if (age>5900){
+        finPill(FINALE.quip,recX-(compact?44:80),baseY-sc*64,'900 13px system-ui',8,'#111','rgba(255,255,255,.96)');
+        finPill(FIN_L.presenterLine||'',preX+(compact?40:80),preY-sc*60,'900 11px system-ui',7,'#111','rgba(255,255,255,.88)');
+      }
+      // yes-men parade along the bottom
+      if (age>5200){
+        const pa=(age-5200)/1000;
+        [['qanon','QANON'],['fox','FOX HOST'],['vance','VANCE']].forEach(([kind,label],i)=>{
+          const px=(pa*0.22+i*0.16)%1.3*VW-40;
+          const hopY=Math.abs(Math.sin(age/90+i))*6;
+          ctx.save(); ctx.globalAlpha=.95; ctx.translate(px,VH-8-hopY); ctx.scale(.62,.62);
+          drawYesArchetype({kind,label,x:0},true,i);
+          ctx.restore();
+        });
+        ctx.globalAlpha=1;
+      }
+    }
+    if (age>2200){
+      ctx.fillStyle=`rgba(255,255,255,${0.5+0.4*Math.sin(t/350)})`;
+      ctx.font='12px system-ui'; ctx.textAlign='center';
+      ctx.fillText(FIN_L.tapHint||'',VW/2,VH-(compact?70:16));
+    }
+    if (age>11000){ FINALE.phase='stats'; FINALE.statsAt=t; }
+  } else {
+    // stats card
+    const cw=Math.min(400,VW-40), chh=248;
+    const cx=(VW-cw)/2, cy=(VH-chh)/2;
+    ctx.fillStyle='#f7f3e9'; roundRectPath(ctx,cx,cy,cw,chh,12); ctx.fill();
+    ctx.strokeStyle='#c9a641'; ctx.lineWidth=3; roundRectPath(ctx,cx,cy,cw,chh,12); ctx.stroke();
+    ctx.fillStyle='#111'; ctx.font='900 13px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(FIN_L.statsTitle||'',cx+cw/2,cy+26);
+    const mins=Math.floor((t-(GS.runStartAt||t))/60000);
+    const secs=Math.floor(((t-(GS.runStartAt||t))%60000)/1000);
+    const rows=[
+      [FIN_L.statsMedals||'Medals', `${Object.keys(DATA.MEDALS).length}/${Object.keys(DATA.MEDALS).length} 🏆`],
+      [FIN_L.statsGold||'Gold', `${collectedCoins}/${totalCoinCount()}`],
+      [FIN_L.statsElections||'Elections', `${GS.lives|0} 🗳️`],
+      [FIN_L.statsTime||'Time', `${mins}m ${String(secs).padStart(2,'0')}s`]
+    ];
+    rows.forEach(([lab,val],i)=>{
+      const ry=cy+58+i*30;
+      ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillStyle='#555';
+      ctx.fillText(lab,cx+26,ry);
+      ctx.font='900 13px system-ui'; ctx.textAlign='right'; ctx.fillStyle='#111';
+      ctx.fillText(val,cx+cw-26,ry);
+    });
+    // buttons
+    FINALE.btns=[];
+    const bw=(cw-52)/2, bh=38, by=cy+chh-56;
+    [[FIN_L.playAgain||'RUN AGAIN','again','#b3122e','#fff',cx+20],
+     [FIN_L.keepPlaying||'KEEP GOVERNING','keep','#1e3a5f','#fff',cx+32+bw]].forEach(([lab,act,bg,fg,bx])=>{
+      ctx.fillStyle=bg; roundRectPath(ctx,bx,by,bw,bh,9); ctx.fill();
+      ctx.fillStyle=fg; ctx.font='900 11px system-ui'; ctx.textAlign='center';
+      ctx.fillText(lab,bx+bw/2,by+bh/2+1);
+      FINALE.btns.push({x:bx,y:by,w:bw,h:bh,act});
+    });
+    if (!IS_TOUCH){
+      ctx.fillStyle='rgba(255,255,255,.6)'; ctx.font='10px system-ui';
+      ctx.fillText('1 / 2',VW/2,cy+chh+18);
+    }
+  }
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
 }
 
 /* ================================================================
@@ -6865,6 +7152,7 @@ addEventListener('keydown', e=>{
     if (handled) e.preventDefault();
     return;
   }
+  if (FINALE.active){ finaleKey(k); e.preventDefault(); return; }
   if (FightEngine.active){
     if (k==='arrowleft'||k==='a'){ keys.add('fl'); handled=true; }
     else if (k==='arrowright'||k==='d'){ keys.add('fr'); handled=true; }
@@ -6964,6 +7252,7 @@ cvs.addEventListener('pointerdown', e=>{
   ensureAudio();
   if (scene===SCENE.INTRO){ startGame(); return; }
   const sx=e.clientX-STAGE_X, sy=e.clientY-STAGE_Y;
+  if (FINALE.active){ finaleTap(sx,sy); return; }
   // post-lightbox: any tap dismisses it
   if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && !GS.over){
     OV.d.postUntil=0;
@@ -7355,6 +7644,7 @@ function step(t){
     if (choiceOverlay) drawChoiceOverlay();
     if (infoCard) drawInfoCardOverlay();
     if (GS.over) drawGameOver();
+    if (FINALE.active) drawFinale();
     // toast
     if (toastMsg && now()<toastUntil){
       beginScreen();
@@ -7435,6 +7725,7 @@ window.__tv2 = {
     return base;
   },
   cheat: { gold: n => { player.gold = n; renderHUD(); },
+           finale: () => { Object.keys(DATA.MEDALS).forEach(k=>GS.medals[k]=true); startFinale(); },
            policy: title => { const p=(DATA.OVAL.POLICIES||[]).find(pp=>pp.title===title);
              if (p){ OV.d.policy=p; OV.d.policyCount=(OV.d.policyCount||0)+1;
                      OV.d.chyronAt=p.chyron?now()+300:0; OV.d.policyFlashUntil=now()+300;
