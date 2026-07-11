@@ -133,6 +133,23 @@ nævner det ikke — bør rettes der.
 
 ---
 
+## Input-tilstand må ALDRIG overleve et scene-skift
+
+**Problem:** På mobil gik Trump af sig selv mod højre efter en golfrunde
+(spawn i Grønland) og kunne ikke stoppes — kun genstart hjalp.
+**Årsag:** `pointers`-mappet (aktive fingre) blev ikke ryddet ved
+banseskift. Golfens pointer-pipeline konsumerede 'pointerup'-eventet, så
+fingeren fra det sidste tap stod stadig som "holdt nede" — og i Grønland
+tolkes en holdt finger som "gå i den retning".
+**Fix:** `switchScene()` rydder nu `pointers`, `keys` og `walkTween`
+FØR scene-skiftet. Generel regel: enhver tilstandsmaskine der overtager
+input (golf/fight/overlay) kan sluge modpartens op/ned-events — ryd
+derfor AL input-tilstand ved mode- og scene-skift i stedet for at stole
+på at hvert event når frem.
+**Dato:** 2026-07-10
+
+---
+
 ## Touch-chips er ikke desktop-knapper
 
 **Problem:** Golfens Leave/Reset-chips var nyttige på iPhone, men på desktop

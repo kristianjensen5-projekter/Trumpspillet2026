@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-10
+**Senest opdateret:** 2026-07-11
 
 ---
 
@@ -287,11 +287,37 @@ Alle henvisninger er søgbare strenge (ankertjek kørt — alle findes i
 koden). Sammen med LEVEL_TEMPLATE.md + LESSONS.md + GAME_SPEC.md kan
 Sonnet/Codex nu både bygge baner OG vedligeholde motoren efter ~15/7.
 
+## Kristians 11-punkts-liste — ALLE implementeret 2026-07-11 ✅ (Fable)
+
+1. ✅ Oval jump cut: walk-in-gangen havde et 0,9s-loft uanset afstand —
+   cutscene-gange får nu naturligt tempo (loftet gælder stadig tap-gange)
+2. ✅ Policies forenklet (Kristians valg: ét land pr. tryk): 5 nye
+   tariff/land-policies med KÆMPE typografi på Executive Screen (flag +
+   "CANADA +25%" + én kort linje). De to social-post-gags (Obama/Jesus)
+   er BEHOLDT i puljen — sig til hvis de også skal ud
+3. ✅ Epstein-scroll hakkede: per-linje clip-operationer + tekst på
+   subpixel-positioner — nu ét clip for hele papiret + hele pixels
+4. ✅ Blå navne er nu en blanding: Bill Clinton, Hillary Clinton, Barack
+   Obama, Joe Biden, Nancy Pelosi, Al Gore
+5. ✅ Putin er nu næsten skaldet med kortklippede grå sider
+6. ✅ "Tap or press Enter to continue" på Epstein-succeskortet er hvid
+7. ✅ Blå firkant om golf-tee'en fjernet
+8. ✅ Sigtelinjen er gul hele vejen med mørk underlinje (Kristians valg)
+9. ✅ Generøs kop: fangst-fartgrænse 20→85 + bredere/stærkere magnet —
+   bolden hopper ikke længere over hullet
+10. ✅ MOBIL-SOFT-LOCK: input-tilstand (fingre/taster/auto-gang) ryddes
+    nu ved ALLE scene-skift — se ny lektie i LESSONS.md
+11. ✅ Finalen: konfettien brager i det øjeblik medaljen lander om halsen
+    og fortsætter til man trykker — først dér vises resultat-kortet
+    (auto-skiftet efter 11 s er fjernet)
+
+Verificeret: tariff-tavle/Putin/Epstein-navne/golf-linje med screenshots,
+fuld regression (3 viewports) + finale-flow — alle grønne, 0 pageerrors.
+
 ## Næste skridt
 
-- Kristian tester finalen live: saml alle 6 medaljer (tower = elevator
-  til penthouse) — eller kør `__tv2.cheat.finale()` i konsollen.
-  NB: tower-passet gik live sammen med finalen (2026-07-10)
+- Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
+  (mobil-bug #10) og hul 2's nye gavmildhed
 - Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til
   politiken.dk (iframe-embed-test + sikkerheds-baseline + brand-tjek) —
   afventer redaktionens valg af embed-format
