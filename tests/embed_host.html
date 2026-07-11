@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embed-test: Trumpspillet i iframe (simuleret artikelside)</title>
+<style>
+  body{font-family:Georgia,serif;max-width:1000px;margin:0 auto;padding:20px;background:#fff}
+  .art p{line-height:1.6;font-size:17px}
+  .game-embed{width:100%;aspect-ratio:16/10;border:0;display:block;margin:24px 0}
+  @media (max-width:600px){ .game-embed{aspect-ratio:9/16} }
+</style></head><body class="art">
+<h1>Testartikel: spil indlejret som på politiken.dk</h1>
+<p>Brødtekst før spillet — skal være upåvirket af embedet.</p>
+<iframe class="game-embed" id="gameframe" src="../index.html?resetMedals=1" title="Trumpspillet 2026"></iframe>
+<p>Brødtekst efter spillet — scroll og layout skal virke normalt.</p>
+</body></html>

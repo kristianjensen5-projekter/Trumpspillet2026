@@ -4,6 +4,10 @@
 > (13.633 linjer — den fungerende desktopversion). Krydstjekket mod Codex'
 > `kodebasetilfable.md`. Dette er facit for genopbygningen: gameplayet skal
 > bevares 1:1, arkitekturen bygges om (mobile-first, én responsiv fil).
+>
+> **VIGTIGT (2026-07-11):** §1–9 beskriver v1-facittet. Spillet har siden
+> udviklet sig BEVIDST videre — læs **§10** for den aktuelle sandhed før
+> du bruger denne fil som audit-reference.
 
 ---
 
@@ -403,3 +407,54 @@ Codex' brief stemmer med koden på alle hovedmekanikker. Afvigelser fundet
    world-state (originalens `rescaleAll`-tilgang var skør ved resize).
 8. localStorage-nøgler bevares: `trumpv2-medals`, `trumpv2-music-muted`,
    `trumpv2-help-open`.
+
+
+---
+
+## 10. v2-AFVIGELSER OG TILFØJELSER (facit-opdatering 2026-07-11)
+
+Alt herunder er BEVIDSTE beslutninger truffet af Kristian efter
+genopbygningen — afvigelser fra §1–9 er altså ikke fejl:
+
+### Baner
+- **Oval Office (erstatter §4 helt):** quiz/YES-NO-versionen er skrottet
+  (2026-07-05). Nu: Resolute Desk med TO fysiske knapper — sort POLICY-
+  knap og rød DO NOT PRESS (nuke→voting machine). Policies er 5 store
+  TARIFF/LAND-tavler (flag + "CANADA +25%" + én linje) plus 2 social-
+  post-gags (Obama/Jesus-AI-billeder som lightbox med Community Note).
+  5 tryk → Pulitzer. Yes-mænd (QAnon/Fox-host/Vance) løber ind fra døren
+  ved hvert tryk, jubler og løber ud (på mobil: myldrer foran bordet).
+  To pokalhylder på væggen udenfor vinduerne (fast kamera: world-x
+  158–1118 er synligt bånd)
+- **NY bane 6: Trump Tower (id `tower`):** elevatorlobby; E = rigtig
+  elevatortur én etage op (animation), 4 satiriske etager bag døren,
+  penthouse på 5. etage → "Penthouse Key"-medaljen. Ingen game over
+- **Golf:** generøs kop (fangst ved fart <85, magnet 26/1600), gul
+  stiplet sigtelinje med mørk underlinje, intet tee-markørrektangel.
+  U-roteret stor bane i landskab; roteret kun på portrait-mobil
+- **Kremlin:** Putin er næsten skaldet med kortklippede grå sider
+- **Epstein:** beskyttede blå navne er nu Bill Clinton, Hillary Clinton,
+  Barack Obama, Joe Biden, Nancy Pelosi, Al Gore. Succes-kortets
+  "Tap or press Enter to continue" er hvid
+
+### Nye systemer
+- **FINALE (Medal of Medals):** alle medaljer samlet → ceremoni-overlay:
+  chyron → 6 medaljer flyver ind → East Room-kulisse → Trump tildeler
+  Trump kæmpemedaljen (Obama-meme-kompositionen: overrækker BAGVED,
+  begge ansigter synlige, bånd om halsen) → konfetti til tastetryk →
+  stats-kort (medaljer/guld/elections/tid) + RUN AGAIN / KEEP GOVERNING.
+  Trigger er generisk over DATA.MEDALS (7. bane = 7 medaljer kræves)
+- **Desktop-stage:** landscape ≥900px = centreret 16:9-scene (maks 1240)
+  med guldramme/titel; mobil uændret. Hover-glow + pointer-cursor over
+  interaktive objekter (via tapTargets)
+- **Level-registry:** alle baner registreres via registerLevel({...});
+  heli-menu autogenereres. Se LEVEL_TEMPLATE.md
+- **Medaljer:** GS.medals bygges dynamisk af DATA.MEDALS-nøglerne
+- **Input-hygiejne:** pointers/keys/walkTween ryddes ved ALLE scene-skift
+- **Cutscene-gange:** startWalkTo har 900ms-loft KUN for tap-gange;
+  walk-ins får naturligt tempo (Oval passerer 4000)
+- **GS.runStartAt** (run-ur), **GS.lives** = voting machine-continues —
+  begge bruges af finalens stats
+
+### Reference-hierarki for audits
+STATUS.md (nyeste) > denne §10 > tests/ (adfærd i praksis) > §1–9 (v1)

@@ -323,6 +323,24 @@ kør `node regression.mjs` efter enhver ændring i index.html. Verificeret:
 begge scripts kørt grønt fra den nye placering. Alle dokumenter
 (AI_INDEX, ENGINE_MAP, LEVEL_TEMPLATE, LESSONS) peger nu på tests/.
 
+## GAME_SPEC ajourført + embed-forarbejde — 2026-07-11 ✅ (Fable)
+
+- ✅ `GAME_SPEC.md` har fået **§10: v2-afvigelser og tilføjelser** — alle
+  bevidste ændringer siden genopbygningen (Oval v3+tariffer, Tower,
+  finalen, stage/hover, registry, dynamiske medaljer m.m.) + reference-
+  hierarki for audits. §1–9 bevaret som historisk v1-facit
+- ✅ `EMBED_GUIDE.md` skrevet: **anbefaling = iframe** (spillet er en
+  fuldskærms-side og opfylder ikke inline-CMS-isolationskravene; iframe
+  giver isolationen gratis) + færdig iframe-kode til CUE
+- ✅ Sikkerheds-audit mod `context/03_security.md`: alle 5 lag er N/A med
+  begrundelse (nul eksterne scripts/kald — verificeret; ingen læserinput,
+  API eller uploads). GDPR: kun spil-fremskridt i localStorage
+- ✅ Verificeret iframe-test committet: `tests/embed_host.html` +
+  `tests/embed.mjs` — boot, input gennem iframen og upåvirket værtsside
+  på desktop + iPhone-format, 0 pageerrors
+- Udestår (beslutninger, ikke arbejde): Politikens Cloudflare-konto før
+  produktion · evt. frame-ancestors-header når CUE-domæner kendes
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
