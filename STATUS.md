@@ -314,6 +314,15 @@ Sonnet/Codex nu både bygge baner OG vedligeholde motoren efter ~15/7.
 Verificeret: tariff-tavle/Putin/Epstein-navne/golf-linje med screenshots,
 fuld regression (3 viewports) + finale-flow — alle grønne, 0 pageerrors.
 
+## Testsuiten committet — 2026-07-11 ✅ (Fable)
+
+Overdragelses-hul lukket: Playwright-suiten lå før i AI-sessionernes
+midlertidige scratchpad og døde mellem sessioner. Nu ligger den i
+**`tests/`** (regression.mjs + finale.mjs + README med kendte fælder) —
+kør `node regression.mjs` efter enhver ændring i index.html. Verificeret:
+begge scripts kørt grønt fra den nye placering. Alle dokumenter
+(AI_INDEX, ENGINE_MAP, LEVEL_TEMPLATE, LESSONS) peger nu på tests/.
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone

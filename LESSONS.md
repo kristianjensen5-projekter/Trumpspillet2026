@@ -97,8 +97,9 @@ forkert.
 der spiller spillet (gå, tryk E, vent, screenshot + `window.__tv2.snapshot()`).
 Manuel test havde næppe fundet bjørne-buggen (kræver at man trykker E på en
 rasende bjørn). v2 har en permanent debug-hook `window.__tv2` med read-only
-snapshot + gold-cheat til netop dette. Testscripts ligger i sessionens
-scratchpad og kan genskabes billigt.
+snapshot + cheats til netop dette.
+**Opdatering 2026-07-11:** testsuiten er nu COMMITTET i `tests/`
+(regression + finale + README) — genskab den ikke fra bunden, kør den.
 **Dato:** 2026-07-02
 
 ---

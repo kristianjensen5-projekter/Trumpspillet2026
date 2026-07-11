@@ -159,9 +159,11 @@ slukket ved overlays/fight/cutscene/walkTween).
   snapshots + stage-info). `__tv2.cheat.gold(n)/.policy(title)/.finale()`.
 - Syntaks-tjek FØR browsertest (kommandoerne står i LEVEL_TEMPLATE.md
   trin 6: JSON-validering + `node --check`).
-- Playwright headless (skabelon i LEVEL_TEMPLATE.md): kør ALTID desktop
-  (1280×720 eller bredere) OG iPhone (390×844, touch); kravet er
-  **0 pageerrors** + screenshots man selv har KIGGET på.
+- **Kørselsklar testsuite: `tests/`** — `node regression.mjs` +
+  `node finale.mjs` (se tests/README.md). Kør den efter ENHVER ændring.
+  Nye flows testes efter samme mønster: desktop (1280×720 eller bredere)
+  OG iPhone (390×844, touch); kravet er **0 pageerrors** + screenshots
+  man selv har KIGGET på.
   Bevægelse = piletaster (ikke a/d). Heli-menuens numre afhænger af
   hvilken bane man står i (menuen udelader den aktuelle bane!).
 - Deploy: `npx wrangler pages deploy . --project-name trumpspillet2026

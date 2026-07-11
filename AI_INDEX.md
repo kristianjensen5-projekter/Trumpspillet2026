@@ -39,5 +39,6 @@ Formål: Hurtig onboarding for AI. **Læs STATUS.md først.**
 - Mobil-input: pointers-map (hold >200 ms = gå, tap = intentTap,
   2. finger = hop) + kontekst-chips
 - Debug: `window.__tv2.snapshot()` + `.cheat.gold(n)` / `.cheat.policy(title)`
-- Verifikation: Playwright headless (npm install playwright i scratchpad;
-  browsers cached i ~/Library/Caches/ms-playwright)
+- Verifikation: **kørselsklar testsuite i `tests/`** (`node regression.mjs`
+  + `node finale.mjs` — se tests/README.md). Kør den efter ENHVER ændring
+  i index.html; browsers cached i ~/Library/Caches/ms-playwright

@@ -50,8 +50,9 @@ musik-skift. Du skriver KUN banens indhold.
    print('JSON OK')"
    node --check /tmp/check.js
    ```
-7. **Røgtest med Playwright** (skabelon nederst) — desktop OG mobil-
-   viewport, 0 pageerrors er kravet.
+7. **Røgtest med Playwright** — desktop OG mobil-viewport, 0 pageerrors
+   er kravet. Læg dit script i `tests/` (skabelon nederst; se
+   tests/README.md) og kør BAGEFTER hele `tests/regression.mjs`.
 8. **Regression:** Spil mindst Greenland + ét andet level igennem via
    heli-menuen bagefter (dit level må ikke have smadret de andre).
 9. **Dokumentér:** STATUS.md-afsnit + evt. ny lektie i LESSONS.md.
@@ -178,7 +179,7 @@ Epstein), tilføj en tidlig scene-branch i keydown/pointerdown-routerne
 `d` er reserveret til dynamit-valg), hop = `ArrowUp`, interager = `e`.
 
 ```js
-// scratchpad/smoke_mylevel.mjs — npm install playwright først
+// tests/smoke_mylevel.mjs — npm install i tests/ først
 // (browsers ligger cached i ~/Library/Caches/ms-playwright)
 import { chromium } from 'playwright';
 const FILE='file:///Users/kristian.jensen/Documents/CODE/Masterversioner/Trumpspillet Master 2026/index.html?resetMedals=1';

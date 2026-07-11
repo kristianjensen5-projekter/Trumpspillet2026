@@ -1,0 +1,6 @@
+{
+  "name": "trumpspillet-tests",
+  "private": true,
+  "type": "module",
+  "dependencies": { "playwright": "^1.45.0" }
+}
