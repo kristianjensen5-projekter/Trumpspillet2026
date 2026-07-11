@@ -160,6 +160,34 @@ registerLevel({
 Epstein), tilføj en tidlig scene-branch i keydown/pointerdown-routerne
 (søg `scene===SCENE.EPSTEIN` for mønsteret) — og RETURNÉR efter håndtering.
 
+## Egne billeder som baggrund/sprites (assets)
+
+Motoren tegner ALT programmatisk (fillRect-pixel-art — det er spillets
+look), men billedfiler ER understøttet (golf-overlays, Oval-billederne).
+Sådan bruger du Kristians egne assets:
+
+1. Læg filen i `assets/<dit-level>/` (jpg/png; png ved transparens).
+   OBS: alt i repoet bliver OFFENTLIGT på pages.dev ved deploy
+2. Indlæs ÉN gang øverst i dit level-afsnit (aldrig i draw!):
+   ```js
+   const MY_BG=new Image(); MY_BG.src='assets/mylevel/bg.png';
+   ```
+3. Tegn i `draw()` — kun når billedet er klar, med farve-fallback:
+   ```js
+   if (MY_BG.complete && MY_BG.naturalWidth){
+     // baggrund: dæk hele kameraudsnittet i world-koordinater
+     ctx.drawImage(MY_BG, CAM.x-2, 0, CAM.viewW+4, CFG.WORLD_H);
+   } else { ctx.fillStyle='#dff4ff'; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,CFG.WORLD_H); }
+   ```
+   Sprites placeres med world-koordinater og fast størrelse:
+   `ctx.drawImage(MY_SPRITE, obj.x-w/2, GROUND_Y-h, w, h);`
+4. Mål: verden er 540 units høj — lav billedet ~2× målstørrelsen
+   (retina) og hold filen lille (< ~300 KB)
+5. Husk boot-lektien: mal aldrig under initial script-eval — `draw()`
+   kaldes fra rAF-loopet, så mønstret ovenfor er sikkert
+6. Røgtest skal også tjekke at banen ser rigtig ud FØR billedet er
+   loadet (fallback-farven) og efter (screenshot)
+
 ## Kendte fælder (fra LESSONS.md — læs den!)
 
 - `||`-fallback på tal hvor 0 er gyldigt (`hp||4` healede bjørnen) — brug `??`
