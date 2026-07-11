@@ -113,7 +113,9 @@
       width:min(1240px,calc(100vw - 9vmin),calc((100vh - 18vmin)*16/9));
       border:3px solid rgba(212,175,55,.9);outline:2px solid rgba(0,0,0,.65);outline-offset:3px;
       box-sizing:border-box;padding:18px}
-    .intro-stage canvas{max-height:38%;width:auto}
+    /* #intro-canvas (ID) slår klasse-selectors — derfor ID her.
+       width/height:auto + max-begrænsninger bevarer 3:2-proportionen */
+    .intro-stage #intro-canvas{width:auto;height:auto;max-width:56%;max-height:38%}
   }
   @keyframes blinkGlow{
     0%,40%{opacity:1;text-shadow:0 0 5px #ff00ff,0 0 10px #ff00ff,0 0 15px #ff00ff}
@@ -7739,14 +7741,16 @@ function updateMobileToolButtons(){
    14. BOOT
    ================================================================ */
 const introCanvas=document.getElementById('intro-canvas');
-drawIntroHeliTrump(introCanvas.getContext('2d'),introCanvas.width,introCanvas.height);
 document.getElementById('start-btn').addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
 document.getElementById('intro').addEventListener('click', ()=>{ if (scene===SCENE.INTRO) startGame(); });
 renderAreas();
 // NB: canvas-ikoner malet under selve den indledende script-evaluering kan
 // miste deres backing store ved compositorens første frame (Chromium).
 // Derfor males HUD/inventar først EFTER første frame. (Se LESSONS.md)
-requestAnimationFrame(()=>{ renderHUD(); renderInv(); });
+requestAnimationFrame(()=>{
+  renderHUD(); renderInv();
+  drawIntroHeliTrump(introCanvas.getContext('2d'),introCanvas.width,introCanvas.height);
+});
 requestAnimationFrame(step);
 
 // Dev-only debug handle (read-only snapshots; harmless in production)
