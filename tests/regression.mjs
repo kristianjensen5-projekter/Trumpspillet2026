@@ -20,6 +20,7 @@ const check = (label, cond, extra='') => { console.log((cond?'  ok ':'  FAIL '),
   await page.goto(FILE);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(2800);
+  await page.keyboard.press('e'); await page.waitForTimeout(400); // luk GL-startskilt
   let s = await snap(page);
   console.log('WIDE stage:', JSON.stringify(s.stage));
   check('stage on (wide)', s.stage && s.stage.on === true);
@@ -81,6 +82,7 @@ const check = (label, cond, extra='') => { console.log((cond?'  ok ':'  FAIL '),
   await page.goto(FILE);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(2800);
+  await page.keyboard.press('e'); await page.waitForTimeout(400); // luk GL-startskilt
   let s = await snap(page);
   console.log('STD stage:', JSON.stringify(s.stage));
   check('stage on (1280x720)', s.stage && s.stage.on === true);
@@ -139,6 +141,7 @@ const check = (label, cond, extra='') => { console.log((cond?'  ok ':'  FAIL '),
   await page.goto(FILE);
   await page.tap('#start-btn');
   await page.waitForTimeout(2800);
+  await page.keyboard.press('e'); await page.waitForTimeout(400); // luk GL-startskilt
   let s = await snap(page);
   console.log('MOBIL stage:', JSON.stringify(s.stage));
   check('stage OFF på mobil', s.stage && s.stage.on === false);

@@ -349,6 +349,17 @@ tutorial) er nu på dansk. Trumps replikker, tweets, policies og øvrig
 in-game-tekst er BEVIDST stadig engelsk (afventer senere beslutning om
 fuld oversættelse). Regression grøn + skærmbilleder tjekket.
 
+## Startskærms-ramme + Grønlands-startskilt — 2026-07-11 ✅ (Fable)
+
+- ✅ Startskærmen har nu SAMME scene-ramme som banerne på desktop
+  (mørkeblå baggrund, guldramme, TRUMPSPILLET 2026-titel) — ren CSS,
+  mobil-layoutet er urørt (display:contents-wrapper)
+- ✅ Grønland har fået sit manglende startskilt (Kristians tekst):
+  "Grønland skal naturligvis tilhøre USA. Find en måde at få øen
+  franarret de irriterende danskere..." — vises én gang efter første
+  landing, nulstilles ved fuld genstart. regression.mjs lukker nu
+  skiltet ved spilstart (alle 3 viewports)
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone

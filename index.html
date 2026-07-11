@@ -99,6 +99,22 @@
   .intro-subtitle{font-size:clamp(13px,3.6vw,20px);color:#2a2a2a;max-width:90%;line-height:1.5;margin:0}
   .intro-prompt{font-size:clamp(13px,3vw,18px);color:#1f1f1f;font-weight:700;letter-spacing:1px;
     animation:blinkGlow 1.2s ease-in-out infinite;margin:0}
+  /* Startskærmen får SAMME scene-ramme som banerne på desktop-landscape
+     (matcher STAGE_ON-betingelserne + paintStageBackdrop/Frame-farverne).
+     På mobil er wrapperen display:contents = nul ændring. */
+  .intro-stage{display:contents}
+  .intro-stage-title{display:none}
+  @media (orientation:landscape) and (min-width:900px) and (pointer:fine){
+    .intro-screen{background:radial-gradient(circle at 50% 42%,#20293f 0%,#0a0e1a 72%);gap:14px}
+    .intro-stage-title{display:block;font:800 17px 'Courier New',monospace;
+      color:rgba(255,255,255,.45);letter-spacing:.45em;margin:0}
+    .intro-stage{display:flex;flex-direction:column;justify-content:center;align-items:center;
+      gap:14px;background:#efe8d2;aspect-ratio:16/9;
+      width:min(1240px,calc(100vw - 9vmin),calc((100vh - 18vmin)*16/9));
+      border:3px solid rgba(212,175,55,.9);outline:2px solid rgba(0,0,0,.65);outline-offset:3px;
+      box-sizing:border-box;padding:18px}
+    .intro-stage canvas{max-height:38%;width:auto}
+  }
   @keyframes blinkGlow{
     0%,40%{opacity:1;text-shadow:0 0 5px #ff00ff,0 0 10px #ff00ff,0 0 15px #ff00ff}
     50%,90%{opacity:.4;text-shadow:0 0 2px #ff00ff}
@@ -334,7 +350,8 @@
       "navHeli": "Press E to fly to the next level",
       "navShop1": "Buy powerups in the shop",
       "navShop2": "(you might need them later)"
-    }
+    },
+    "INTRO_CARD": "GRØNLAND\n\nGrønland skal naturligvis tilhøre USA.\nFind en måde at få øen franarret\nde irriterende danskere.\n\nSaml guldbarrer og kig forbi butikken —\ndynamit åbner mange døre.\n\nTap eller tryk på en tast for at starte"
   },
   "OVAL": {
     "INTRO_CARD": "DET OVALE KONTOR\n\nTo knapper. Én præsident.\n\nSORT KNAP:\nPolitik med det samme. Ingen proces, ingen advarsel.\n\nRØD KNAP:\nDer står TRYK IKKE.\nDet har aldrig stoppet nogen.\n\nTryk fem politikker igennem og vind Pulitzerprisen.\nTap eller tryk på en tast for at starte",
@@ -1765,11 +1782,14 @@
 </div>
 
 <div id="intro" class="intro-screen">
-  <canvas id="intro-canvas" width="600" height="400"></canvas>
-  <div class="intro-title">Prøv ikke at ødelægge verden, Donald</div>
-  <div class="intro-subtitle">Det er hårdt at være den bedste præsident nogensinde. DU kunne helt sikkert ikke klare det</div>
-  <div class="intro-prompt">Tryk Enter eller tap Start for at begynde</div>
-  <button id="start-btn" class="intro-button" type="button">Start</button>
+  <div class="intro-stage-title">TRUMPSPILLET&nbsp;&nbsp;2026</div>
+  <div class="intro-stage">
+    <canvas id="intro-canvas" width="600" height="400"></canvas>
+    <div class="intro-title">Prøv ikke at ødelægge verden, Donald</div>
+    <div class="intro-subtitle">Det er hårdt at være den bedste præsident nogensinde. DU kunne helt sikkert ikke klare det</div>
+    <div class="intro-prompt">Tryk Enter eller tap Start for at begynde</div>
+    <button id="start-btn" class="intro-button" type="button">Start</button>
+  </div>
 </div>
 
 <script>
@@ -6307,6 +6327,12 @@ function currentLevel(){ return LEVELS[scene]||null; }
 registerLevel({
   id:SCENE.GREENLAND, name:'Greenland', worldW:CFG.GREENLAND_W,
   reset:resetGreenland,
+  onWalkInDone(){
+    startWalkTo(player.x+40, ()=>{
+      if (entryHeli.line) say(player,entryHeli.line,1800);
+      if (!GL.introCardShown){ GL.introCardShown=true; openInfoCard(DATA.GREENLAND.INTRO_CARD, ()=>{ closeInfoCard(); }); }
+    });
+  },
   draw:drawGreenland,
   update(dt){
     const t=now();
@@ -6373,7 +6399,7 @@ registerLevel({
       }))
     ];
   },
-  onRestart(){ resetGreenlandRunState(); },
+  onRestart(){ resetGreenlandRunState(); GL.introCardShown=false; },
   snapshot(){
     return {
       bear:{ x:Math.round(GL.bear.x), hp:GL.bear.hp, angry:GL.bear.angry,
