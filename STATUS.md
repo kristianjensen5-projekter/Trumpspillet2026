@@ -341,6 +341,14 @@ begge scripts kørt grønt fra den nye placering. Alle dokumenter
 - Udestår (beslutninger, ikke arbejde): Politikens Cloudflare-konto før
   produktion · evt. frame-ancestors-header når CUE-domæner kendes
 
+## Introskilte oversat til dansk — 2026-07-11 ✅ (Fable)
+
+Til mor-testen: startskærmen (titel/undertitel/prompt) + alle intro-/
+instruktionskort (Oval, Kremlin + begge håndtrykskort, Epstein, golf-
+tutorial) er nu på dansk. Trumps replikker, tweets, policies og øvrig
+in-game-tekst er BEVIDST stadig engelsk (afventer senere beslutning om
+fuld oversættelse). Regression grøn + skærmbilleder tjekket.
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
