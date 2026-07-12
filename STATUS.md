@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-11
+**Senest opdateret:** 2026-07-12
 
 ---
 
@@ -359,6 +359,30 @@ fuld oversættelse). Regression grøn + skærmbilleder tjekket.
   franarret de irriterende danskere..." — vises én gang efter første
   landing, nulstilles ved fuld genstart. regression.mjs lukker nu
   skiltet ved spilstart (alle 3 viewports)
+
+## Mor-testens 5 punkter — ALLE implementeret 2026-07-12 ✅ (Fable)
+
+1. ✅ **Styring:** desktop viser nu taste-hints nederst midtfor ("← → gå ·
+   E brug · ↑ hop") — hver kvitterer med grønt flueben når den er brugt,
+   og rækken fader når alle tre er lært. Skjult i golf/Epstein (egne
+   kontroller) og på touch
+1b. ✅ **Lars-dialog = RPG-valg (Kristians forslag b):** efter hver
+   replik-runde vælger man "Fortsæt kedelig diplomatisk dialog" eller
+   "Rigtige præsidenter slås 👊" — ingen tvungen 5-runders maraton
+2. ✅ **Heli-menu:** ALLE piletaster flytter valget (mor brugte ←→),
+   valgt punkt har guldkant + pulserende ▶ + de øvrige dæmpes, og der
+   står "Piletaster = vælg · Enter = OK (eller klik)" under menuen
+3. ✅ **Golf hul 2:** koppen er flyttet fra blindgyden (72 px fra
+   endevæggen) ud på det åbne midterstykke af slutkorridoren + r 18→21.
+   S-formen og sværhedsgraden i øvrigt bevaret
+4. ✅ **Tower:** joke-etagerne ses nu som OPLYSTE RUM bag elevatordøren
+   (væg, fodpanel, gulv — opstillingen står på etagen, ikke i elevatoren),
+   og penthousen har fået panoramavindue med tegnet Central Park-udsigt
+   (park-perspektiv, sø, trækroner, flankerende skyskrabere, gule taxier)
+   + messingskilt "CENTRAL PARK — I OWN THE TREES"
+
+Verificeret: screenshots af alle fem + fuld regression + finale-flow —
+alle grønne, 0 pageerrors.
 
 ## Næste skridt
 

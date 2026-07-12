@@ -258,7 +258,10 @@
       "Det skader USA's ry — work group.",
       "NATO er i fare — work group.",
       "... work group?"
-    ]
+    ],
+    "CHOICE_HEADER": "Lars vil forhandle. Hvad gør en rigtig præsident?",
+    "CHOICE_DIPLO": "Fortsæt kedelig diplomatisk dialog",
+    "CHOICE_FIGHT": "Rigtige præsidenter slås 👊"
   },
   "TWEETS": {
     "PRESETS": [
@@ -542,7 +545,8 @@
   "TOWER": {
     "LINES": {
       "arrive": "Straight to the penthouse — the best floors, believe me.",
-      "top": "The best floors. Nobody goes higher."
+      "top": "The best floors. Nobody goes higher.",
+      "viewLabel": "CENTRAL PARK — I OWN THE TREES"
     },
     "BOASTS": [
       "Higher than anyone, believe me.",
@@ -759,9 +763,9 @@
             "h": 45.5
           },
           "cup": {
-            "x": 376,
+            "x": 560,
             "y": 420,
-            "r": 18.4
+            "r": 21
           },
           "walls": [
             {
@@ -2787,16 +2791,30 @@ function drawChoiceOverlay(){
   }
   ctx.textBaseline='middle'; ctx.textAlign='left';
   choiceOverlay.boxes.forEach((b,i)=>{
+    const sel=(i===choiceOverlay.selected);
+    ctx.globalAlpha=sel?1:.55;                      // ikke-valgte dæmpes tydeligt
     ctx.fillStyle=CHOICE_COLORS[i%CHOICE_COLORS.length];
     ctx.fillRect(b.x,b.y,b.w,b.h);
-    if (i===choiceOverlay.selected){ ctx.globalAlpha=.18; ctx.fillStyle='#fff'; ctx.fillRect(b.x,b.y,b.w,b.h); ctx.globalAlpha=1; }
-    const lw=(i===choiceOverlay.selected?5:3);
-    ctx.lineWidth=lw; ctx.strokeStyle='#fff';
+    if (sel){ ctx.globalAlpha=.22; ctx.fillStyle='#fff'; ctx.fillRect(b.x,b.y,b.w,b.h); ctx.globalAlpha=1; }
+    const lw=sel?6:2;
+    ctx.lineWidth=lw; ctx.strokeStyle=sel?'#ffd54f':'rgba(255,255,255,.7)';
     ctx.strokeRect(b.x+lw/2,b.y+lw/2,b.w-lw,b.h-lw);
     let fs=Math.min(24,b.h*0.5); ctx.font=`800 ${fs}px system-ui`;
-    while (ctx.measureText(b.label).width > b.w-36 && fs>11){ fs--; ctx.font=`800 ${fs}px system-ui`; }
-    ctx.fillStyle='#fff'; ctx.fillText(b.label, b.x+18, b.y+b.h/2);
+    while (ctx.measureText(b.label).width > b.w-56 && fs>11){ fs--; ctx.font=`800 ${fs}px system-ui`; }
+    ctx.fillStyle='#fff'; ctx.fillText(b.label, b.x+40, b.y+b.h/2);
+    if (sel){                                        // stor pil-markør
+      const pulse=2*Math.sin(now()/180);
+      ctx.fillStyle='#ffd54f'; ctx.font=`900 ${Math.min(22,b.h*0.44)}px system-ui`;
+      ctx.fillText('▶', b.x+12+pulse, b.y+b.h/2);
+    }
+    ctx.globalAlpha=1;
   });
+  if (!IS_TOUCH){
+    const lb=choiceOverlay.boxes[choiceOverlay.boxes.length-1];
+    ctx.fillStyle='rgba(255,255,255,.85)'; ctx.font='700 13px system-ui'; ctx.textAlign='center';
+    ctx.fillText('Piletaster = vælg · Enter = OK (eller klik)', VW/2, lb.y+lb.h+26);
+    ctx.textAlign='left';
+  }
   ctx.textBaseline='alphabetic';
 }
 function drawInfoCardOverlay(){
@@ -3647,18 +3665,32 @@ function interactGreenland(){
 }
 
 function larsDialogueStep(){
+  // RPG-valg (mor-testen 1b): efter hver replik-runde vælger spilleren
+  // selv mellem mere kedelig diplomati eller kamp — ingen tvungen maraton
   if (GL.state.larsMiniGameStarted || GL.lars.blownUp) return;
   const T=DATA.DIALOG.TRUMP_ABSURD, M=DATA.DIALOG.METTE_DIPLO;
   const maxRounds=Math.min(T.length,5);
   const round=GL.state.larsDialogRounds||0;
-  if (round>=maxRounds){ startGreenlandFight(); return; }
-  const isLast=(round+1)>=maxRounds;
-  say(player, T[round], 2000);
-  if (M[round] && !isLast) say(GL.lars, M[round], 120000);
-  else { GL.lars.say=''; GL.lars.speakingUntil=0; }
+  if (round>=maxRounds-1){
+    say(player, T[maxRounds-1], 2000);   // "Enough talk. Now fight."
+    GL.lars.say=''; GL.lars.speakingUntil=0;
+    GL.state.larsDialogRounds=round+1;
+    setTimeout(()=>startGreenlandFight(), 1600);
+    return;
+  }
+  say(player, T[round], 2200);
+  if (M[round]) say(GL.lars, M[round], 120000);
   GL.state.larsDialogRounds=round+1;
-  if (isLast) setTimeout(()=>startGreenlandFight(), 2050);
   GL.lars.nextBlink=now()+2000+Math.random()*3000;
+  setTimeout(()=>{
+    if (GL.state.larsMiniGameStarted || GL.lars.blownUp || scene!==SCENE.GREENLAND || GS.over) return;
+    openChoice(DATA.DIALOG.CHOICE_HEADER,
+      [DATA.DIALOG.CHOICE_DIPLO, DATA.DIALOG.CHOICE_FIGHT], k=>{
+        closeChoice();
+        if (k==='2') startGreenlandFight();
+        else larsDialogueStep();
+      });
+  },1500);
 }
 function startGreenlandFight(){
   if (GL.state.larsFightRequested || GL.lars.blownUp) return;
@@ -6690,6 +6722,14 @@ function drawTowerElevatorBack(dx){
     if (TW.floor>=1 && TW.floor<TOWER_PENTHOUSE_FLOOR && openAmt>0.15){
       ctx.save(); ctx.beginPath(); ctx.rect(voidX,voidY,voidW,voidH); ctx.clip();
       ctx.globalAlpha=clamp((openAmt-0.15)/0.5,0,1);
+      // man kigger IND PÅ ETAGEN: oplyst rum med væg, fodpanel og gulv —
+      // så joke-opstillingen står i lokalet, ikke inde i elevatoren
+      ctx.fillStyle='#ded3ba'; ctx.fillRect(voidX,voidY,voidW,voidH);
+      ctx.fillStyle='#c9bda0'; ctx.fillRect(voidX,voidY,voidW,3);
+      ctx.fillStyle='#8a7a55'; ctx.fillRect(voidX,GROUND_Y-10,voidW,10);
+      ctx.fillStyle='#6e6244'; ctx.fillRect(voidX,GROUND_Y-12,voidW,2);
+      ctx.fillStyle='rgba(0,0,0,.16)';
+      ctx.fillRect(voidX,voidY,5,voidH); ctx.fillRect(voidX+voidW-5,voidY,5,voidH);
       drawTowerFloorVignette(DATA.TOWER.FLOORS[TW.floor-1].kind, dx);
       ctx.restore();
     }
@@ -6708,6 +6748,66 @@ function drawTowerElevatorBack(dx){
   ctx.fillText('▲', TW.button.x, by+4);
   ctx.textAlign='left';
   if (!inPenthouse) drawTowerFloorPlaque(dx);
+  else drawTowerPenthouseView(dx);
+}
+function drawTowerPenthouseView(dx){
+  // panoramavindue med Central Park set fra penthousen (tegnet, pixel-stil)
+  const openAmt=towerDoorOpenAmount(); if (openAmt<=0.05) return;
+  const px=dx-268, py=GROUND_Y-176, pw=204, ph=118;
+  ctx.save(); ctx.globalAlpha=clamp(openAmt*1.6,0,1);
+  ctx.fillStyle='#2a2210'; ctx.fillRect(px-7,py-7,pw+14,ph+14);
+  ctx.fillStyle='#c9a641'; ctx.fillRect(px-3,py-3,pw+6,ph+6);
+  const sky=ctx.createLinearGradient(0,py,0,py+ph);
+  sky.addColorStop(0,'#8ec9f0'); sky.addColorStop(.45,'#cde9fa'); sky.addColorStop(1,'#e4f2e2');
+  ctx.fillStyle=sky; ctx.fillRect(px,py,pw,ph);
+  ctx.fillStyle='#ffe9a0'; ctx.beginPath(); ctx.arc(px+pw-26,py+17,9,0,Math.PI*2); ctx.fill();
+  // fjern skyline i horisonten
+  ctx.fillStyle='#9fb0c0';
+  for (let i=0;i<9;i++){
+    const bw=10+(i*7)%12, bh=12+(i*11)%18, bx=px+6+i*(pw-20)/9;
+    ctx.fillRect(bx,py+ph*0.42-bh,bw,bh);
+  }
+  // parken som grønt perspektiv-bånd ned mod beskueren
+  ctx.fillStyle='#4e9e57'; ctx.beginPath();
+  ctx.moveTo(px+pw*0.40,py+ph*0.42); ctx.lineTo(px+pw*0.60,py+ph*0.42);
+  ctx.lineTo(px+pw*0.88,py+ph); ctx.lineTo(px+pw*0.12,py+ph);
+  ctx.closePath(); ctx.fill();
+  // sø + trækroner (større jo tættere på)
+  ctx.fillStyle='#7fc4e8'; ctx.beginPath(); ctx.ellipse(px+pw*0.5,py+ph*0.68,pw*0.075,ph*0.05,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#3b7d43';
+  for (let i=0;i<16;i++){
+    const yy=py+ph*(0.47+0.48*(((i*37)%100)/100));
+    const depth=(yy-py)/ph;
+    const spread=0.42-0.26*depth;
+    const xx=px+pw*(0.5+((i%2?1:-1))*spread*(((i*53)%100)/100));
+    ctx.beginPath(); ctx.arc(xx,yy,1.5+3.5*depth,0,Math.PI*2); ctx.fill();
+  }
+  // bygningsrækkerne der flankerer parken
+  ctx.fillStyle='#6e7f90';
+  for (let i=0;i<5;i++){
+    const t=i/5, yy=py+ph*(0.46+t*0.5), bh=7+t*24, bwd=5+t*13;
+    ctx.fillRect(px+pw*(0.40-t*0.29)-bwd, yy-bh, bwd, bh);
+    ctx.fillRect(px+pw*(0.60+t*0.29), yy-bh, bwd, bh);
+  }
+  // gule taxier på gaden nederst
+  ctx.fillStyle='#f7c948';
+  for (let i=0;i<4;i++) ctx.fillRect(px+pw*(0.18+i*0.19), py+ph-6, 7,3);
+  // glasrefleks + vinduessprosse
+  ctx.fillStyle='rgba(255,255,255,.10)'; ctx.beginPath();
+  ctx.moveTo(px+pw*0.12,py); ctx.lineTo(px+pw*0.30,py); ctx.lineTo(px+pw*0.04,py+ph); ctx.lineTo(px,py+ph*0.78);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(42,34,16,.8)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(px+pw/2,py); ctx.lineTo(px+pw/2,py+ph); ctx.stroke();
+  // messingskilt under vinduet
+  const label=(DATA.TOWER.LINES.viewLabel||'CENTRAL PARK');
+  ctx.font='bold 8px system-ui';
+  const lw2=ctx.measureText(label).width+18;
+  ctx.fillStyle='#1c1c1c'; roundRectPath(ctx,px+pw/2-lw2/2,py+ph+9,lw2,16,4); ctx.fill();
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=1.5; roundRectPath(ctx,px+pw/2-lw2/2,py+ph+9,lw2,16,4); ctx.stroke();
+  ctx.fillStyle='#e9c766'; ctx.textAlign='center';
+  ctx.fillText(label, px+pw/2, py+ph+20);
+  ctx.textAlign='left';
+  ctx.restore();
 }
 // Drawn AFTER Trump so the sliding panels visually swallow him on close
 // and reveal him on open — order matters here, unlike most of the scene.
@@ -7200,6 +7300,9 @@ addEventListener('keydown', e=>{
     return;
   }
   if (FINALE.active){ finaleKey(k); e.preventDefault(); return; }
+  if (k==='arrowleft'||k==='arrowright'){ KEYHINTS.moved=KEYHINTS.moved||now(); }
+  if (k==='e'||e.code==='KeyE'){ KEYHINTS.used=KEYHINTS.used||now(); }
+  if (k==='arrowup'||k===' '){ KEYHINTS.jumped=KEYHINTS.jumped||now(); }
   if (FightEngine.active){
     if (k==='arrowleft'||k==='a'){ keys.add('fl'); handled=true; }
     else if (k==='arrowright'||k==='d'){ keys.add('fr'); handled=true; }
@@ -7221,8 +7324,8 @@ addEventListener('keydown', e=>{
   }
   if (choiceOverlay){
     const n=choiceOverlay.options.length;
-    if (k==='arrowup'||k==='w'){ choiceOverlay.selected=(choiceOverlay.selected-1+n)%n; handled=true; }
-    else if (k==='arrowdown'||k==='s'){ choiceOverlay.selected=(choiceOverlay.selected+1)%n; handled=true; }
+    if (k==='arrowup'||k==='arrowleft'||k==='w'){ choiceOverlay.selected=(choiceOverlay.selected-1+n)%n; handled=true; }
+    else if (k==='arrowdown'||k==='arrowright'||k==='s'){ choiceOverlay.selected=(choiceOverlay.selected+1)%n; handled=true; }
     else if (k==='enter'||k===' '){ choiceOverlay.onKey(choiceOverlay.options[choiceOverlay.selected].key); handled=true; }
     else if (k>='1'&&k<='9'&&k.length===1){ const i=+k-1; if (i<n){ choiceOverlay.onKey(k); handled=true; } }
     else if (k==='escape'){ closeChoice(); handled=true; }
@@ -7377,6 +7480,44 @@ cvs.addEventListener('pointercancel', releasePointer);
 cvs.addEventListener('touchstart', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 cvs.addEventListener('touchmove', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
 cvs.addEventListener('touchend', e=>{ if (scene===SCENE.GOLF) e.preventDefault(); }, {passive:false});
+
+/* Desktop taste-hints (mor-testen #1): "← → gå · E brug" nederst midtfor,
+   hver del kvitterer med flueben og det hele fader når begge er brugt. */
+const KEYHINTS={moved:0,used:0};
+function drawKeyHints(){
+  if (IS_TOUCH || GS.over || anyOverlayActive() || FightEngine.active) return;
+  if (scene===SCENE.GOLF || scene===SCENE.EPSTEIN) return; // egne kontroller
+  const t=now();
+  const doneAt=(KEYHINTS.moved&&KEYHINTS.used&&KEYHINTS.jumped)
+    ? Math.max(KEYHINTS.moved,KEYHINTS.used,KEYHINTS.jumped) : 0;
+  if (doneAt && t>doneAt+1500) return;
+  const fade=doneAt?1-clamp((t-doneAt-300)/1200,0,1):1;
+  beginScreen();
+  ctx.save(); ctx.globalAlpha=0.92*fade;
+  const items=[['\u2190 \u2192','g\u00e5',KEYHINTS.moved],['E','brug',KEYHINTS.used],['\u2191','hop',KEYHINTS.jumped]];
+  ctx.font='800 14px system-ui'; ctx.textBaseline='middle';
+  const pad=10, gap=12, kw=i=>ctx.measureText(items[i][0]).width+pad*2;
+  ctx.font='600 13px system-ui';
+  const lw=i=>ctx.measureText(items[i][1]).width;
+  let total=0; for (let i=0;i<items.length;i++) total+=kw(i)+8+lw(i)+(i<items.length-1?gap+10:0);
+  let x=VW/2-total/2; const y=VH-34;
+  items.forEach(([key,label,done],i)=>{
+    ctx.font='800 14px system-ui';
+    const w=ctx.measureText(key).width+pad*2;
+    ctx.fillStyle=done?'rgba(80,160,90,.9)':'rgba(20,24,40,.85)';
+    roundRectPath(ctx,x,y-14,w,28,7); ctx.fill();
+    ctx.strokeStyle=done?'#7fd08c':'#ffd54f'; ctx.lineWidth=2;
+    roundRectPath(ctx,x,y-14,w,28,7); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.textAlign='center';
+    ctx.fillText(done?'\u2713':key, x+w/2, y+1);
+    x+=w+8;
+    ctx.font='600 13px system-ui'; ctx.textAlign='left';
+    ctx.fillStyle='rgba(255,255,255,.95)';
+    ctx.fillText(label, x, y+1);
+    x+=ctx.measureText(label).width+gap+10;
+  });
+  ctx.restore(); ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
 
 /* Desktop hover (Spor A2): mus over interaktivt objekt -> glow + pointer.
    Genbruger levels tapTargets(); rank>0 (store baggrundsobjekter) glower
@@ -7686,6 +7827,7 @@ function step(t){
     paintStageBackdrop();
     { const Lv=currentLevel(); if (Lv && Lv.draw) Lv.draw(); }
     if (!IS_TOUCH) drawHoverGlow();
+    if (!IS_TOUCH) drawKeyHints();
     if (FightEngine.active) FightEngine.draw();
     // overlays (screen space)
     if (choiceOverlay) drawChoiceOverlay();
