@@ -6415,10 +6415,13 @@ registerLevel({
   id:SCENE.GREENLAND, name:'Greenland', worldW:CFG.GREENLAND_W,
   reset:resetGreenland,
   onWalkInDone(){
-    startWalkTo(player.x+40, ()=>{
+    // gå et godt stykke VÆK fra helikopteren (dens tap-felt er bredt,
+    // ca. 180-400): ellers åbner et hurtigt E-tryk heli-menuen med det
+    // samme, og taleboblen lå oven i heli-hintet (Kristian 2026-07-12)
+    startWalkTo(455, ()=>{
       if (entryHeli.line) say(player,entryHeli.line,1800);
       if (!GL.introCardShown){ GL.introCardShown=true; openInfoCard(DATA.GREENLAND.INTRO_CARD, ()=>{ closeInfoCard(); }); }
-    });
+    }, 4000);
   },
   draw:drawGreenland,
   update(dt){

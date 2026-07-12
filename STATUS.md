@@ -419,6 +419,15 @@ er kørt, men Kristian bør se skærmbillederne/spille det igennem.
 
 Screenshots verificeret (etage + penthouse), fuld regression grøn.
 
+## Landing-gåtur forlænget — 2026-07-12 ✅ (Fable)
+
+Trump går nu hen til minen (x=455) efter helikopterlandingen i Grønland:
+taleboblen ligger ikke længere oven i heli-hintet, og et hurtigt E-tryk
+kan ikke længere åbne heli-menuen ved et uheld (helikopterens tap-felt
+går til x=400, INTERACT_DIST=48). Verificeret: dobbelt-E efter landing
+holder spilleren i Grønland. regression.mjs justeret (startskiltet
+åbner nu ~4,2 s inde pga. den længere gåtur).
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
