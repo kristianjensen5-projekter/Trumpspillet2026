@@ -3178,23 +3178,24 @@ function drawContinueOverlay(){
   ctx.textAlign='center';
   // mor-testen r2 #2: utvetydig dansk forklaring af hvad der sker og
   // hvad man skal GØRE — før var det kun en gådefuld maskine
+  const hy0=Math.max(44,VH*0.10);
   ctx.fillStyle='#8b0000';
   ctx.font=`900 ${clamp(VW*0.05,20,30)}px "Courier New",monospace`;
-  ctx.fillText('GAME OVER', VW/2, Math.max(30,VH*0.05));
+  ctx.fillText('GAME OVER', VW/2, hy0);
   ctx.fillStyle='#141414';
   ctx.font=`bold ${clamp(VW*0.026,12,17)}px "Courier New",monospace`;
-  ctx.fillText('...men i Amerika kan man altid STEMME sig til en chance til', VW/2, Math.max(52,VH*0.05+24));
+  ctx.fillText('...men i Amerika kan man altid STEMME sig til en chance til', VW/2, hy0+26);
   if (C.phase==='idle'){
     ctx.save(); ctx.globalAlpha=0.55+0.45*Math.sin(t/300);
     ctx.fillStyle='#8b0000';
     ctx.font=`900 ${clamp(VW*0.028,13,18)}px system-ui`;
-    ctx.fillText('▼ Tryk på en tast (eller tap på maskinen) for at stemme ▼', VW/2, Math.max(70,VH*0.05+46));
+    ctx.fillText('▼ Tryk på en tast (eller tap på maskinen) for at stemme ▼', VW/2, hy0+52);
     ctx.restore();
   }
   // ---- THE MACHINE (full-screen star of the show) ----
   const mW=Math.min(VW*0.86, 460);
-  const mH=Math.min(VH*0.52, mW*1.05);
-  let mX=(VW-mW)/2, mY=VH*0.13;
+  const mH=Math.min(VH*0.50, mW*1.05);
+  let mX=(VW-mW)/2, mY=Math.max(VH*0.22, hy0+64);
   // ballot-rejection shake
   if (t<C.shakeUntil){
     mX+=(Math.random()-0.5)*14; mY+=(Math.random()-0.5)*8;
@@ -6774,15 +6775,18 @@ function drawTowerElevatorBack(dx){
     if (TW.floor>=1 && TW.floor<TOWER_PENTHOUSE_FLOOR && openAmt>0.15){
       ctx.save(); ctx.beginPath(); ctx.rect(voidX,voidY,voidW,voidH); ctx.clip();
       ctx.globalAlpha=clamp((openAmt-0.15)/0.5,0,1);
-      // man kigger IND PÅ ETAGEN: oplyst rum med væg, fodpanel og gulv —
-      // så joke-opstillingen står i lokalet, ikke inde i elevatoren
+      // døråbningen = tomt oplyst rum; selve joke-opstillingen står
+      // UDE PÅ ETAGEN ved siden af elevatoren (tegnes nedenfor, uden clip)
       ctx.fillStyle='#ded3ba'; ctx.fillRect(voidX,voidY,voidW,voidH);
       ctx.fillStyle='#c9bda0'; ctx.fillRect(voidX,voidY,voidW,3);
       ctx.fillStyle='#8a7a55'; ctx.fillRect(voidX,GROUND_Y-10,voidW,10);
       ctx.fillStyle='#6e6244'; ctx.fillRect(voidX,GROUND_Y-12,voidW,2);
       ctx.fillStyle='rgba(0,0,0,.16)';
       ctx.fillRect(voidX,voidY,5,voidH); ctx.fillRect(voidX+voidW-5,voidY,5,voidH);
-      drawTowerFloorVignette(DATA.TOWER.FLOORS[TW.floor-1].kind, dx);
+      ctx.restore();
+      ctx.save();
+      ctx.globalAlpha=clamp((openAmt-0.15)/0.5,0,1);
+      drawTowerFloorVignette(DATA.TOWER.FLOORS[TW.floor-1].kind, dx-116);
       ctx.restore();
     }
   }
@@ -6800,66 +6804,47 @@ function drawTowerElevatorBack(dx){
   ctx.fillText('▲', TW.button.x, by+4);
   ctx.textAlign='left';
   if (!inPenthouse) drawTowerFloorPlaque(dx);
-  else drawTowerPenthouseView(dx);
 }
-function drawTowerPenthouseView(dx){
-  // panoramavindue med Central Park set fra penthousen (tegnet, pixel-stil)
-  const openAmt=towerDoorOpenAmount(); if (openAmt<=0.05) return;
-  const px=dx-268, py=GROUND_Y-176, pw=204, ph=118;
-  ctx.save(); ctx.globalAlpha=clamp(openAmt*1.6,0,1);
-  ctx.fillStyle='#2a2210'; ctx.fillRect(px-7,py-7,pw+14,ph+14);
-  ctx.fillStyle='#c9a641'; ctx.fillRect(px-3,py-3,pw+6,ph+6);
+function drawCentralParkView(px,py,pw,ph){
+  // Central Park set fra penthousen — fylder HELE vinduet (mor r3 #3)
   const sky=ctx.createLinearGradient(0,py,0,py+ph);
   sky.addColorStop(0,'#8ec9f0'); sky.addColorStop(.45,'#cde9fa'); sky.addColorStop(1,'#e4f2e2');
   ctx.fillStyle=sky; ctx.fillRect(px,py,pw,ph);
-  ctx.fillStyle='#ffe9a0'; ctx.beginPath(); ctx.arc(px+pw-26,py+17,9,0,Math.PI*2); ctx.fill();
-  // fjern skyline i horisonten
+  ctx.fillStyle='#ffe9a0'; ctx.beginPath(); ctx.arc(px+pw*0.82,py+ph*0.14,ph*0.08,0,Math.PI*2); ctx.fill();
   ctx.fillStyle='#9fb0c0';
-  for (let i=0;i<9;i++){
-    const bw=10+(i*7)%12, bh=12+(i*11)%18, bx=px+6+i*(pw-20)/9;
-    ctx.fillRect(bx,py+ph*0.42-bh,bw,bh);
+  for (let i=0;i<14;i++){
+    const bw=pw*0.02+((i*7)%9)*pw*0.006, bh=ph*0.10+((i*11)%17)*ph*0.008;
+    ctx.fillRect(px+pw*0.02+i*(pw*0.96)/14, py+ph*0.42-bh, bw, bh);
   }
-  // parken som grønt perspektiv-bånd ned mod beskueren
   ctx.fillStyle='#4e9e57'; ctx.beginPath();
-  ctx.moveTo(px+pw*0.40,py+ph*0.42); ctx.lineTo(px+pw*0.60,py+ph*0.42);
-  ctx.lineTo(px+pw*0.88,py+ph); ctx.lineTo(px+pw*0.12,py+ph);
+  ctx.moveTo(px+pw*0.42,py+ph*0.42); ctx.lineTo(px+pw*0.58,py+ph*0.42);
+  ctx.lineTo(px+pw*0.84,py+ph); ctx.lineTo(px+pw*0.16,py+ph);
   ctx.closePath(); ctx.fill();
-  // sø + trækroner (større jo tættere på)
-  ctx.fillStyle='#7fc4e8'; ctx.beginPath(); ctx.ellipse(px+pw*0.5,py+ph*0.68,pw*0.075,ph*0.05,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#7fc4e8'; ctx.beginPath(); ctx.ellipse(px+pw*0.5,py+ph*0.68,pw*0.06,ph*0.05,0,0,Math.PI*2); ctx.fill();
   ctx.fillStyle='#3b7d43';
-  for (let i=0;i<16;i++){
-    const yy=py+ph*(0.47+0.48*(((i*37)%100)/100));
-    const depth=(yy-py)/ph;
-    const spread=0.42-0.26*depth;
+  for (let i=0;i<20;i++){
+    const yy=py+ph*(0.46+0.5*(((i*37)%100)/100));
+    const depth=(yy-py)/ph, spread=0.40-0.24*depth;
     const xx=px+pw*(0.5+((i%2?1:-1))*spread*(((i*53)%100)/100));
-    ctx.beginPath(); ctx.arc(xx,yy,1.5+3.5*depth,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(xx,yy,ph*0.012+ph*0.03*depth,0,Math.PI*2); ctx.fill();
   }
-  // bygningsrækkerne der flankerer parken
   ctx.fillStyle='#6e7f90';
-  for (let i=0;i<5;i++){
-    const t=i/5, yy=py+ph*(0.46+t*0.5), bh=7+t*24, bwd=5+t*13;
-    ctx.fillRect(px+pw*(0.40-t*0.29)-bwd, yy-bh, bwd, bh);
-    ctx.fillRect(px+pw*(0.60+t*0.29), yy-bh, bwd, bh);
+  for (let i=0;i<6;i++){
+    const t=i/6, yy=py+ph*(0.46+t*0.52), bh=ph*0.06+t*ph*0.2, bwd=pw*0.012+t*pw*0.03;
+    ctx.fillRect(px+pw*(0.42-t*0.30)-bwd, yy-bh, bwd, bh);
+    ctx.fillRect(px+pw*(0.58+t*0.30), yy-bh, bwd, bh);
   }
-  // gule taxier på gaden nederst
   ctx.fillStyle='#f7c948';
-  for (let i=0;i<4;i++) ctx.fillRect(px+pw*(0.18+i*0.19), py+ph-6, 7,3);
-  // glasrefleks + vinduessprosse
-  ctx.fillStyle='rgba(255,255,255,.10)'; ctx.beginPath();
-  ctx.moveTo(px+pw*0.12,py); ctx.lineTo(px+pw*0.30,py); ctx.lineTo(px+pw*0.04,py+ph); ctx.lineTo(px,py+ph*0.78);
-  ctx.closePath(); ctx.fill();
-  ctx.strokeStyle='rgba(42,34,16,.8)'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(px+pw/2,py); ctx.lineTo(px+pw/2,py+ph); ctx.stroke();
-  // messingskilt under vinduet
+  for (let i=0;i<5;i++) ctx.fillRect(px+pw*(0.16+i*0.16), py+ph-ph*0.045, pw*0.014, ph*0.02);
+  // messingskilt nederst i vinduet
   const label=(DATA.TOWER.LINES.viewLabel||'CENTRAL PARK');
-  ctx.font='bold 8px system-ui';
+  ctx.font='bold 9px system-ui';
   const lw2=ctx.measureText(label).width+18;
-  ctx.fillStyle='#1c1c1c'; roundRectPath(ctx,px+pw/2-lw2/2,py+ph+9,lw2,16,4); ctx.fill();
-  ctx.strokeStyle='#c9a641'; ctx.lineWidth=1.5; roundRectPath(ctx,px+pw/2-lw2/2,py+ph+9,lw2,16,4); ctx.stroke();
+  ctx.fillStyle='rgba(20,20,20,.88)'; roundRectPath(ctx,px+pw/2-lw2/2,py+ph-24,lw2,17,4); ctx.fill();
+  ctx.strokeStyle='#c9a641'; ctx.lineWidth=1.5; roundRectPath(ctx,px+pw/2-lw2/2,py+ph-24,lw2,17,4); ctx.stroke();
   ctx.fillStyle='#e9c766'; ctx.textAlign='center';
-  ctx.fillText(label, px+pw/2, py+ph+20);
+  ctx.fillText(label, px+pw/2, py+ph-12);
   ctx.textAlign='left';
-  ctx.restore();
 }
 // Drawn AFTER Trump so the sliding panels visually swallow him on close
 // and reveal him on open — order matters here, unlike most of the scene.
@@ -6881,16 +6866,8 @@ function drawPenthouseBackdrop(){
   ctx.fillStyle=grad; ctx.fillRect(CAM.x-2,0,CAM.viewW+4,GROUND_Y);
   const winX=CAM.x+40, winW=CAM.viewW-80, winY=40, winH=GROUND_Y-90;
   if (winW>20){
-    ctx.fillStyle='#ffdca0'; ctx.fillRect(winX,winY,winW,winH);
     ctx.save(); ctx.beginPath(); ctx.rect(winX,winY,winW,winH); ctx.clip();
-    ctx.fillStyle='#ffb366'; ctx.beginPath(); ctx.arc(winX+winW*0.7, winY+winH*0.35, 46,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#3a2a4a';
-    let bx=winX-20;
-    while (bx<winX+winW+20){
-      const bw=30+((bx*7)%40), bh=60+((bx*13)%120);
-      ctx.fillRect(bx, winY+winH-bh, bw, bh);
-      bx+=bw+8;
-    }
+    drawCentralParkView(winX,winY,winW,winH);
     ctx.restore();
     ctx.strokeStyle='#c9a641'; ctx.lineWidth=6; ctx.strokeRect(winX,winY,winW,winH);
     ctx.strokeStyle='#c9a641'; ctx.lineWidth=3;

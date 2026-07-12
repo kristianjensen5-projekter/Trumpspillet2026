@@ -406,6 +406,19 @@ Fuld regression grøn. UDESTÅR: visuel gennemgang af 1/1b/1c/2 med
 screenshots (desktop+mobil) før endelig deploy-blåstempling — deployet
 er kørt, men Kristian bør se skærmbillederne/spille det igennem.
 
+## Mor-test runde 3 (Kristians gennemspil) — 2026-07-12 ✅ (Fable)
+
+1. ✅ Voting machine: GAME OVER-blokken flyttet ned i læsbart område
+   (før: klippet i toppen/bag taleboblen) og maskinen rykket med ned
+2. ✅ Tower: joke-opstillingerne står nu UDE PÅ ETAGEN til venstre for
+   elevatoren (før: i døråbningen = lignede elevatorens indre);
+   døråbningen er et rent oplyst rum
+3. ✅ Penthouse: Central Park-udsigten fylder nu HELE det store
+   panoramavindue (de lilla skyskraber-firkanter er væk); messingskilt
+   nederst i vinduet. Genbrugelig `drawCentralParkView(px,py,pw,ph)`
+
+Screenshots verificeret (etage + penthouse), fuld regression grøn.
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
