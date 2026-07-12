@@ -384,6 +384,28 @@ fuld oversættelse). Regression grøn + skærmbilleder tjekket.
 Verificeret: screenshots af alle fem + fuld regression + finale-flow —
 alle grønne, 0 pageerrors.
 
+## Mor-test runde 2 — implementeret 2026-07-12 ✅ (Fable)
+
+1. ✅ **Infokort skygger ikke længere for banen:** ALLE kort er docket i
+   TOPPEN (himlen er død plads i alle baner — handlingen foregår ved
+   jorden), baggrunden dæmpes kun let. Én løsning, virker på begge formater
+1b. ✅ **Executive Screen-hvileskærm:** kun "PRESS THE BLACK BUTTON" +
+   kæmpe pulserende gul pil ned mod knappen — ingen tekst at lede
+   efter pointer i. Jokes kommer først NÅR man trykker
+1c. ✅ **QAnon-lokkeren (mors idé):** efter 2. policy lister QAnon ind
+   fra højre, stiller sig ved den røde knap med hviskeboble ("Psst. The
+   RED one. The plan demands it.") + pulserende rød pil mod knappen
+2. ✅ **Voting machine forklaret:** stor dansk "GAME OVER"-overskrift +
+   "...men i Amerika kan man altid STEMME sig til en chance til" +
+   pulserende "Tryk på en tast for at stemme"-instruktion
+3. ✅ **Butikken:** bekræftet at den kører på samme menu-system som
+   helikopteren — piletaster/markering/hjælpelinje kom automatisk med
+   menu-fixet fra runde 1 (mors test lå FØR det fix)
+
+Fuld regression grøn. UDESTÅR: visuel gennemgang af 1/1b/1c/2 med
+screenshots (desktop+mobil) før endelig deploy-blåstempling — deployet
+er kørt, men Kristian bør se skærmbillederne/spille det igennem.
+
 ## Næste skridt
 
 - Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone

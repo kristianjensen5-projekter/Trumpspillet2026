@@ -464,7 +464,9 @@
       "buttonHint": "Stand by a button first.",
       "nukeLine": "Who wrote this label?",
       "libraryLabel": "THE TRUMP PRESIDENTIAL LIBRARY",
-      "libraryLabel2": "EAST WING ANNEX"
+      "libraryLabel2": "EAST WING ANNEX",
+      "idleLine": "PRESS THE BLACK BUTTON",
+      "lurkLine": "Psst. The RED one. The plan demands it."
     },
     "PRAISE": [
       "Genius move, sir!",
@@ -2818,10 +2820,13 @@ function drawChoiceOverlay(){
   ctx.textBaseline='alphabetic';
 }
 function drawInfoCardOverlay(){
+  // Docket i TOPPEN (mor-testen r2 #1): al handling i banerne foregår ved
+  // jorden, så himlen er død plads på BÅDE mobil og desktop — kortet må
+  // aldrig skygge for det man skal forstå. Baggrunden dæmpes kun let.
   beginScreen();
-  ctx.fillStyle='rgba(0,0,0,.6)'; ctx.fillRect(0,0,VW,VH);
-  const w=Math.min(VW*0.86,620), h=Math.min(VH*0.6,380);
-  const x=(VW-w)/2, y=(VH-h)/2;
+  ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(0,0,VW,VH);
+  const w=Math.min(VW*0.9,620), h=Math.min(VH*0.42,300);
+  const x=(VW-w)/2, y=Math.max(14,VH*0.03);
   ctx.fillStyle='#f7f5ee'; ctx.fillRect(x,y,w,h);
   ctx.strokeStyle='#c9a641'; ctx.lineWidth=6; ctx.strokeRect(x-6,y-6,w+12,h+12);
   ctx.strokeStyle='#8b7355'; ctx.lineWidth=2; ctx.strokeRect(x-2,y-2,w+4,h+4);
@@ -3171,10 +3176,21 @@ function drawContinueOverlay(){
   const t=now();
   ctx.fillStyle='#efe8d2'; ctx.fillRect(0,0,VW,VH);
   ctx.textAlign='center';
-  // framing line
+  // mor-testen r2 #2: utvetydig dansk forklaring af hvad der sker og
+  // hvad man skal GØRE — før var det kun en gådefuld maskine
+  ctx.fillStyle='#8b0000';
+  ctx.font=`900 ${clamp(VW*0.05,20,30)}px "Courier New",monospace`;
+  ctx.fillText('GAME OVER', VW/2, Math.max(30,VH*0.05));
   ctx.fillStyle='#141414';
-  ctx.font=`bold ${clamp(VW*0.034,14,22)}px "Courier New",monospace`;
-  ctx.fillText('Out of luck? In America, you can always VOTE.', VW/2, Math.max(34,VH*0.07));
+  ctx.font=`bold ${clamp(VW*0.026,12,17)}px "Courier New",monospace`;
+  ctx.fillText('...men i Amerika kan man altid STEMME sig til en chance til', VW/2, Math.max(52,VH*0.05+24));
+  if (C.phase==='idle'){
+    ctx.save(); ctx.globalAlpha=0.55+0.45*Math.sin(t/300);
+    ctx.fillStyle='#8b0000';
+    ctx.font=`900 ${clamp(VW*0.028,13,18)}px system-ui`;
+    ctx.fillText('▼ Tryk på en tast (eller tap på maskinen) for at stemme ▼', VW/2, Math.max(70,VH*0.05+46));
+    ctx.restore();
+  }
   // ---- THE MACHINE (full-screen star of the show) ----
   const mW=Math.min(VW*0.86, 460);
   const mH=Math.min(VH*0.52, mW*1.05);
@@ -3934,6 +3950,7 @@ function resetOval(){
     {kind:'vance',label:'VANCE',x:120,nextBlink:0,blinkUntil:0,nodPhase:Math.random()*6.28}
   ];
   OV.yes.say=''; OV.yes.speakingUntil=0; OV.yes.mood='happy'; OV.yes.reactions=[];
+  OV.lurk=null;
   OV.coins = DATA.OVAL.COINS.map(([x,dy])=>({x,y:GROUND_Y+dy,collected:false,type:'coin'}));
   resetOvalDecisions();
   playEntryHeli(OL.arrive,{x:OV.landingX});
@@ -3973,6 +3990,7 @@ function ovalPressPolicy(){
   d.policyCount++;
   d.policyFlashUntil=t+430;
   d.cheerUntil=t+1550;
+  if (d.policyCount===2 && !OV.lurk) OV.lurk={start:t}; // QAnon-lokkeren (mor r2 1c)
   OV.policy.pressed=true;
   setTimeout(()=>{ OV.policy.pressed=false; },160);
   ovalChoir(true);
@@ -4193,6 +4211,26 @@ function drawOvalReactionText(text,x,y){
   ctx.fillStyle='#111'; ctx.fillText(text,x,y+1);
   ctx.restore();
 }
+function drawOvalLurker(){
+  // mor-testen r2 1c: efter 2. policy kommer QAnon ind fra højre,
+  // stiller sig ved den røde knap og lokker — med pil og hviskeboble
+  if (!OV.lurk || NUKE.active) return;
+  const t=now(), age=t-OV.lurk.start;
+  const targetX=OV.deskX+OV.deskW+(OV.compact?26:46);
+  const startX=CAM.x+CAM.viewW+40;
+  const k=1-Math.pow(1-clamp(age/900,0,1),3);
+  const x=startX+(targetX-startX)*k;
+  const hop=k<1?Math.abs(Math.sin(age/70))*5:0;
+  ctx.save(); ctx.translate(x,GROUND_Y-hop); ctx.scale(.9,.9);
+  drawYesArchetype({kind:'qanon',label:'QANON',x:0}, k>=1 && Math.sin(t/400)>0, 0);
+  ctx.restore();
+  if (k>=1){
+    if ((t/3800)%1<0.6) drawOvalReactionText(OL.lurkLine||'Psst. The RED one.', x, GROUND_Y-142);
+    const bx=OV.surprise.x, by=OV.surprise.y-52+Math.sin(t/220)*4;
+    ctx.fillStyle='#ff5b4d';
+    ctx.beginPath(); ctx.moveTo(bx-9,by-15); ctx.lineTo(bx+9,by-15); ctx.lineTo(bx,by); ctx.closePath(); ctx.fill();
+  }
+}
 function drawOvalYesRunners(){
   // world-space: they run in ON THE FLOOR, cheer, run out again.
   // Wide: in from the door, cheering left of the desk.
@@ -4271,9 +4309,9 @@ function drawOvalTV(){
     ctx.fillStyle='#fff';
     ctx.fillText(policy.kicker,x+w/2,y+(OV.compact?37:39));
   }
-  if (!(policy && policy.big)){
+  if (policy && !policy.big){
     ctx.fillStyle='#86d6ff'; ctx.font=`bold ${OV.compact?11:13}px system-ui`;
-    ctx.fillText(policy?policy.title:'NO POLICY YET',x+w/2,y+(OV.compact?52:57));
+    ctx.fillText(policy.title,x+w/2,y+(OV.compact?52:57));
   }
   if (policy && policy.mediaMode==='post'){
     // the post itself pops out as a big lightbox (drawOvalPostLightbox);
@@ -4294,9 +4332,22 @@ function drawOvalTV(){
     ctx.fillText(policy.big, x+w/2, y+(OV.compact?90:110));
     ctx.fillStyle='#9fd8ff'; ctx.font=`${OV.compact?9:12}px system-ui`;
     ovalWrap(policy.body,x+18,y+(OV.compact?104:130),w-36,OV.compact?11:14,2,'center');
-  } else {
+  } else if (policy){
     ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?10:12}px system-ui`;
-    ovalWrap(policy?policy.body:OL.policyDefault,x+18,y+(OV.compact?72:82),w-36,OV.compact?12:15,OV.compact?4:4,'center');
+    ovalWrap(policy.body,x+18,y+(OV.compact?72:82),w-36,OV.compact?12:15,OV.compact?4:4,'center');
+  } else {
+    // hvileskærm (mor-testen r2 1b): INGEN tekst at lede pointer i —
+    // kun instruktionen + kæmpe pulserende pil ned mod den sorte knap
+    ctx.fillStyle='#fff'; ctx.font=`900 ${OV.compact?13:17}px system-ui`;
+    ctx.fillText(OL.idleLine||'PRESS THE BLACK BUTTON',x+w/2,y+(OV.compact?62:72));
+    const bounce=Math.sin(now()/220)*(OV.compact?4:6);
+    const ax=OV.policy.x, ay0=y+(OV.compact?76:90)+bounce;
+    const ah=(OV.compact?26:38), aw=(OV.compact?12:16);
+    ctx.fillStyle='#ffd54f';
+    ctx.fillRect(ax-aw/4,ay0,aw/2,ah*0.55);
+    ctx.beginPath();
+    ctx.moveTo(ax-aw/2,ay0+ah*0.55); ctx.lineTo(ax+aw/2,ay0+ah*0.55); ctx.lineTo(ax,ay0+ah);
+    ctx.closePath(); ctx.fill();
   }
   // BREAKING chyron slides in over the screen bottom
   if (policy && policy.chyron && d.chyronAt && now()>=d.chyronAt){
@@ -4688,6 +4739,7 @@ function drawOval(){
   drawTrump(player.x,player.y,player.facing);
   drawOvalDesk();   // desk in front of Trump (he stands behind it)
   drawOvalYesRunners(); // after the desk: on mobile they mob the desk front
+  drawOvalLurker();
   drawFx();
   if (entryHeli.active) drawHeli(entryHeli.x,entryHeli.y,1);
   drawOvalMedalDrop();
