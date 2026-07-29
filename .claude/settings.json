@@ -30,7 +30,9 @@
       "Bash(git commit -q -m 'Step 5: Kremlin scene \\(package B\\) *)",
       "Bash(curl -s -o /dev/null -w \"live: HTTP %{http_code}\\\\n\" \"https://trumpspillet2026.pages.dev/trumpspillet-v2\")",
       "Bash(node v2ep.mjs)",
-      "Bash(git commit -q -m 'Step 6: Epstein Files scene \\(package B\\) *)"
+      "Bash(git commit -q -m 'Step 6: Epstein Files scene \\(package B\\) *)",
+      "Bash(git fsck *)",
+      "Bash(sort -u -t: -k2)"
     ]
   }
 }

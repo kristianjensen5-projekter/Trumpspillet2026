@@ -403,27 +403,6 @@
         "body": "We built it. We miss it.",
         "quip": "It's basically ours already.",
         "title": "PANAMA CANAL: TAKE BACK"
-      },
-      {
-        "kicker": "SOCIAL POST",
-        "title": "AI MESSIAH POST",
-        "body": "Repost holy AI art. Eagles, golden light, zero fact-checkers.",
-        "media": "trumpJesus",
-        "mediaMode": "post",
-        "postText": "THE MOST BEAUTIFUL PICTURE EVER MADE. MANY PEOPLE ARE SAYING HE ENDORSES. THANK YOU!",
-        "chyron": "THEOLOGIANS 'HAVE QUESTIONS' — RATINGS UP",
-        "quip": "Very accurate likeness."
-      },
-      {
-        "kicker": "FLAGGED REPOST",
-        "title": "THE OBAMA REPOST",
-        "body": "Repost a racist AI image. Deny posting it. Keep it up.",
-        "media": "obamaMonkeys",
-        "mediaMode": "post",
-        "postText": "Interesting picture. I know nothing about it. RETRUTH!",
-        "communityNote": "Community Note: This image is AI-generated and racist. It was reposted anyway.",
-        "chyron": "WHITE HOUSE: 'THE PRESIDENT DOESN'T SEE RACE, ONLY RATINGS'",
-        "quip": "I know nothing about it. Great picture though."
       }
     ],
     "COINS": [
@@ -3897,16 +3876,6 @@ function doTweet(){
    Black button: random policy. Red button: nuke.
    ================================================================ */
 const OL = DATA.OVAL.LINES;
-const OVAL_POLICY_IMAGES = {};
-function loadOvalPolicyImage(key,src){
-  const img=new Image();
-  img.decoding='async';
-  img.src=src;
-  img.onerror=()=>{ img.__broken=true; };
-  OVAL_POLICY_IMAGES[key]=img;
-}
-loadOvalPolicyImage('trumpJesus','assets/oval%20office/trumpjesus.jpeg');
-loadOvalPolicyImage('obamaMonkeys','assets/oval%20office/obamaabes.jpeg');
 const OV = {
   deskX: 438, deskW: 400, trumpDeskX: 506,
   landingX:160, cameraFocus:600, compact:false,
@@ -3996,8 +3965,6 @@ function ovalPressPolicy(){
   setTimeout(()=>{ OV.policy.pressed=false; },160);
   ovalChoir(true);
   d.chyronAt = (d.policy && d.policy.chyron) ? t+1300 : 0;
-  if (d.policy && d.policy.mediaMode==='post'){ d.postShownAt=t; d.postUntil=t+6200; }
-  else d.postUntil=0;
   say(player, (d.policy && d.policy.quip) || pick(DATA.OVAL.PRAISE) || OL.policyTap, 1900);
   spawnSparks(OV.policy.x, OV.policy.y-8, 14);
   ensureAudio(); SFX.buttonPress(); setTimeout(()=>SFX.success(),90);
@@ -4304,8 +4271,7 @@ function drawOvalTV(){
   if (policy && policy.kicker){
     ctx.font='900 8px system-ui';
     const kw=ctx.measureText(policy.kicker).width+14;
-    const isFlag=policy.communityNote;
-    ctx.fillStyle=isFlag?'#b31217':'#b8860b';
+    ctx.fillStyle='#b8860b';
     roundRectPath(ctx,x+w/2-kw/2,y+(OV.compact?28:30),kw,12,6); ctx.fill();
     ctx.fillStyle='#fff';
     ctx.fillText(policy.kicker,x+w/2,y+(OV.compact?37:39));
@@ -4314,18 +4280,7 @@ function drawOvalTV(){
     ctx.fillStyle='#86d6ff'; ctx.font=`bold ${OV.compact?11:13}px system-ui`;
     ctx.fillText(policy.title,x+w/2,y+(OV.compact?52:57));
   }
-  if (policy && policy.mediaMode==='post'){
-    // the post itself pops out as a big lightbox (drawOvalPostLightbox);
-    // the TV shows the caption line + BREAKING chyron
-    ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?10:12}px system-ui`;
-    ovalWrap(policy.postText||policy.body,x+18,y+(OV.compact?72:82),w-36,OV.compact?12:15,OV.compact?3:3,'center');
-  } else if (policy && policy.media){
-    const mediaX=x+(OV.compact?10:14), mediaY=y+(OV.compact?58:66), mediaW=OV.compact?62:82, mediaH=h-(OV.compact?70:82);
-    drawOvalPolicyMedia(policy,mediaX,mediaY,mediaW,mediaH);
-    ctx.textAlign='left';
-    ctx.fillStyle='#eef7ff'; ctx.font=`${OV.compact?9:12}px system-ui`;
-    ovalWrap(policy.body,mediaX+mediaW+12,mediaY+16,w-mediaW-(OV.compact?30:40),OV.compact?11:14,OV.compact?4:4,'left');
-  } else if (policy && policy.big){
+  if (policy && policy.big){
     // tariff/land-tavlen (#2): ET land, ET tal — kæmpe typografi
     ctx.font=`${OV.compact?24:32}px system-ui`;
     ctx.fillText(policy.flag||'', x+w/2, y+(OV.compact?68:80));
@@ -4381,141 +4336,6 @@ function drawOvalTV(){
     ctx.fillRect(px,py,14,10);
   }
   ctx.textAlign='left';
-}
-function drawOvalPolicyMedia(policy,x,y,w,h){
-  ctx.save();
-  roundRectPath(ctx,x,y,w,h,4); ctx.clip();
-  ctx.fillStyle='#08111f'; ctx.fillRect(x,y,w,h);
-  const img=OVAL_POLICY_IMAGES[policy.media];
-  if (img && img.complete && img.naturalWidth && !img.__broken){
-    if (policy.mediaMode==='censored'){
-      ctx.filter='blur(8px) grayscale(1) brightness(.45)';
-      drawOvalImageCover(img,x-6,y-6,w+12,h+12);
-      ctx.filter='none';
-      ctx.fillStyle='rgba(0,0,0,.64)'; ctx.fillRect(x,y,w,h);
-      ctx.fillStyle='#b31217'; ctx.fillRect(x,y,w,14);
-      ctx.fillStyle='#fff'; ctx.font='900 8px system-ui'; ctx.textAlign='center';
-      ctx.fillText('RACIST AI POST',x+w/2,y+10);
-      ctx.fillStyle='rgba(255,255,255,.9)';
-      for (let i=0;i<4;i++) ctx.fillRect(x+10,y+25+i*13,w-20,7);
-      ctx.fillStyle='#ffdf5d'; ctx.font='900 9px system-ui';
-      ctx.fillText('FLAGGED',x+w/2,y+h-12);
-      ctx.textAlign='left';
-    } else {
-      drawOvalImageCover(img,x,y,w,h);
-    }
-  } else {
-    ctx.fillStyle='#1d3557'; ctx.fillRect(x,y,w,h);
-    ctx.fillStyle='#86d6ff'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
-    ctx.fillText('LOADING IMAGE',x+w/2,y+h/2);
-    ctx.textAlign='left';
-  }
-  ctx.restore();
-  ctx.save();
-  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1.5;
-  roundRectPath(ctx,x,y,w,h,4); ctx.stroke();
-  ctx.restore();
-}
-/* Social-media post card — the image is shown openly (it ran on every
-   major outlet; Kristians redaktionelle afklaring 2026-07-05). The satire
-   lives in the framing: handle, caption, engagement and Community Note. */
-function drawOvalPostLightbox(policy){
-  // The repost takes the stage: big, readable, openly shown (it ran on every
-  // major outlet — Kristians redaktionelle afklaring 2026-07-05). The satire
-  // is the framing: handle, caption, engagement, Community Note.
-  beginScreen();
-  const t=now();
-  const born=OV.d.postShownAt||t;
-  const inK=Math.min(1,(t-born)/220);           // pop-in scale
-  ctx.fillStyle=`rgba(10,14,22,${0.55*inK})`; ctx.fillRect(0,0,VW,VH);
-  const cw=Math.min(VW*0.86,380);
-  const noteH=policy.communityNote?40:0;
-  const capH=30, headH=40, engH=0, padd=12;
-  const imgHmax=Math.min(VH*0.42,cw*0.75);
-  const chH=policy.chyron?22:0;
-  const ch=headH+capH+imgHmax+noteH+chH+padd*2+10;
-  const cx=(VW-cw)/2, cy=Math.max(10,(VH-ch)/2 - VH*0.04);
-  ctx.save();
-  ctx.translate(VW/2,cy+ch/2); ctx.scale(0.9+0.1*inK,0.9+0.1*inK); ctx.translate(-VW/2,-(cy+ch/2));
-  // card
-  ctx.fillStyle='#101b2c';
-  roundRectPath(ctx,cx,cy,cw,ch,12); ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.5;
-  roundRectPath(ctx,cx,cy,cw,ch,12); ctx.stroke();
-  // header
-  const hx=cx+padd, hy=cy+padd, avR=13;
-  ctx.fillStyle='#f3a32d'; ctx.beginPath(); ctx.arc(hx+avR,hy+avR,avR,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#ffdbb2'; ctx.beginPath(); ctx.arc(hx+avR,hy+avR+1.5,avR*0.62,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#f3a32d'; ctx.fillRect(hx+avR-avR*0.72,hy+3,avR*1.44,avR*0.5);
-  ctx.textAlign='left';
-  ctx.fillStyle='#fff'; ctx.font='900 13px system-ui';
-  ctx.fillText('@REALPRESIDENT',hx+avR*2+8,hy+avR-2);
-  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='10px system-ui';
-  ctx.fillText('2m · Very Truthful',hx+avR*2+8,hy+avR+11);
-  // caption
-  ctx.fillStyle='#eef7ff'; ctx.font='bold 12px system-ui';
-  ovalWrap(policy.postText||policy.body,hx,hy+headH,cw-padd*2,14,2,'left');
-  // image
-  const imgY=hy+headH+capH-4;
-  const imgW=cw-padd*2, imgH=imgHmax;
-  const img=OVAL_POLICY_IMAGES[policy.media];
-  if (img && img.complete && img.naturalWidth && !img.__broken){
-    ctx.save();
-    roundRectPath(ctx,hx,imgY,imgW,imgH,6); ctx.clip();
-    drawOvalImageCover(img,hx,imgY,imgW,imgH);
-    const grd=ctx.createLinearGradient(0,imgY+imgH-26,0,imgY+imgH);
-    grd.addColorStop(0,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(0,0,0,.8)');
-    ctx.fillStyle=grd; ctx.fillRect(hx,imgY+imgH-26,imgW,26);
-    ctx.fillStyle='rgba(255,255,255,.95)'; ctx.font='11px system-ui';
-    ctx.fillText('❤ 1.4M    ⟳ 890K    💬 47K',hx+8,imgY+imgH-9);
-    ctx.restore();
-    ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1;
-    roundRectPath(ctx,hx,imgY,imgW,imgH,6); ctx.stroke();
-  } else {
-    ctx.fillStyle='#1d3557'; ctx.fillRect(hx,imgY,imgW,imgH);
-    ctx.fillStyle='#86d6ff'; ctx.font='bold 11px system-ui'; ctx.textAlign='center';
-    ctx.fillText('LOADING IMAGE',hx+imgW/2,imgY+imgH/2); ctx.textAlign='left';
-  }
-  // Community Note
-  let noteBottom=imgY+imgH;
-  if (policy.communityNote){
-    const nY=noteBottom+7;
-    ctx.fillStyle='rgba(120,170,255,.15)';
-    roundRectPath(ctx,hx,nY,imgW,noteH,6); ctx.fill();
-    ctx.strokeStyle='rgba(120,170,255,.65)'; ctx.lineWidth=1.2;
-    roundRectPath(ctx,hx,nY,imgW,noteH,6); ctx.stroke();
-    ctx.fillStyle='#9cc4ff'; ctx.font='bold 10px system-ui';
-    ovalWrap('ⓘ '+policy.communityNote,hx+8,nY+15,imgW-16,12,2,'left');
-    noteBottom=nY+noteH;
-  }
-  // BREAKING chyron across the card foot
-  if (policy.chyron && OV.d.chyronAt && t>=OV.d.chyronAt){
-    const slide=Math.min(1,(t-OV.d.chyronAt)/350);
-    const cyr=noteBottom+8;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(cx,cyr,cw,chH); ctx.clip();
-    ctx.translate((1-slide)*(-cw),0);
-    ctx.fillStyle='#b31217'; ctx.fillRect(cx,cyr,cw,chH);
-    ctx.fillStyle='#fff'; ctx.font='900 10px system-ui';
-    ctx.fillText('BREAKING',cx+8,cyr+15);
-    ctx.fillStyle='#ffd54f'; ctx.font='bold 10px system-ui';
-    let cyText=policy.chyron;
-    while (ctx.measureText(cyText).width>cw-84 && cyText.length>8) cyText=cyText.slice(0,-2);
-    ctx.fillText(cyText,cx+72,cyr+15);
-    ctx.restore();
-  }
-  ctx.restore();
-  // dismiss hint
-  ctx.save(); ctx.globalAlpha=0.6+0.4*Math.sin(t/350);
-  ctx.fillStyle='#fff'; ctx.font='bold 12px system-ui'; ctx.textAlign='center';
-  ctx.fillText(IS_TOUCH?'Tap to dismiss':'Tap or press E to dismiss', VW/2, Math.min(VH-12,cy+ch+24));
-  ctx.restore(); ctx.textAlign='left';
-}
-function drawOvalImageCover(img,x,y,w,h){
-  const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
-  const scale=Math.max(w/iw,h/ih);
-  const sw=w/scale, sh=h/scale;
-  ctx.drawImage(img,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,w,h);
 }
 function ovalWrap(text,x,y,w,lineH,maxLines,align='left'){
   const words=String(text||'').split(/\s+/); let line='', lines=[];
@@ -6505,8 +6325,6 @@ registerLevel({
   reset:resetOval,
   draw(){
     drawOval(); drawNuke();
-    if (OV.d.policy && OV.d.policy.mediaMode==='post' && OV.d.postUntil && now()<OV.d.postUntil && !GS.over && !NUKE.active)
-      drawOvalPostLightbox(OV.d.policy);
   },
   update(dt){ updateOval(dt); updateNuke(); updateOvalMedalDrop(dt); },
   coins(){ return OV.coins; },
@@ -6539,10 +6357,8 @@ registerLevel({
   snapshot(){
     return { oval:{ phase:OV.d.phase, policies:OV.d.policyCount,
       policyTitle:OV.d.policy?OV.d.policy.title:null,
-      policyMedia:OV.d.policy&&OV.d.policy.media?OV.d.policy.media:null,
       completed:OV.d.completed, nuke:NUKE.active,
-      buttons:{ policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} },
-      mediaLoaded:Object.fromEntries(Object.entries(OVAL_POLICY_IMAGES).map(([key,img])=>[key,!!(img.complete&&img.naturalWidth&&!img.__broken)])) } };
+      buttons:{ policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} } } };
   }
 });
 
@@ -7382,11 +7198,6 @@ addEventListener('keydown', e=>{
     if (golfKeyDown(e,k)) e.preventDefault();
     return;
   }
-  if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && (k==='e'||k==='x'||k==='escape'||k===' ')){
-    OV.d.postUntil=0;
-    e.preventDefault();
-    return;
-  }
   if (scene===SCENE.OVAL && (k==='1'||k==='2')){
     const near=nearestOV();
     if (k==='1' && near && near.type==='policy'){ ovalPressPolicy(); e.preventDefault(); return; }
@@ -7435,11 +7246,6 @@ cvs.addEventListener('pointerdown', e=>{
   if (scene===SCENE.INTRO){ startGame(); return; }
   const sx=e.clientX-STAGE_X, sy=e.clientY-STAGE_Y;
   if (FINALE.active){ finaleTap(sx,sy); return; }
-  // post-lightbox: any tap dismisses it
-  if (scene===SCENE.OVAL && OV.d.postUntil && now()<OV.d.postUntil && !GS.over){
-    OV.d.postUntil=0;
-    return;
-  }
   // overlays eat taps first
   if (GS.over){
     if (GS.overMode==='continue' && continueOverlay){
@@ -7951,9 +7757,7 @@ window.__tv2 = {
            finale: () => { Object.keys(DATA.MEDALS).forEach(k=>GS.medals[k]=true); startFinale(); },
            policy: title => { const p=(DATA.OVAL.POLICIES||[]).find(pp=>pp.title===title);
              if (p){ OV.d.policy=p; OV.d.policyCount=(OV.d.policyCount||0)+1;
-                     OV.d.chyronAt=p.chyron?now()+300:0; OV.d.policyFlashUntil=now()+300;
-                     if (p.mediaMode==='post'){ OV.d.postShownAt=now(); OV.d.postUntil=now()+6200; }
-                     else OV.d.postUntil=0; } } }
+                     OV.d.chyronAt=p.chyron?now()+300:0; OV.d.policyFlashUntil=now()+300; } } }
 };
 
 })();
