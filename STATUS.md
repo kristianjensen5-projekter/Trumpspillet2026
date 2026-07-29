@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-12
+**Senest opdateret:** 2026-07-13
 
 ---
 
@@ -418,6 +418,55 @@ er kørt, men Kristian bør se skærmbillederne/spille det igennem.
    nederst i vinduet. Genbrugelig `drawCentralParkView(px,py,pw,ph)`
 
 Screenshots verificeret (etage + penthouse), fuld regression grøn.
+
+## ⚠️ GitHub-konto suspenderet — 2026-07-13 (Fable)
+
+**Status:** `github.com/kristianjensen5` er suspenderet af GitHub ("violation
+of our Terms of Service" — ingen uddybende mail modtaget trods grundigt
+tjek). `git push` fejler med 403 "Your account is suspended". Kristian
+går videre med en appel via GitHub Support ("Account reinstatement").
+
+**Sandsynlig årsag:** `assets/oval office/obamaabes.jpeg` — et
+AI-genereret billede der viser Obama/Michelle Obama som aber, brugt i
+Oval-banens satire siden 4. juli. Lå frit tilgængeligt både i det
+offentlige GitHub-repo og på den live pages.dev-URL. Matcher direkte
+GitHub's Acceptable Use Policy §2 ("discriminatory or abusive toward
+any individual or group") — præcis den slags indhold automatisk
+billed-hash-scanning er bygget til at fange. Ikke bekræftet 100 %
+(GitHub oplyser ikke årsag via API), men langt den mest sandsynlige
+forklaring givet at det er en konto-suspendering, ikke en generel fejl.
+
+**Oprydning udført (2026-07-13):**
+- ✅ `obamaabes.jpeg` + `trumpjesus.jpeg` slettet fra disk og fra
+  `index.html` (de to policy-poster der brugte dem: AI MESSIAH POST,
+  THE OBAMA REPOST). Al dødt kode ryddet (loadOvalPolicyImage,
+  drawOvalPolicyMedia, drawOvalPostLightbox m.fl.). Oval kører nu på de
+  5 tariff/land-policies alene — fuldt funktionelt sæt, verificeret med
+  5-tryk-gennemspil → Pulitzer, 0 fejl
+- ✅ **Git-historikken omskrevet** (`git filter-repo`, efter Kristians
+  eksplicitte godkendelse): billederne fjernet fra SAMTLIGE 59 commits,
+  ikke kun den nyeste — ellers ville de stadig ligge tilgængelige via
+  gamle commit-hashes efter en eventuel genåbning. Fuld backup af
+  repoet taget før omskrivningen. `origin`-remote gendannet bagefter
+  (filter-repo fjerner den som sikkerhedsforanstaltning)
+- ✅ Deployet direkte til Cloudflare Pages (uafhængig af GitHub) —
+  billederne er væk fra den aktive deployment. NB: Cloudflare's
+  edge-cache serverer den gamle fil på den præcise URL i op til 7 dage
+  (`s-maxage=604800`) da jeg ikke har cache-purge-rettigheder på denne
+  API-nøgle — udløber selv, ikke GitHub-relevant
+- ⏳ **Kan ikke pushes til GitHub endnu** (konto suspenderet) — alt
+  arbejde ligger committet lokalt, klar til push når kontoen er tilbage
+
+**Redaktionel læring:** Kristians tidligere afklaring (8. juli) — at
+billedet var redaktionelt forsvarligt at vise fordi det havde kørt i
+store medier som nyhedsdækning af en kontrovers — er en gyldig
+avisredaktionel vurdering, men er IKKE det samme som at en
+fil-hosting-platform (GitHub) accepterer selve billedfilen liggende
+frit tilgængelig, uafhængigt af den satiriske kontekst i selve spillet.
+Generel regel fremover: AI-genereret billedindhold der efterligner
+kendte racistiske memes bør ikke committes som rå, offentligt
+tilgængelige filer i et repo — uanset redaktionel kontekst i selve
+produktet.
 
 ## Landing-gåtur forlænget — 2026-07-12 ✅ (Fable)
 
