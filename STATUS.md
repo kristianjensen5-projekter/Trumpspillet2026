@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-13
+**Senest opdateret:** 2026-07-29
 
 ---
 
@@ -467,6 +467,17 @@ Generel regel fremover: AI-genereret billedindhold der efterligner
 kendte racistiske memes bør ikke committes som rå, offentligt
 tilgængelige filer i et repo — uanset redaktionel kontekst i selve
 produktet.
+
+**Appel indsendt (2026-07-29):** Kristian har udfyldt og sendt GitHub's
+"Reinstatement request"-formular (via omvejen "Unable to sign in" →
+"Account locked" → "Reinstatement request", da det direkte login-flow
+kører i ring for suspenderede konti). GitHub Support har bekræftet
+modtagelse og bedt om identitetsverificering (kontonavn, omtrentlig
+lokation ved oprettelse, oprindelig(e) e-mail(s)) — Kristian har svaret.
+**Afventer nu GitHub's afgørelse.** Appel-teksten ligger som udkast i
+`GITHUB_APPEAL_UDKAST.md` (bevidst IKKE committet — personlig
+korrespondance, hører ikke hjemme i det offentlige repo; tilføjet til
+`.gitignore`).
 
 ## Landing-gåtur forlænget — 2026-07-12 ✅ (Fable)
 
