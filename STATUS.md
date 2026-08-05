@@ -512,6 +512,34 @@ holder spilleren i Grønland. regression.mjs justeret (startskiltet
 - ✅ Verificeret med screenshots (nyt Grønlands-skilt, Lars' danske
   linje, nyt Tower-skilt) + fuld regression, 0 fejl
 
+## Oval Office: kamera-fix + indholdsstramning — 2026-08-05 ✅ (Opus 4.8)
+
+Kristian rapporterede et vedvarende "jump cut" fra helikopter til
+skrivebord — VISTE SIG at være en anden bug end den tidligere
+gang-tempo-fix (900ms-loftet): `cameraFocus()` blandede spillerens
+x-position 50/50 med et fast skrivebordsfokus (638) hele vejen gennem
+gangturen, men hvile-formlen efter gangturen returnerede det samme
+faste tal ANDERLEDES (også 638, men blandingens grænseværdi var kun
+572) — et ~66-enheders spring i kameraets fokus i én frame, fordi
+`updateCamera()` ikke har nogen udjævning overhovedet.
+
+- ✅ **Fixet:** gangtursformlen glider nu mod PRÆCIS den værdi
+  hvile-formlen bruger, så der er nul spring ved overgangen (matematisk
+  garanteret, ikke bare finjusteret). Verificeret ved at måle CAM.x
+  hver 60ms hen over hele forløbet: glat S-kurve, ingen enkelt-frame-hop
+- ✅ **Indholdsgennemgang af hele Oval-forløbet** (policies, chyroner,
+  yes-men-reaktioner, QAnon-lokker, rød knap): kernejokes var allerede
+  skarpe, to konkrete stramninger fundet og rettet:
+  - CHINA og PANAMA manglede en BREAKING-chyron (kun 3/5 policies havde
+    én) — tilføjet, så alle 5 nu har samme komiske tæthed
+  - QAnon-lokkeren ved den røde knap sagde ORDRET samme sætning hver
+    eneste gang efter 2. tryk — udvidet til 3 varianter, valgt tilfældigt
+    én gang når han dukker op (ikke per frame). Verificeret over 6 friske
+    gennemspilninger at alle tre varianter rammer
+- Bevidst IKKE ændret: policy-tekster, yes-men-arketype-replikker,
+  introkortet — allerede stramme/i-karakter, ingen grund til at rette
+  noget der ikke var i stykker
+
 ## Næste skridt
 
 - Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til

@@ -393,7 +393,8 @@
         "big": "CHINA -5%",
         "body": "We made a deal. Nobody has read it.",
         "quip": "I win every deal. Ask anyone.",
-        "title": "CHINA -5%"
+        "title": "CHINA -5%",
+        "chyron": "BEIJING: 'WE HAVEN'T READ IT EITHER'"
       },
       {
         "kicker": "LAND",
@@ -410,7 +411,8 @@
         "big": "PANAMA CANAL: TAKE BACK",
         "body": "We built it. We miss it.",
         "quip": "It's basically ours already.",
-        "title": "PANAMA CANAL: TAKE BACK"
+        "title": "PANAMA CANAL: TAKE BACK",
+        "chyron": "PANAMA: 'WE'VE HAD IT SINCE 1999, ACTUALLY'"
       }
     ],
     "COINS": [
@@ -453,7 +455,12 @@
       "libraryLabel": "THE TRUMP PRESIDENTIAL LIBRARY",
       "libraryLabel2": "EAST WING ANNEX",
       "idleLine": "PRESS THE BLACK BUTTON",
-      "lurkLine": "Psst. The RED one. The plan demands it."
+      "lurkLine": "Psst. The RED one. The plan demands it.",
+      "lurkLines": [
+        "Psst. The RED one. The plan demands it.",
+        "They don't want you to press it. That's how you know.",
+        "Real presidents press the red one. Just saying."
+      ]
     },
     "PRAISE": [
       "Genius move, sir!",
@@ -3969,7 +3976,9 @@ function ovalPressPolicy(){
   d.policyCount++;
   d.policyFlashUntil=t+430;
   d.cheerUntil=t+1550;
-  if (d.policyCount===2 && !OV.lurk) OV.lurk={start:t}; // QAnon-lokkeren (mor r2 1c)
+  // QAnon-lokkeren (mor r2 1c): linjen vælges ÉN gang her, ikke per frame,
+  // ellers ville den flimre mellem varianter mens den vises
+  if (d.policyCount===2 && !OV.lurk) OV.lurk={start:t,line:pick(OL.lurkLines||[OL.lurkLine])};
   OV.policy.pressed=true;
   setTimeout(()=>{ OV.policy.pressed=false; },160);
   ovalChoir(true);
@@ -4202,7 +4211,7 @@ function drawOvalLurker(){
   drawYesArchetype({kind:'qanon',label:'QANON',x:0}, k>=1 && Math.sin(t/400)>0, 0);
   ctx.restore();
   if (k>=1){
-    if ((t/3800)%1<0.6) drawOvalReactionText(OL.lurkLine||'Psst. The RED one.', x, GROUND_Y-142);
+    if ((t/3800)%1<0.6) drawOvalReactionText(OV.lurk.line||OL.lurkLine||'Psst. The RED one.', x, GROUND_Y-142);
     const bx=OV.surprise.x, by=OV.surprise.y-52+Math.sin(t/220)*4;
     ctx.fillStyle='#ff5b4d';
     ctx.beginPath(); ctx.moveTo(bx-9,by-15); ctx.lineTo(bx+9,by-15); ctx.lineTo(bx,by); ctx.closePath(); ctx.fill();
@@ -6376,6 +6385,7 @@ registerLevel({
   snapshot(){
     return { oval:{ phase:OV.d.phase, policies:OV.d.policyCount,
       policyTitle:OV.d.policy?OV.d.policy.title:null,
+      lurkLine:OV.lurk?OV.lurk.line:null,
       completed:OV.d.completed, nuke:NUKE.active,
       buttons:{ policy:{x:OV.policy.x,y:OV.policy.y}, red:{x:OV.surprise.x,y:OV.surprise.y} } } };
   }
