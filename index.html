@@ -6347,7 +6347,17 @@ registerLevel({
   tapTargets(){ return [OV.door,OV.heli,OV.policy,OV.surprise].map(o=>({obj:o})); },
   cameraFocus(){
     const deskFocus=OV.cameraFocus || (OV.deskX+OV.deskW/2);
-    if (entryHeli.active || OV.d.phase==='arriving' || walkTween) return (player.x+deskFocus)/2;
+    if (entryHeli.active || OV.d.phase==='arriving' || walkTween){
+      // Ease toward the EXACT value the resting formula below will use
+      // once the walk-in ends (deskFocus) — not a flat 50/50 average,
+      // which asymptotes to a DIFFERENT number than deskFocus and caused
+      // a one-frame camera snap ("jump cut") the instant walkTween
+      // cleared. k=0 at heli landing (camera on player), k=1 at the desk
+      // (camera == deskFocus), so there is zero discontinuity at handoff.
+      const startDist=Math.abs(OV.trumpDeskX-OV.landingX)||1;
+      const k=1-clamp(Math.abs(OV.trumpDeskX-player.x)/startDist,0,1);
+      return player.x+(deskFocus-player.x)*k;
+    }
     if (player.x < OV.deskX-70) return player.x+65;
     return deskFocus;
   },
