@@ -262,7 +262,7 @@
       "Enough talk. Now fight."
     ],
     "METTE_DIPLO": [
-      "Greenland is not for sale — let's put it in a work group.",
+      "Grønland er ikke til salg — lad os nedsætte en work group.",
       "Det skader USA's ry — work group.",
       "NATO er i fare — work group.",
       "... work group?"
@@ -364,7 +364,7 @@
       "navShop1": "Buy powerups in the shop",
       "navShop2": "(you might need them later)"
     },
-    "INTRO_CARD": "GRØNLAND\n\nGrønland skal naturligvis tilhøre USA.\nFind en måde at få øen franarret\nde irriterende danskere.\n\nSaml guldbarrer og kig forbi butikken —\ndynamit åbner mange døre.\n\nTap eller tryk på en tast for at starte"
+    "INTRO_CARD": "GRØNLAND\n\nGrønland skal tilhøre USA. Gå hen og find\nLars Løkke — forhandl med ham om øen,\neller sprit sagen op med lidt dynamit.\n\nSaml guldbarrer undervejs og kig forbi butikken.\n\nTap eller tryk på en tast for at starte"
   },
   "OVAL": {
     "INTRO_CARD": "DET OVALE KONTOR\n\nTo knapper. Én præsident.\n\nSORT KNAP:\nPolitik med det samme. Ingen proces, ingen advarsel.\n\nRØD KNAP:\nDer står TRYK IKKE.\nDet har aldrig stoppet nogen.\n\nTryk fem politikker igennem og vind Pulitzerprisen.\nTap eller tryk på en tast for at starte",
@@ -535,7 +535,8 @@
     "LINES": {
       "arrive": "Straight to the penthouse — the best floors, believe me.",
       "top": "The best floors. Nobody goes higher.",
-      "viewLabel": "CENTRAL PARK — I OWN THE TREES"
+      "viewLabel": "CENTRAL PARK — I OWN THE TREES",
+      "introCard": "TRUMP TOWER\n\nGå hen til den gyldne knap ved elevatoren\nog tryk E for at køre en etage op.\n\nHver etage har sin egen pral. Nå 5. sal\nog find penthousen — der venter en medalje.\n\nTap eller tryk på en tast for at starte"
     },
     "BOASTS": [
       "Higher than anyone, believe me.",
@@ -6464,7 +6465,8 @@ const TW = {
   button:{x:640,y:GROUND_Y,type:'button',say:'',speakingUntil:0,pressedUntil:0},
   coins:[],
   floor:0,
-  ride:null            // {phase:'closing'|'traveling'|'opening', start}
+  ride:null,           // {phase:'closing'|'traveling'|'opening', start}
+  introShown:false
 };
 const TOWER_PENTHOUSE_FLOOR = DATA.TOWER.FLOORS.length + 1; // 4 jokes -> penthouse is floor 5
 function resetTower(){
@@ -6474,6 +6476,12 @@ function resetTower(){
   TW.ride=null;
   TW.coins=[];
   playEntryHeli(TL.arrive);
+}
+function towerWalkInDone(){
+  startWalkTo(player.x+40, ()=>{
+    if (entryHeli.line) say(player,entryHeli.line,1800);
+    if (!TW.introShown){ TW.introShown=true; openInfoCard(TL.introCard, ()=>{ closeInfoCard(); }); }
+  });
 }
 function towerCarX(){ return TW.button.x+40; }
 // Zero-distance "hold": reuses the walk-tween as a timer that also blocks
@@ -6780,7 +6788,8 @@ registerLevel({
     return o.type==='heli'?'🚁':'E';
   },
   tapTargets(){ return [TW.heli,TW.button].map(o=>({obj:o})); },
-  onRestart(){ TW.floor=0; TW.ride=null; walkTween=null; },
+  onWalkInDone: towerWalkInDone,
+  onRestart(){ TW.floor=0; TW.ride=null; walkTween=null; TW.introShown=false; },
   snapshot(){
     return { tower:{ floor:TW.floor, medalAwarded:!!GS.medals.tower,
       penthouse:TW.floor>=TOWER_PENTHOUSE_FLOOR, doorOpen:+towerDoorOpenAmount().toFixed(2),

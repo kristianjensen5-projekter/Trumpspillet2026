@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-07-29
+**Senest opdateret:** 2026-08-05
 
 ---
 
@@ -42,8 +42,8 @@ Bygget over et år af mange AI-generationer — nu under **fuld genopbygning**
 1. ✅ Spec + krydstjek (Fable 5, 2026-07-02)
 2. ✅ Fundament + Greenland komplet (Fable 5, 2026-07-02)
 3. ✅ Oval Office → Kremlin → Epstein → Golf (én bane ad gangen, test imellem)
-4. ⏳ Musik-engine (chiptune-tracks porteres; disabled by default)
-5. Når v2 = feature-paritet: v2 bliver `index.html`, gammel fil arkiveres
+4. ✅ Musik-engine (4 MP3-loops, GainNode-styring — færdig, se senere sektioner)
+5. ✅ v2 = `index.html` (Trin 9 udført 2026-07-08), gammel fil arkiveret
 
 ---
 
@@ -94,8 +94,7 @@ restart, snapshot, walk-in) er erstattet af generiske registry-opslag.
   copy-paste-skelet, tjekliste, kendte fælder, Playwright-røgtest-skabelon.
   Indsætningsmarkør i index.html: ">>> NYE LEVELS REGISTRERES HER <<<"
 - ✅ Fuld regression efter omlægningen: alle 5 baner + mobil, 0 fejl
-- Accept-testen (nyt legetøjs-level < 1 time, bygget af en anden model
-  alene ud fra skabelonen) udestår — kør den med Codex/Sonnet
+- ✅ Accept-testen bestået (Sonnet, se sektionen nedenfor)
 
 ## Accept-test af level-systemet — 2026-07-08 ✅ (Sonnet)
 
@@ -240,7 +239,7 @@ etage-stop, 5. tryk → penthouse med baggrundsskift + credits.
   Shift+R midt i en tur nulstiller rent uden hængende callbacks
 - ✅ Fuld regression (Grønland → Oval → Tower → Grønland via heli begge
   veje) kørt igen efter ændringerne — 0 fejl
-- Committet, **ikke deployet** — afventer Kristians OK
+- ✅ Committet og deployet sammen med finalen 2026-07-10 (se nedenfor)
 
 ## FINALEN: The Medal of Medals Ceremony — 2026-07-10 ✅ (Fable)
 
@@ -468,16 +467,16 @@ kendte racistiske memes bør ikke committes som rå, offentligt
 tilgængelige filer i et repo — uanset redaktionel kontekst i selve
 produktet.
 
-**Appel indsendt (2026-07-29):** Kristian har udfyldt og sendt GitHub's
-"Reinstatement request"-formular (via omvejen "Unable to sign in" →
-"Account locked" → "Reinstatement request", da det direkte login-flow
-kører i ring for suspenderede konti). GitHub Support har bekræftet
-modtagelse og bedt om identitetsverificering (kontonavn, omtrentlig
-lokation ved oprettelse, oprindelig(e) e-mail(s)) — Kristian har svaret.
-**Afventer nu GitHub's afgørelse.** Appel-teksten ligger som udkast i
-`GITHUB_APPEAL_UDKAST.md` (bevidst IKKE committet — personlig
-korrespondance, hører ikke hjemme i det offentlige repo; tilføjet til
-`.gitignore`).
+**✅ LØST (2026-07-30):** Kristian appellerede via GitHub's "Reinstatement
+request"-formular (omvejen "Unable to sign in" → "Account locked" →
+"Reinstatement request", da direkte login-flow kører i ring for
+suspenderede konti) og svarede på GitHub's opfølgende
+identitetsverificering. **Kontoen er genåbnet.** Den rensede historik
+(billeder fjernet fra alle 59+ commits via `git filter-repo`) er
+force-pushet til GitHub — verificeret: nul træf på filnavnene i hele
+historikken, raw-URL'en giver 404. Repoet er offentligt og synkroniseret
+igen. `GITHUB_APPEAL_UDKAST.md` ligger stadig lokalt (utracket,
+`.gitignore`) — kan slettes, spørg Kristian om han vil beholde den.
 
 ## Landing-gåtur forlænget — 2026-07-12 ✅ (Fable)
 
@@ -488,13 +487,38 @@ går til x=400, INTERACT_DIST=48). Verificeret: dobbelt-E efter landing
 holder spilleren i Grønland. regression.mjs justeret (startskiltet
 åbner nu ~4,2 s inde pga. den længere gåtur).
 
+## GitHub-konto genåbnet + Dock-ikon + skilte-review — 2026-07-30/08-05
+
+- ✅ **GitHub-konto genåbnet** (se opdateret sektion ovenfor): rensede
+  historik force-pushet, repo synkroniseret og offentligt igen
+- ✅ **Dock/hjemmeskærm-ikon:** `apple-touch-icon.png` (180×180),
+  `icon-192.png`, `icon-512.png`, `favicon-32.png` (fra Kristians
+  pixel-art-beskæring af Trump) + `manifest.json` + link-tags i
+  `<head>`. Kristian skal fjerne+gentilføje webappen i Safari for at
+  Safari henter det nye ikon (den cacher ved tilføjelsestidspunktet)
+- ✅ **Sprog-beslutning:** Trump fortsætter med engelske replikker/
+  tweets/policies. **Kun Lars Løkke taler dansk** — hans linje 1
+  ("Greenland is not for sale...") er oversat, "work group"-vitsen
+  (engelsk låneord midt i dansk politiker-tale) bevaret som pointen
+- ✅ **Skilte-review:** alle intro-/instruktionskort gennemgået for
+  forståelighed, ikke kun placering:
+  - Grønlands skilt konkretiseret: nævner nu eksplicit at man skal
+    opsøge Lars Løkke (var for vagt om selve målet)
+  - **Tower manglede et introskilt fuldstændigt** — tilføjet
+    (`onWalkInDone`, samme mønster som de andre baner): forklarer
+    knap/etage-mekanikken og penthouse-målet
+  - Oval/Kreml/håndtryk/Epstein/golf vurderet allerede klare og
+    handlingsorienterede — ikke rørt
+- ✅ Verificeret med screenshots (nyt Grønlands-skilt, Lars' danske
+  linje, nyt Tower-skilt) + fuld regression, 0 fejl
+
 ## Næste skridt
 
-- Kristian tester hele listen live — særligt golfrunden på FYSISK iPhone
-  (mobil-bug #10) og hul 2's nye gavmildhed
 - Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til
   politiken.dk (iframe-embed-test + sikkerheds-baseline + brand-tjek) —
   afventer redaktionens valg af embed-format
+- Fuld dansk oversættelse af Trumps replikker/tweets/policies: BEVIDST
+  fravalgt (2026-07-30) — Trump forbliver engelsk, kun Lars Løkke er dansk
 
 ## Trin 9 udført — 2026-07-08 ✅
 
