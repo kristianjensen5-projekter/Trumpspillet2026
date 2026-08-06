@@ -540,6 +540,35 @@ faste tal ANDERLEDES (også 638, men blandingens grænseværdi var kun
   introkortet — allerede stramme/i-karakter, ingen grund til at rette
   noget der ikke var i stykker
 
+## Dedikeret hop-knap på mobil — 2026-08-05 ✅ (Opus 4.8)
+
+Tre venner testede spillet på mobil (aldrig prøvet det før) — fælles
+tilbagemelding: ingen kunne finde ud af at hoppe. Årsag: hop krævede en
+helt usynlig gestus (2. finger på skærmen), uden nogen markering af at
+den fandtes. Vigtigt fund undervejs: hop bruges KUN til møntopsamling
+(mønter kræver at spilleren er "i luften" for at samles) — intet andet
+i spillet kræver et hop, så det var en polerings-mangel, ikke en
+blokerende fejl.
+
+- ✅ **Research først:** slog mobil-spil-UX op før beslutningen.
+  Nøglefund: *"gestures should supplement visible controls, never
+  replace them"* — en gestus uden nogen skærm-markering er
+  lærebogs-fejlen. Touch-mål bør være min. 44×44pt (Apple)/48×48dp
+  (Google); at lade samme knap både hoppe og "interagere" øger risikoen
+  for fejltryk (fandt i researchen, droppede derfor idéen om at
+  genbruge kontekst-knappen)
+- ✅ **Ny permanent hop-knap** (⬆️) tilføjet til knap-rækken i bunden
+  (samme familie som handling/inventar/tweet-knapperne, 50×50px, samme
+  afstandsmønster). Kristian bekræftede bevidst at dette bryder med
+  spillets ellers gennemgående "kun kontekstuelle knapper"-filosofi —
+  korrekt undtagelse, da hele pointen er at gøre noget usynligt synligt
+- ✅ Skjules i golf og Epstein (egne separate touch-input-systemer hvor
+  hop ikke giver mening), samt under overlays/game over/kamp — ellers
+  altid synlig på touch-enheder. Aldrig vist på desktop (uændret)
+- ✅ Verificeret: usynlig på desktop, synlig i Grønland, et tryk løfter
+  faktisk spilleren (player.y målt før/under/efter), skjult i golf.
+  Fuld regression + finale-suite grøn, 0 fejl
+
 ## Næste skridt
 
 - Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til

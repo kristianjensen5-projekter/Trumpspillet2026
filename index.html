@@ -81,6 +81,13 @@
   .toolbtn.active{background:rgba(255,215,0,.72);color:#111}
   .invbtn{right:max(92px,calc(env(safe-area-inset-right) + 92px))}
   .tweetbtn{right:max(150px,calc(env(safe-area-inset-right) + 150px))}
+  /* Jump button (2026-08-05): deliberate exception to the contextual-
+     chip philosophy above — it's PERMANENTLY visible, not on-demand.
+     Three fresh mobile testers couldn't find the old 2nd-finger-tap
+     jump gesture at all; a gesture with zero on-screen affordance is
+     the textbook mistake here (undiscoverable input). Same 58px
+     spacing step as the invbtn->tweetbtn gap, continuing the row. */
+  .jumpbtn{right:max(208px,calc(env(safe-area-inset-right) + 208px))}
   @media (pointer:fine){ .toolbtn{display:none !important} }
   @media (pointer:coarse){
     .inv{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));
@@ -1774,6 +1781,7 @@
 <div id="inv" class="inv hidden" role="region" aria-label="Inventory"></div>
 <button id="tweetbtn" class="toolbtn tweetbtn" type="button" aria-label="Tweet">𝕏</button>
 <button id="invbtn" class="toolbtn invbtn" type="button" aria-label="Inventory">🎒</button>
+<button id="jumpbtn" class="toolbtn jumpbtn" type="button" aria-label="Jump">⬆️</button>
 <button id="actbtn" class="actbtn" type="button" aria-label="Interact">E</button>
 
 <div class="helpbox" id="helpbox">
@@ -2156,6 +2164,7 @@ const areasEl = document.getElementById('areas');
 const invEl = document.getElementById('inv');
 const invBtn = document.getElementById('invbtn');
 const tweetBtn = document.getElementById('tweetbtn');
+const jumpBtn = document.getElementById('jumpbtn');
 const actBtn = document.getElementById('actbtn');
 const helpBox = document.getElementById('helpbox');
 document.getElementById('help-toggle').addEventListener('click', ()=>{
@@ -7465,6 +7474,11 @@ invBtn.addEventListener('pointerdown', e=>{
   ensureAudio();
   toggleInventory();
 });
+jumpBtn.addEventListener('pointerdown', e=>{
+  e.stopPropagation(); e.preventDefault();
+  ensureAudio();
+  doJump();
+});
 tweetBtn.addEventListener('pointerdown', e=>{
   e.stopPropagation(); e.preventDefault();
   ensureAudio();
@@ -7743,6 +7757,7 @@ function updateMobileToolButtons(){
   if (!IS_TOUCH){
     invBtn.classList.remove('show','active');
     tweetBtn.classList.remove('show');
+    jumpBtn.classList.remove('show');
     return;
   }
   const blocked = scene===SCENE.INTRO || GS.over || anyOverlayActive() || FightEngine.active || !!tug || !!flagOverlay;
@@ -7752,6 +7767,13 @@ function updateMobileToolButtons(){
   invBtn.classList.toggle('active', invShow && !invEl.classList.contains('hidden'));
   const tweetScenes = [SCENE.GREENLAND, SCENE.OVAL, SCENE.KREMLIN];
   tweetBtn.classList.toggle('show', !blocked && tweetScenes.includes(scene));
+  // Permanently visible (not contextual, unlike the buttons above) —
+  // that's the whole point: testers never found the old 2-finger jump
+  // gesture. Hidden only in scenes with their own separate touch
+  // pipeline (golf drag-aim, Epstein tap-to-redact) where doJump()
+  // has no visible effect, and in the same blocked states as tweetBtn.
+  const jumpScenes = scene!==SCENE.GOLF && scene!==SCENE.EPSTEIN;
+  jumpBtn.classList.toggle('show', !blocked && jumpScenes);
 }
 
 /* ================================================================
