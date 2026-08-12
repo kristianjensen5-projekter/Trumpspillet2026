@@ -5,7 +5,7 @@
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
 **GitHub:** https://github.com/kristianjensen5/Trumpspillet2026
-**Senest opdateret:** 2026-08-05
+**Senest opdateret:** 2026-08-12
 
 ---
 
@@ -650,6 +650,28 @@ efter enhver ændring, før de tunge browsertests.
   kendes først (spørg CUE-holdet)
 - Skal `/index-v1` fortsat eksistere offentligt? Den er nu ikke længere
   deployet, og EMBED_GUIDE.md's henvisning til den bør rettes eller fjernes
+
+## Afventer (sessionsslut 2026-08-12)
+
+- ⏳ **Afventer: Kristians test af den granskede version** på fysisk iPhone
+  over de næste dage. Resultatet skal tilbage — i denne chat eller som
+  første linje i næste. Konkret at kigge efter:
+  1. Spærrer spillet for scroll i artiklen, når det ligger i en iframe?
+  2. Starter lyden ved første tryk (og respekterer den lydløs-kontakten)?
+  3. Drej telefonen midt i et golfhul — er banen stadig spilbar?
+  4. Epsteins nye 🚁 Leave-knap: kan man nu komme ud af banen?
+  5. Føles de nye 700 ms/1200 ms læse-pauser på infokort og game
+     over-tableauer rigtige, eller er de irriterende?
+- ⏸️ **IKKE pushet til GitHub** (Kristians valg 2026-08-12 — utryg efter
+  suspenderingen). To commits ligger lokalt, `main` er foran `origin`.
+  Arbejdet findes derfor KUN på Kristians Mac. Ekstern harddisk på vej;
+  lav backup når den er der.
+- ⚠️ **Gammel workers-URL findes stadig:**
+  `trumpspillet.kristianjensen5.workers.dev` serverer en byte-identisk kopi
+  af `index-v1.html` (v1 fra før genopbygningen, virker ikke på mobil,
+  loader Lottie fra cdnjs uden SRI). Ikke undersøgt nærmere efter Kristians
+  ønske. **Del den ikke** — det korrekte link er
+  https://trumpspillet2026.pages.dev/
 
 ## Næste skridt
 
