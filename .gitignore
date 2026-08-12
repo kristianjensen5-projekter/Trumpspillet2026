@@ -16,8 +16,15 @@ Promt til ny bane.md
 Skabelon til ny bane.md
 flag drop.md
 
-# Personal correspondence draft — never meant to be public in this repo
+# Personal correspondence draft — never meant to be public in this repo.
+# Moved to Masterversioner/_arbejdsdokumenter/Trumpspillet/ 2026-08-12 after the
+# granskning found it served live on pages.dev: .gitignore stops git, but NOT
+# `wrangler pages deploy .`, which uploads the folder as-is.
 GITHUB_APPEAL_UDKAST.md
 
-# Kristian's editorial review working doc — not an engineering artifact
+# Kristian's editorial review working doc — not an engineering artifact.
+# Also moved to _arbejdsdokumenter/ (same reason).
 OVERSIGT_JOKES.md
+
+# Deploy folder built by build-dist.mjs — deploy THIS, never "."
+dist/

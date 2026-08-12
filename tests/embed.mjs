@@ -20,9 +20,16 @@ for (const [name,vp] of [['desktop',{viewport:{width:1200,height:900}}],
   const fbox=await (await page.$('#gameframe')).boundingBox();
   if (vp.hasTouch) await page.touchscreen.tap(fbox.x+fbox.width/2, fbox.y+fbox.height*0.4);
   else await page.mouse.click(fbox.x+fbox.width/2, fbox.y+fbox.height*0.4);
-  await page.waitForTimeout(3000);
+  // 4500ms: heli-landing + gåturen til minen (~4,2 s) + introskiltet
+  await page.waitForTimeout(4500);
   const s=await frame.evaluate(()=>window.__tv2 && window.__tv2.snapshot());
   check(`${name}: spillet booter i iframe`, s && s.scene==='greenland', s&&s.scene);
+  // Luk Grønlands introskilt først. Siden granskningen 2026-08-12 har
+  // infokort 700 ms læse-grace, og de skal lukkes med et selvstændigt tryk —
+  // ét tryk kan ikke længere både lukke kortet OG flytte Trump.
+  if (vp.hasTouch) await page.touchscreen.tap(fbox.x+fbox.width/2, fbox.y+fbox.height*0.4);
+  else await page.mouse.click(fbox.x+fbox.width/2, fbox.y+fbox.height*0.4);
+  await page.waitForTimeout(400);
   // input inde i framen (klik-for-at-gå)
   if (s && s.stage){
     const box=await (await page.$('#gameframe')).boundingBox();

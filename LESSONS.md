@@ -151,6 +151,46 @@ på at hvert event når frem.
 
 ---
 
+## `.gitignore` beskytter mod GitHub — ikke mod `wrangler pages deploy .`
+
+**Problem:** Granskningen før publicering (2026-08-12) fandt at
+`GITHUB_APPEAL_UDKAST.md`, `OVERSIGT_JOKES.md`, `STATUS.md`, tre gamle
+spilversioner (1,4 MB) og hele `tests/` lå live på pages.dev med HTTP 200.
+Den personlige GitHub-appel beskrev i klartekst det racistiske AI-billede der
+kostede kontoen i juli — på en URL der ville stå i kildekoden på en
+politiken.dk-artikel.
+**Årsag:** `wrangler pages deploy .` uploader mappen som den er.
+`.gitignore` gælder kun git. De to filer var korrekt gitignoreret og alligevel
+offentlige — beskyttelsen så rigtig ud og virkede ikke.
+**Fix:** `build-dist.mjs` samler kun de filer `index.html` faktisk refererer
+(assets udledes af filen selv, så nye baner kommer automatisk med), og
+deploy peger på `dist/`. Deploy-kommandoen er rettet i ENGINE_MAP.md.
+**Generel regel:** hosting-platformens enhed er MAPPEN, ikke repoet. Spørg
+altid "hvad bliver offentligt?" — ikke "hvad er committet?". Verificér med
+`curl -o /dev/null -w "%{http_code}"` mod en fil der IKKE burde være der.
+**Dato:** 2026-08-12
+
+---
+
+## Fire granskere fandt tre fejl der kun opstår når man forlader en bane
+
+**Indsigt:** Granskningen 2026-08-12 fandt et mønster ingen enkelt bane-test
+kunne se: tilstand der er knyttet til én bane, men ikke ryddes når man rejser.
+Atomraketten i Oval (`resetOval` nulstillede ikke `NUKE`) detonerede
+uundgåeligt ved næste besøg. Grønlands smeltevand fulgte med til Kreml, fordi
+`submerged`-testen aldrig spurgte hvilken bane man var i. Og en kamp-timer
+uden `scene`-guard kunne starte en boksekamp EFTER spilleren var død — hvor
+mobilspilleren så sad fast, fordi kun Esc kunne afbryde.
+**Fælles årsag:** en `setTimeout` eller et vedvarende flag der overlever
+`switchScene()`. Søsterlinjen syv linjer længere nede HAVDE guarden — den var
+bare aldrig kopieret op.
+**Generel regel:** hver gang du skriver `setTimeout` i en bane, så spørg: hvad
+sker der, hvis spilleren er et andet sted, når den fyrer? Guarden er
+`if (scene!==SCENE.X || GS.over) return;`. `tests/granskning.mjs` bevogter dem nu.
+**Dato:** 2026-08-12
+
+---
+
 ## Touch-chips er ikke desktop-knapper
 
 **Problem:** Golfens Leave/Reset-chips var nyttige på iPhone, men på desktop

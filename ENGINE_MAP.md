@@ -161,14 +161,26 @@ slukket ved overlays/fight/cutscene/walkTween).
   trin 6: JSON-validering + `node --check`).
 - **Kørselsklar testsuite: `tests/`** — `node regression.mjs` +
   `node finale.mjs` (se tests/README.md). Kør den efter ENHVER ændring.
+  Dertil `node tests/granskning.mjs` (ingen browser, kører på 1 sekund):
+  den bevogter de 16 rettelser fra granskningen 2026-08-12 mod at blive
+  fortrudt ved en fremtidig refaktorering. Kør den FØR de tunge browsertests.
   Nye flows testes efter samme mønster: desktop (1280×720 eller bredere)
   OG iPhone (390×844, touch); kravet er **0 pageerrors** + screenshots
   man selv har KIGGET på.
   Bevægelse = piletaster (ikke a/d). Heli-menuens numre afhænger af
   hvilken bane man står i (menuen udelader den aktuelle bane!).
-- Deploy: `npx wrangler pages deploy . --project-name trumpspillet2026
-  --branch=main --commit-dirty=true` (ALTID `--branch=main`) — verificér
-  bagefter at live er byte-identisk (`curl` + sammenlign).
+- **Deploy: byg først, deploy så `dist` — ALDRIG `.`**
+  ```
+  node build-dist.mjs
+  npx wrangler pages deploy dist --project-name trumpspillet2026 \
+    --branch=main --commit-dirty=true
+  ```
+  (ALTID `--branch=main`.) `deploy .` uploader HELE mappen og respekterer
+  IKKE `.gitignore` — granskningen 2026-08-12 fandt STATUS.md, en personlig
+  GitHub-appel, tre gamle spilversioner og `tests/` liggende offentligt på
+  pages.dev. Verificér bagefter at live er byte-identisk (`curl` +
+  sammenlign), og at `curl -o /dev/null -w "%{http_code}" .../STATUS.md`
+  ikke giver 200.
 - Commit efter hver afsluttet, verificeret ændring; deploy er standard-
   flowet, men spørg Kristian ved indholdsmæssige/redaktionelle ændringer.
 

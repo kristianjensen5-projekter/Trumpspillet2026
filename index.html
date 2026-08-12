@@ -337,7 +337,7 @@
         -65
       ]
     ],
-    "HELI_MENU_HEADER": "Board helicopter?",
+    "HELI_MENU_HEADER": "Hvor skal vi hen? Saml alle 6 medaljer",
     "HELI_MENU": [
       "Stay in Greenland",
       "Fly to The White House",
@@ -1810,7 +1810,24 @@
 /* ================================================================
    0. DATA + UTILS
    ================================================================ */
-const DATA = JSON.parse(document.getElementById('game-data').textContent);
+// Editorial text is hand-edited in #game-data. A stray quote or missing comma
+// used to fail silently: #intro is static HTML, so the start screen still
+// looked perfect and only the Start button was dead. Say it out loud instead.
+let DATA;
+try {
+  DATA = JSON.parse(document.getElementById('game-data').textContent);
+} catch (err) {
+  const box = document.getElementById('intro');
+  if (box) box.innerHTML =
+    '<div style="max-width:640px;margin:auto;padding:24px;font:600 15px/1.5 system-ui;color:#7a0000;text-align:left">'
+    + '<h1 style="font:800 22px system-ui;margin:0 0 10px">Fejl i tekstblokken — spillet kan ikke starte</h1>'
+    + '<p style="margin:0 0 10px">Der er en syntaksfejl i <b>#game-data</b>-blokken i index.html. '
+    + 'Typisk årsag: et lige anførselstegn (") midt i en tekst, et manglende komma, eller et linjeskift midt i en replik.</p>'
+    + '<p style="margin:0;font-family:ui-monospace,monospace;font-size:13px;background:#fff3f3;padding:10px;border-radius:6px">'
+    + String(err && err.message || err).replace(/[<>&]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))
+    + '</p></div>';
+  throw err;
+}
 const CFG = DATA.CONFIG;
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const dist2 = (ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
@@ -1875,6 +1892,12 @@ function fit(){
   // wide desktop windows don't blow sprites up absurdly)
   CAM.scale = clamp(VH / CFG.WORLD_H, 0.5, 2.4);
   CAM.viewW = VW / CAM.scale;
+  // The golf course locks its layout per hole. Rotating the phone mid-hole
+  // otherwise mixes a stale scale with the live viewport and pushes the cup
+  // off-screen until the next hole.
+  // try/catch, not typeof: fit() runs at boot while `scene` and `GOLF` are
+  // still in their temporal dead zone, where even typeof throws.
+  try{ if (scene===SCENE.GOLF) GOLF.viewLock={vw:VW,vh:VH}; }catch(_){}
   positionStageUI();
 }
 /* DOM HUD elements are position:fixed to the window — anchor them to the
@@ -1991,7 +2014,10 @@ const MUSIC_TRACKS = {
 };
 const Music = {
   disabled:false,
-  muted:(localStorage.getItem('trumpv2-music-muted')==='1'),
+  // Runs during initial script evaluation. As a cross-origin iframe with
+  // third-party storage blocked (incognito default), a bare read throws
+  // SecurityError and kills boot before it starts — blank iframe, no error.
+  muted:(()=>{ try{ return localStorage.getItem('trumpv2-music-muted')==='1'; }catch(_){ return false; } })(),
   volume:0.42,
   masterGain:null,
   tracks:{},
@@ -2191,7 +2217,7 @@ function heliLevelLabel(dest){
 function openHeliLevelSelect(currentScene){
   ensureAudio(); SFX.helicopter();
   const destinations=HELI_DESTINATIONS_LIST().filter(d=>d.scene!==currentScene);
-  openChoice(DATA.GREENLAND.HELI_MENU_HEADER, ['Stay here', ...destinations.map(heliLevelLabel)], k=>{
+  openChoice(DATA.GREENLAND.HELI_MENU_HEADER, ['Bliv her', ...destinations.map(heliLevelLabel)], k=>{
     closeChoice();
     const idx=parseInt(k,10)-2;
     if (idx<0) return;
@@ -2770,7 +2796,9 @@ function openChoice(header, options, onKey){
   choiceOverlay={ header, options:options.map((label,i)=>({key:String(i+1),label})), onKey, selected:0, boxes:[] };
 }
 function closeChoice(){ choiceOverlay=null; }
-function openInfoCard(text,onKey){ infoCard={text,onKey}; }
+// readyAt: the intro cards are the only place a level explains itself, and an
+// impatient second tap used to wipe them before they could be read.
+function openInfoCard(text,onKey){ infoCard={text,onKey,readyAt:now()+700}; }
 function closeInfoCard(){ infoCard=null; }
 function anyOverlayActive(){ return !!(choiceOverlay||infoCard||(typeof FINALE!=='undefined'&&FINALE.active)); }
 function closeAllOverlays(){ choiceOverlay=null; infoCard=null; continueOverlay=null; }
@@ -2838,7 +2866,13 @@ function drawInfoCardOverlay(){
   ctx.fillStyle='#333'; ctx.textAlign='center';
   let fs=16;
   ctx.font=`bold ${fs}px system-ui`;
-  while (Math.max(...lines.map(l=>ctx.measureText(l).width)) > w-30 && fs>11){ fs--; ctx.font=`bold ${fs}px system-ui`; }
+  // shrink on BOTH axes: a short, wide viewport (landscape phone, or a squat
+  // iframe) gives a card only ~100px tall, and width-only shrinking let the
+  // text run straight out of the frame and across the level.
+  while ((Math.max(...lines.map(l=>ctx.measureText(l).width)) > w-30
+          || lines.length*fs*1.45 > h-20) && fs>11){
+    fs--; ctx.font=`bold ${fs}px system-ui`;
+  }
   const lh=fs*1.45, totalH=lines.length*lh;
   const startY=y+(h-totalH)/2+lh*0.8;
   lines.forEach((l,i)=>ctx.fillText(l, x+w/2, startY+i*lh));
@@ -3355,6 +3389,7 @@ const FightEngine = {
   stop(result){
     if (!this.active) return;
     this.active=false; this.punchOut=false;
+    pointers.clear(); // a finger held through the KO would otherwise stay "down"
     GL.state.larsFightRequested=false;
     player.walking=false; player.walkCycle=0;
     if (result && result.winner==='trump'){ startGreenlandFlagDrop(); }
@@ -3696,7 +3731,10 @@ function larsDialogueStep(){
     say(player, T[maxRounds-1], 2000);   // "Enough talk. Now fight."
     GL.lars.say=''; GL.lars.speakingUntil=0;
     GL.state.larsDialogRounds=round+1;
-    setTimeout(()=>startGreenlandFight(), 1600);
+    setTimeout(()=>{
+      if (scene!==SCENE.GREENLAND || GS.over || GL.lars.blownUp) return;
+      startGreenlandFight();
+    }, 1600);
     return;
   }
   say(player, T[round], 2200);
@@ -3795,7 +3833,7 @@ function startGlacierExplosion(){
         clearInterval(glacierExplosion.riseTimer);
       }
     },16);
-    setTimeout(()=>gameOverCause('ice'),1500);
+    setTimeout(()=>{ if (scene===SCENE.GREENLAND) gameOverCause('ice'); },1500);
   },2000);
 }
 
@@ -3937,6 +3975,9 @@ function ovalApplyLayout(){
 }
 function resetOval(){
   ovalApplyLayout();
+  // A launched missile is only ticked by Oval's update(). Leave the scene mid
+  // countdown and it freezes; without this it detonates on arrival next time.
+  NUKE.active=false;
   player.x=190; player.y=GROUND_Y; player.say=''; player.speakingUntil=0;
   player.x=OV.landingX;
   OV.yes.members=[
@@ -5410,7 +5451,7 @@ function drawEpstein(){
     }
     // big REDACT button (touch primary, E on desktop)
     const bw=Math.min(200,VW*0.5), bh=54;
-    const bx=(VW-bw)/2, by2=VH-bh-Math.max(10,VH*0.02);
+    const bx=(VW-bw)/2, by2=VH-bh-Math.max(36,VH*0.02); // 36px: home indicator
     EP._btn={x:bx,y:by2,w:bw,h:bh};
     ctx.fillStyle='#1a1a1a';
     roundRectPath(ctx,bx,by2,bw,bh,27); ctx.fill();
@@ -5419,6 +5460,21 @@ function drawEpstein(){
     ctx.fillStyle='#ffd700'; ctx.font='800 20px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(IS_TOUCH?'🖊 REDACT':'🖊 REDACT [E]', bx+bw/2, by2+bh/2);
     ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+    // Touch has no Esc key — without this chip the scene is a one-way door
+    // (every tap is a redaction, and dying respawns you right back here).
+    EP._btnLeave=null;
+    if (IS_TOUCH){
+      // sits ABOVE the centred REDACT button — on a 390px phone REDACT spans
+      // x 97–292, so a bottom-left chip would overlap it.
+      const lw=104, lh=38, ly=by2-lh-10;
+      EP._btnLeave={x:12,y:ly,w:lw,h:lh};
+      ctx.fillStyle='#22324a'; roundRectPath(ctx,12,ly,lw,lh,18); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.85)'; ctx.lineWidth=2;
+      roundRectPath(ctx,13,ly+1,lw-2,lh-2,17); ctx.stroke();
+      ctx.fillStyle='#fff'; ctx.font='bold 13px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('🚁 Leave',12+lw/2,ly+lh/2);
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    }
   }
   // toasts
   EP.toasts=EP.toasts.filter(x=>t-x.start<x.ttl);
@@ -6129,7 +6185,8 @@ function drawGolfHUD(){
   ctx.fillText(`You: ${GOLF.total+GOLF.strokesThisHole}  |  Joe: ${GOLF.joeTotal}`,px+12,py+60);
   GOLF._btnLeave=null; GOLF._btnDrop=null;
   if (IS_TOUCH){
-    const bw=110, bh=38, gap=8, by=VH-bh-Math.max(12,VH*0.025);
+    // 36px floor keeps the chips clear of the iPhone home indicator (34px)
+    const bw=110, bh=38, gap=8, by=VH-bh-Math.max(36,VH*0.025);
     GOLF._btnLeave={x:12,y:by,w:bw,h:bh}; GOLF._btnDrop={x:12+bw+gap,y:by,w:bw+22,h:bh};
     [[GOLF._btnLeave,'#22324a','🚁 Leave'],[GOLF._btnDrop,'#355b2c','⛳ Reset +1']].forEach(([b,col,label])=>{
       ctx.fillStyle=col; roundRectPath(ctx,b.x,b.y,b.w,b.h,18); ctx.fill();
@@ -6906,6 +6963,9 @@ function finalePlayAgain(){
   Object.keys(GS.medals).forEach(k=>GS.medals[k]=false);
   saveMedals(); renderAreas();
   GS.lives=0;
+  // a death trigger can fire while the ceremony plays; without this RUN AGAIN
+  // drops the player straight into a game over tableau
+  GS.over=false; GS.overMode=null; continueOverlay=null;
   FINALE.active=false;
   finaleRestoreUI();
   fullRestartRun();
@@ -7145,16 +7205,19 @@ let jumpTween=null;
 let walkTween=null;
 
 function doJump(){
-  if (anyOverlayActive()||jumpTween||GS.over) return;
+  if (anyOverlayActive()||jumpTween||GS.over||entryHeli.active) return;
   jumpTween={start:now(),dur:CFG.JUMP_MS,height:player.capOn?CFG.JUMP_H_CAP:CFG.JUMP_H};
 }
-function startWalkTo(tx,onDone,maxMs){
+function startWalkTo(tx,onDone,maxMs,byPlayer){
   // maxMs default 900: intent-tap auto-walks stay snappy. Cutscene
   // walk-ins pass a higher cap so long walks keep NATURAL speed
   // (the 900ms cap made the Oval desk walk look like a jump cut)
+  // byPlayer: only the intent-tap passes this. Every other caller is a
+  // cutscene, and a tap must not overwrite those — their onDone is what
+  // opens the level's intro card, which would otherwise be lost for good.
   const dx=Math.abs(tx-player.x);
   const dur=Math.min(maxMs||900,(dx/(CFG.SPEED*(player.speedMul||1)))*1000+150);
-  walkTween={sx:player.x,tx,start:now(),dur:Math.max(100,dur),onDone};
+  walkTween={sx:player.x,tx,start:now(),dur:Math.max(100,dur),onDone,byPlayer:!!byPlayer};
   player.facing=Math.sign(tx-player.x)||player.facing;
 }
 function stepWalkTween(t){
@@ -7181,8 +7244,13 @@ addEventListener('keydown', e=>{
     if (handled) e.preventDefault();
     return;
   }
+  // FINALE outranks GS.over here to match the pointer ladder below — the two
+  // used to disagree, so keys drove the voting machine while taps drove the
+  // ceremony.
+  if (FINALE.active){ finaleKey(k); e.preventDefault(); return; }
   if (GS.over){
     if (GS.overMode && String(GS.overMode).startsWith('go_')){
+      if (now() < (GO.shownAt||0)+1200){ e.preventDefault(); return; } // read-grace
       startContinueOverlay(); handled=true;
     } else if (GS.overMode==='continue'){
       if (k==='r'&&e.shiftKey){ fullRestartToIntro(); }
@@ -7193,7 +7261,6 @@ addEventListener('keydown', e=>{
     if (handled) e.preventDefault();
     return;
   }
-  if (FINALE.active){ finaleKey(k); e.preventDefault(); return; }
   if (k==='arrowleft'||k==='arrowright'){ KEYHINTS.moved=KEYHINTS.moved||now(); }
   if (k==='e'||e.code==='KeyE'){ KEYHINTS.used=KEYHINTS.used||now(); }
   if (k==='arrowup'||k===' '){ KEYHINTS.jumped=KEYHINTS.jumped||now(); }
@@ -7227,6 +7294,7 @@ addEventListener('keydown', e=>{
     return;
   }
   if (infoCard){
+    if (now()<(infoCard.readyAt||0)){ e.preventDefault(); return; } // read-grace
     if (k==='escape'){ closeInfoCard(); }
     else { infoCard.onKey && infoCard.onKey(k); }
     e.preventDefault();
@@ -7301,6 +7369,9 @@ cvs.addEventListener('pointerdown', e=>{
       if (hit(C._giveUp)){ fullRestartToIntro(); return; }
       continueSpin(); // VOTE button or anywhere else: democracy happens
     } else if (GS.overMode && String(GS.overMode).startsWith('go_')){
+      // the tableaux are some of the most editorial art in the game — don't
+      // let a mash-tap left over from the fight wipe them in ~100ms
+      if (now() < (GO.shownAt||0)+1200) return;
       startContinueOverlay();
     }
     return;
@@ -7311,13 +7382,18 @@ cvs.addEventListener('pointerdown', e=>{
     if (hitBox){ choiceOverlay.selected=choiceOverlay.boxes.indexOf(hitBox); choiceOverlay.onKey(hitBox.key); }
     return;
   }
-  if (infoCard){ infoCard.onKey && infoCard.onKey('tap'); return; }
+  if (infoCard){
+    if (now()<(infoCard.readyAt||0)) return; // read-grace
+    infoCard.onKey && infoCard.onKey('tap'); return;
+  }
   // Kremlin overlays: every tap is a mash / a dismiss
   if (tug){ tugInput('tap'); return; }
   if (flagOverlay){ closeFlagOverlay(); return; }
   // Epstein: every tap is a redaction attempt (success card: dismiss)
   if (scene===SCENE.EPSTEIN){
     if (EP.success){ epsteinDismissSuccess(); return; }
+    const lb=EP._btnLeave;
+    if (lb && sx>=lb.x && sx<=lb.x+lb.w && sy>=lb.y && sy<=lb.y+lb.h){ epsteinLeave(); return; }
     epsteinRedact();
     return;
   }
@@ -7353,7 +7429,11 @@ function releasePointer(e){
   if (!p) return;
   const heldMs=now()-p.startT;
   if (p.fight) return;
-  if (heldMs<250 && !p.moved && !anyOverlayActive() && !GS.over){
+  // entryHeli/walkTween: during the landing and the scripted walk-in, a tap
+  // used to open the heli menu on top of the cutscene, or overwrite the walk
+  // tween so its callback (the level's intro sign) never fired.
+  const inCutscene = entryHeli.active || (walkTween && !walkTween.byPlayer);
+  if (heldMs<250 && !p.moved && !anyOverlayActive() && !GS.over && !inCutscene){
     // SHORT TAP → intent-tap: interact, or walk to nearest object and interact
     const w=screenToWorld(p.x,p.y);
     intentTap(w.x,w.y);
@@ -7457,7 +7537,7 @@ function intentTap(wx,wy){
     if (near && near.type===best.type){ interact(); return; }
     const side=Math.sign(best.x-player.x)||1;
     const targetX=clamp(best.x-side*(CFG.INTERACT_DIST-6),40,CAM.worldW-40);
-    startWalkTo(targetX, ()=>interact());
+    startWalkTo(targetX, ()=>interact(), null, true); // byPlayer: may be redirected
   } else {
     // tapped empty area: if Trump is already near something, just interact
     if (Lv.nearest && Lv.nearest()) interact();
@@ -7618,6 +7698,9 @@ function drawNavHints(){
     ctx.textAlign='left';
   };
   if (IS_TOUCH){
+    // Touch users get no key legend (.helpbox is hidden on coarse pointers),
+    // so hold-to-walk was taught nowhere at all.
+    hint(GL.mine.x, GL.mine.y-300, '👉', 'Hold fingeren i højre side', 'af skærmen for at gå');
     hint(GL.heli.x, GL.heli.y-180, '🚁', 'Tap the helicopter to fly on');
     hint(GL.shop.x, GL.shop.y-300, '🛒', L.navShop1, L.navShop2);
   } else {
@@ -7656,7 +7739,7 @@ function step(t){
           }
         }
         if (dx){
-          const submerged = glacierExplosion.active && glacierExplosion.waterLevel>0 &&
+          const submerged = scene===SCENE.GREENLAND && glacierExplosion.active && glacierExplosion.waterLevel>0 &&
             (player.y-38) > (CFG.WORLD_H-glacierExplosion.waterLevel);
           player.x += dx*CFG.SPEED*(player.speedMul||1)*(submerged?0.85:1)*dt;
           player.facing=Math.sign(dx);
@@ -7740,6 +7823,10 @@ function step(t){
 
     requestAnimationFrame(step);
   }catch(err){
+    // paintStageBackdrop() does save()+clip(); paintStageFrame() does the
+    // matching restore(). Throwing between them skips it, and the loop
+    // restarts 10x/second — one leaked clip per frame, forever.
+    try{ ctx.restore(); }catch(_){}
     console.error('Game loop error:',err);
     setTimeout(()=>requestAnimationFrame(step),100);
   }
@@ -7761,7 +7848,7 @@ function updateMobileToolButtons(){
     return;
   }
   const blocked = scene===SCENE.INTRO || GS.over || anyOverlayActive() || FightEngine.active || !!tug || !!flagOverlay;
-  const invShow = inventory.length>0 && scene!==SCENE.INTRO && !GS.over;
+  const invShow = inventory.length>0 && !blocked && scene!==SCENE.GOLF && scene!==SCENE.EPSTEIN;
   if (!invShow) invEl.classList.add('hidden');
   invBtn.classList.toggle('show', invShow);
   invBtn.classList.toggle('active', invShow && !invEl.classList.contains('hidden'));

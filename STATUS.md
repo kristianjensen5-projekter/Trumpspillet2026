@@ -569,6 +569,70 @@ blokerende fejl.
   faktisk spilleren (player.y målt før/under/efter), skjult i golf.
   Fuld regression + finale-suite grøn, 0 fejl
 
+## GRANSKNING før publicering — 2026-08-12 ✅ (Opus 4.8 + 4 granskere)
+
+Fire read-only agenter (sikkerhed/eksponering · brugsoplevelse · robusthed ·
+mobil-robusthed), ~538.000 tokens, ~25 min. Alle fund trieret og efterprøvet
+i koden af mig selv før noget blev rettet. **16 rettelser, 0 regressioner.**
+
+**Det alvorligste fund var ikke kode:** `wrangler pages deploy .` uploader
+HELE mappen og respekterer IKKE `.gitignore`. Live på pages.dev lå
+`GITHUB_APPEAL_UDKAST.md` (beskriver det racistiske AI-billede i klartekst),
+`OVERSIGT_JOKES.md`, `STATUS.md`, tre gamle spilversioner og `tests/`.
+→ `build-dist.mjs` + deploy af `dist/`; de to følsomme filer flyttet til
+`Masterversioner/_arbejdsdokumenter/Trumpspillet/`. Se LESSONS.md.
+
+**P1 — låste eller dræbte uundgåeligt (alle bekræftet i koden):**
+- **Epstein var en envejsdør på mobil** (fundet af TO granskere uafhængigt):
+  `epsteinLeave()` fandtes kun bag Escape-tasten, og game over respawnede
+  ind i samme bane → uendelig løkke. Nu en 🚁 Leave-chip som i golf,
+  placeret OVER REDACT (målt: ville ellers overlappe på 390 px)
+- **Atomraketten overlevede at man forlod Oval** → detonerede på første frame
+  ved næste besøg. `resetOval()` nulstiller nu `NUKE`
+- **Grønlands smeltevand fulgte med til alle baner** (drukning i Kreml +
+  permanent 15 % fartnedsættelse). `submerged` og ice-timeren er scene-gated
+- **Kampen kunne starte efter spillerens død** → respawn midt i en udløbet
+  boksekamp, uden udvej på mobil. Guarden kopieret fra søsterlinjen
+
+**P2 — tavse fejlmåder:**
+- **Ødelagt JSON fejlede usynligt:** `#intro` er statisk HTML, så startskærmen
+  så perfekt ud og kun Start-knappen var død. Nu en rød fejlboks med
+  linjenummer — vigtigt for redaktionel tekstretning tæt på deadline
+- **Én ubeskyttet `localStorage`-linje** kunne give helt blank iframe i
+  inkognito (blokeret tredjeparts-storage). De fire andre var beskyttet
+- **`step()`-catch lukkede ikke stage-clippet** → én lækket canvas-tilstand
+  pr. frame, 10 gange i sekundet, hvis noget kastede
+
+**P3 — polish:** infokort/game over-tableauer kan ikke længere tappes væk før
+de er læst (1200 ms grace) · inventarknappen respekterer nu spærretilstande
+(stod oven på finalen) · intent-tap og hop spærret under cutscenes (et tidligt
+tap kunne permanent fjerne banens introskilt) · `FightEngine.stop()` rydder
+`pointers` · golfens viewLock opdateres ved orienteringsskift · FINALE står nu
+før `GS.over` i BEGGE input-stiger · mobil har fået et gå-hint ("Hold fingeren
+i højre side") · heli-menuen er dansk og nævner nu målet: samle alle 6
+medaljer · canvas-knapper er fri af iPhonens home-indicator
+
+**Nedgraderet efter min triage** (granskernes egen alvorlighed holdt ikke):
+- "Mobilspilleren kan ikke gå mod højre" — hold-for-at-gå virker, og dine tre
+  venner + mor gik alle fint; klagen var hop. Reel oplæringssvaghed, ikke
+  blokering → løst med hintet, ikke med en ny knap
+- "Oval er en blindgyde" — man kan gå til helikopteren; kun et kamera-spring
+- Sikkerhedsgranskerens påstand om at `assets/drawing.png` er eneste asset var
+  **forkert** — golfbanens tre overlays refereres fra JSON-blokken. Havde jeg
+  fulgt den blindt, var golfbanen gået i stykker i produktion
+
+**Bevis:** `tests/granskning.mjs` (ingen browser, ~1 sek) — 42 tjek grønne:
+hvert lukket hul afvises nu, og det der virkede før virker stadig. Kør den
+efter enhver ændring, før de tunge browsertests.
+
+**Udestår — kun Kristian kan afgøre:**
+- Fysisk iPhone: spærrer spillet for scroll i artiklen? Starter lyden ved
+  første tryk? Drej telefonen midt i et golfhul
+- `frame-ancestors` i en `_headers`-fil: kræver at CUE's preview-domæne
+  kendes først (spørg CUE-holdet)
+- Skal `/index-v1` fortsat eksistere offentligt? Den er nu ikke længere
+  deployet, og EMBED_GUIDE.md's henvisning til den bør rettes eller fjernes
+
 ## Næste skridt
 
 - Ingen åbne Fable-spor. Evt. næste: publicerings-klargøring til
