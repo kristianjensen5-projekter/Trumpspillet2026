@@ -625,6 +625,24 @@ medaljer · canvas-knapper er fri af iPhonens home-indicator
 hvert lukket hul afvises nu, og det der virkede før virker stadig. Kør den
 efter enhver ændring, før de tunge browsertests.
 
+**Deployet + verificeret 2026-08-12:**
+- `node build-dist.mjs && npx wrangler pages deploy dist --project-name
+  trumpspillet2026 --branch=main --commit-dirty=true`
+- Live `/` er **byte-identisk** med `dist/index.html` (samme SHA-256)
+- Live-røgtest desktop 1280×720 + iPhone 390×844: booter, scene=greenland,
+  **0 pageerrors** på begge
+- Med cache-buster returnerer `/STATUS.md`, `/GITHUB_APPEAL_UDKAST.md`,
+  `/OVERSIGT_JOKES.md` og `/index-v1` nu spillet (320.902 B) — filerne er
+  reelt væk fra produktion
+- ⏳ **MEN:** Cloudflares edge-cache serverer stadig de gamle kopier på de
+  nøgne URL'er med `s-maxage=604800` (7 dage, `cf-cache-status: HIT`,
+  `age` ~4 t ved deploy). Wrangler-tokenet har kun `zone (read)`, ikke
+  `cache_purge` — samme begrænsning som 2026-07-13. Cachen udløber af sig
+  selv **senest ~2026-08-19**. Tjek med:
+  `curl -sI https://trumpspillet2026.pages.dev/STATUS.md | grep -i content-type`
+  → når den siger `text/html` i stedet for `text/markdown`, er den væk.
+  Skal det gå hurtigere, kræver det en API-nøgle med cache-purge-rettighed.
+
 **Udestår — kun Kristian kan afgøre:**
 - Fysisk iPhone: spærrer spillet for scroll i artiklen? Starter lyden ved
   første tryk? Drej telefonen midt i et golfhul
