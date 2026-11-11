@@ -1,6 +1,11 @@
 # Trumpspillet 2026 — Status
 
 **Type:** arbejde (bekræftet af Kristian 2026-07-02)
+**Tilstand:** pauseret
+**Vis på portfolio:** ja
+**Spor:** udgivet
+**Overskrift:** Trumpspillet 2026
+**Vis-URL:** https://trumpspillet2026.pages.dev/
 **Live URL:** https://trumpspillet2026.pages.dev/ (v2 — NY version, Trin 9
 udført 2026-07-08) · gammel version arkiveret på `/index-v1` ·
 gamle `/trumpspillet-v2`-links redirecter til `/`
